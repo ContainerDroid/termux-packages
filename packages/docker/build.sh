@@ -4,6 +4,7 @@ TERMUX_PKG_VERSION=master
 TERMUX_PKG_SHA256=9fa91d67d2f43abdfcd8ef13a637ea28c50e7c0a764855a07674948098aba6dc
 TERMUX_PKG_SRCURL=https://github.com/LineageOSPlus/moby/archive/master.zip
 TERMUX_PKG_FOLDERNAME=moby-master
+TERMUX_PKG_DEPENDS="docker-cli, docker-runc, docker-containerd"
 
 termux_step_make(){
 	termux_setup_golang
