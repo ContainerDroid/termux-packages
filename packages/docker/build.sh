@@ -17,6 +17,7 @@ termux_step_make(){
 
 	# issue the build command
 	cd go/src/github.com/docker/docker
+	unset LDFLAGS
 	export DOCKER_GITCOMMIT=bcdca11
 	export DOCKER_BUILDTAGS='exclude_graphdriver_btrfs exclude_graphdriver_devicemapper exclude_graphdriver_quota selinux exclude_graphdriver_aufs '
 	./hack/make.sh dynbinary

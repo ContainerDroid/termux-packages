@@ -17,6 +17,7 @@ termux_step_make(){
 
 	# issue the build command
 	cd go/src/github.com/containerd/containerd
+	unset LDFLAGS
 	export BUILDTAGS=no_btrfs
 	make
 }

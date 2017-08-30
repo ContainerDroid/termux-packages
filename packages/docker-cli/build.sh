@@ -17,6 +17,7 @@ termux_step_make(){
 	export GOPATH=$(pwd)/go
 
 	# issue the build command
+	unset LDFLAGS
 	cd go/src/github.com/docker/cli
 	export DISABLE_WARN_OUTSIDE_CONTAINER=1
 	make

@@ -17,6 +17,7 @@ termux_step_make(){
 
 	# issue the build command
 	cd go/src/github.com/opencontainers/runc/
+	unset LDFLAGS
 	make  BUILDTAGS="selinux"
 }
 
