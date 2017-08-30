@@ -26,4 +26,15 @@ termux_step_make(){
 
 termux_step_make_install() {
 	cp go/src/github.com/docker/docker/bundles/17.06.0-dev/dynbinary-daemon/dockerd-17.06.0-dev  $TERMUX_PREFIX/bin/dockerd
+
+	mkdir -p $TERMUX_PREFIX/etc/docker/
+	cat > $TERMUX_PREFIX/etc/docker/docker.json << EOL
+{
+	"storage-driver": "overlay",
+	"storage-opts": [
+		"overlay.override_kernel_check=true"
+	]
+}
+EOL
+
 }
