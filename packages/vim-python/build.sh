@@ -38,32 +38,32 @@ TERMUX_PKG_CONFFILES="share/vim/vimrc"
 # vim-python:
 TERMUX_PKG_CONFLICTS="vim"
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS+="
-vi_cv_path_python3_pfx=$TERMUX_PREFIX
+vi_cv_path_python3_pfx=$TERMUX_DESTDIR/usr
 vi_cv_var_python3_version=3.6
 --enable-python3interp
---with-python3-config-dir=$TERMUX_PREFIX/lib/python3.6/config-3.6m/
+--with-python3-config-dir=$TERMUX_DESTDIR/usr/lib/python3.6/config-3.6m/
 "
 TERMUX_PKG_DESCRIPTION+=" - with python support"
 termux_step_pre_configure() {
-	CPPFLAGS+=" -I${TERMUX_PREFIX}/include/python3.6m"
+	CPPFLAGS+=" -I${TERMUX_DESTDIR}/usr/include/python3.6m"
 }
 
 termux_step_pre_configure () {
 	make distclean
 
 	# Remove eventually existing symlinks from previous builds so that they get re-created
-	for b in rview rvim ex view vimdiff; do rm -f $TERMUX_PREFIX/bin/$b; done
-	rm -f $TERMUX_PREFIX/share/man/man1/view.1
+	for b in rview rvim ex view vimdiff; do rm -f $TERMUX_DESTDIR/usr/bin/$b; done
+	rm -f $TERMUX_DESTDIR/usr/share/man/man1/view.1
 }
 
 termux_step_post_make_install () {
-	cp $TERMUX_PKG_BUILDER_DIR/vimrc $TERMUX_PREFIX/share/vim/vimrc
+	cp $TERMUX_PKG_BUILDER_DIR/vimrc $TERMUX_DESTDIR/usr/share/vim/vimrc
 
 	# Remove most tutor files:
-	cp $TERMUX_PREFIX/share/vim/vim80/tutor/{tutor,tutor.vim,tutor.utf-8} $TERMUX_PKG_TMPDIR/
-	rm -f $TERMUX_PREFIX/share/vim/vim80/tutor/*
-	cp $TERMUX_PKG_TMPDIR/{tutor,tutor.vim,tutor.utf-8} $TERMUX_PREFIX/share/vim/vim80/tutor/
+	cp $TERMUX_DESTDIR/usr/share/vim/vim80/tutor/{tutor,tutor.vim,tutor.utf-8} $TERMUX_PKG_TMPDIR/
+	rm -f $TERMUX_DESTDIR/usr/share/vim/vim80/tutor/*
+	cp $TERMUX_PKG_TMPDIR/{tutor,tutor.vim,tutor.utf-8} $TERMUX_DESTDIR/usr/share/vim/vim80/tutor/
 
-	cd $TERMUX_PREFIX/bin
+	cd $TERMUX_DESTDIR/usr/bin
 	ln -f -s vim vi
 }

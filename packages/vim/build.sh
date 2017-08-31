@@ -41,18 +41,18 @@ termux_step_pre_configure () {
 	make distclean
 
 	# Remove eventually existing symlinks from previous builds so that they get re-created
-	for b in rview rvim ex view vimdiff; do rm -f $TERMUX_PREFIX/bin/$b; done
-	rm -f $TERMUX_PREFIX/share/man/man1/view.1
+	for b in rview rvim ex view vimdiff; do rm -f $TERMUX_DESTDIR/usr/bin/$b; done
+	rm -f $TERMUX_DESTDIR/usr/share/man/man1/view.1
 }
 
 termux_step_post_make_install () {
-	cp $TERMUX_PKG_BUILDER_DIR/vimrc $TERMUX_PREFIX/share/vim/vimrc
+	cp $TERMUX_PKG_BUILDER_DIR/vimrc $TERMUX_DESTDIR/usr/share/vim/vimrc
 
 	# Remove most tutor files:
-	cp $TERMUX_PREFIX/share/vim/vim80/tutor/{tutor,tutor.vim,tutor.utf-8} $TERMUX_PKG_TMPDIR/
-	rm -f $TERMUX_PREFIX/share/vim/vim80/tutor/*
-	cp $TERMUX_PKG_TMPDIR/{tutor,tutor.vim,tutor.utf-8} $TERMUX_PREFIX/share/vim/vim80/tutor/
+	cp $TERMUX_DESTDIR/usr/share/vim/vim80/tutor/{tutor,tutor.vim,tutor.utf-8} $TERMUX_PKG_TMPDIR/
+	rm -f $TERMUX_DESTDIR/usr/share/vim/vim80/tutor/*
+	cp $TERMUX_PKG_TMPDIR/{tutor,tutor.vim,tutor.utf-8} $TERMUX_DESTDIR/usr/share/vim/vim80/tutor/
 
-	cd $TERMUX_PREFIX/bin
+	cd $TERMUX_DESTDIR/usr/bin
 	ln -f -s vim vi
 }

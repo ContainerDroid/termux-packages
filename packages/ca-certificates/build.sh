@@ -4,7 +4,7 @@ TERMUX_PKG_VERSION=20170607
 TERMUX_PKG_PLATFORM_INDEPENDENT=yes
 
 termux_step_make_install () {
-	local CERTDIR=$TERMUX_PREFIX/etc/tls
+	local CERTDIR=$TERMUX_DESTDIR/etc/tls
 	local CERTFILE=$CERTDIR/cert.pem
 	# If the checksum has changed, it may be time to update the package version.
 	local CERTFILE_SHA256=e78c8ab7b4432bd466e64bb942d988f6c0ac91cd785017e465bdc96d42fe9dd0
@@ -23,7 +23,7 @@ termux_step_make_install () {
 		$KEYUTIL_JAR \
 		18f1d2c82839d84949b1ad015343c509e81ef678c24db6112acc6c0761314610
 
-	local JAVA_KEYSTORE_DIR=$PREFIX/lib/jvm/openjdk-9/lib/security
+	local JAVA_KEYSTORE_DIR=$TERMUX_DESTDIR/usr/lib/jvm/openjdk-9/lib/security
 	mkdir -p $JAVA_KEYSTORE_DIR
 
 	java -jar $KEYUTIL_JAR \

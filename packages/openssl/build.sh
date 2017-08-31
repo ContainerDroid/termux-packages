@@ -18,15 +18,15 @@ TERMUX_PKG_CLANG=no
 
 termux_step_configure () {
 	perl -p -i -e "s@TERMUX_CFLAGS@$CFLAGS@g" Configure
-	rm -Rf $TERMUX_PREFIX/lib/libcrypto.* $TERMUX_PREFIX/lib/libssl.*
+	rm -Rf $TERMUX_DESTDIR/usr/lib/libcrypto.* $TERMUX_DESTDIR/usr/lib/libssl.*
 	test $TERMUX_ARCH = "arm" && TERMUX_OPENSSL_PLATFORM="android-armv7"
 	test $TERMUX_ARCH = "aarch64" && TERMUX_OPENSSL_PLATFORM="linux-aarch64"
 	test $TERMUX_ARCH = "i686" && TERMUX_OPENSSL_PLATFORM="android-x86"
 	test $TERMUX_ARCH = "x86_64" && TERMUX_OPENSSL_PLATFORM="linux-x86_64"
 	# If enabling zlib-dynamic we need "zlib-dynamic" instead of "no-comp no-dso":
 	./Configure $TERMUX_OPENSSL_PLATFORM \
-		--prefix=$TERMUX_PREFIX \
-		--openssldir=$TERMUX_PREFIX/etc/tls \
+		--prefix=$TERMUX_DESTDIR/usr \
+		--openssldir=$TERMUX_DESTDIR/etc/tls \
 		shared \
 		no-comp \
 		no-dso \
@@ -43,5 +43,5 @@ termux_step_make () {
 
 termux_step_make_install () {
 	# "install_sw" instead of "install" to not install man pages:
-	make -j 1 install_sw MANDIR=$TERMUX_PREFIX/share/man MANSUFFIX=.ssl
+	make -j 1 install_sw MANDIR=$TERMUX_DESTDIR/usr/share/man MANSUFFIX=.ssl
 }

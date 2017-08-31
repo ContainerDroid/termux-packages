@@ -43,27 +43,27 @@ termux_step_pre_configure() {
 }
 
 termux_step_post_make_install () {
-	(cd $TERMUX_PREFIX/bin && rm -f python && ln -s python3 python)
-	(cd $TERMUX_PREFIX/share/man/man1 && rm -f python.1 && ln -s python3.1 python.1)
+	(cd $TERMUX_DESTDIR/usr/bin && rm -f python && ln -s python3 python)
+	(cd $TERMUX_DESTDIR/usr/share/man/man1 && rm -f python.1 && ln -s python3.1 python.1)
 
 	# Save away pyconfig.h so that the python-dev subpackage does not take it.
 	# It is required by ensurepip so bundled with the main python package.
 	# Copied back in termux_step_post_massage() after the python-dev package has been built.
-	mv $TERMUX_PREFIX/include/python${_MAJOR_VERSION}m/pyconfig.h $TERMUX_PKG_TMPDIR/pyconfig.h
+	mv $TERMUX_DESTDIR/usr/include/python${_MAJOR_VERSION}m/pyconfig.h $TERMUX_PKG_TMPDIR/pyconfig.h
 }
 
 termux_step_post_massage () {
 	# Verify that desired modules have been included:
 	for module in _ssl _bz2 zlib _curses _sqlite3 _lzma; do
-		if [ ! -f lib/python${_MAJOR_VERSION}/lib-dynload/${module}.*.so ]; then
+		if [ ! -f usr/lib/python${_MAJOR_VERSION}/lib-dynload/${module}.*.so ]; then
 			termux_error_exit "Python module library $module not built"
 		fi
 	done
 
 	# Restore pyconfig.h saved away in termux_step_post_make_install() above:
-	mkdir -p $TERMUX_PKG_MASSAGEDIR/$TERMUX_PREFIX/include/python${_MAJOR_VERSION}m/
-	cp $TERMUX_PKG_TMPDIR/pyconfig.h $TERMUX_PREFIX/include/python${_MAJOR_VERSION}m/
-	mv $TERMUX_PKG_TMPDIR/pyconfig.h $TERMUX_PKG_MASSAGEDIR/$TERMUX_PREFIX/include/python${_MAJOR_VERSION}m/
+	mkdir -p $TERMUX_PKG_MASSAGEDIR/$TERMUX_DESTDIR/usr/include/python${_MAJOR_VERSION}m/
+	cp $TERMUX_PKG_TMPDIR/pyconfig.h $TERMUX_DESTDIR/usr/include/python${_MAJOR_VERSION}m/
+	mv $TERMUX_PKG_TMPDIR/pyconfig.h $TERMUX_PKG_MASSAGEDIR/$TERMUX_DESTDIR/usr/include/python${_MAJOR_VERSION}m/
 
 	cd $TERMUX_PKG_MASSAGEDIR
 	find . -path '*/__pycache__*' -delete
@@ -71,26 +71,26 @@ termux_step_post_massage () {
 
 termux_step_create_debscripts () {
 	## POST INSTALL:
-	echo "#!$TERMUX_PREFIX/bin/sh" > postinst
+	echo "#!/system/bin/sh" > postinst
 	echo 'echo "Setting up pip..."' >> postinst
 	# Fix historical mistake which removed bin/pip but left site-packages/pip-*.dist-info,
 	# which causes ensurepip to avoid installing pip due to already existing pip install:
-	echo "if [ ! -f $TERMUX_PREFIX/bin/pip -a -d $TERMUX_PREFIX/lib/python${_MAJOR_VERSION}/site-packages/pip-*.dist-info ]; then rm -Rf $TERMUX_PREFIX/lib/python${_MAJOR_VERSION}/site-packages/pip-*.dist-info ; fi" >> postinst
+	echo "if [ ! -f /usr/bin/pip -a -d /usr/lib/python${_MAJOR_VERSION}/site-packages/pip-*.dist-info ]; then rm -Rf /usr/lib/python${_MAJOR_VERSION}/site-packages/pip-*.dist-info ; fi" >> postinst
 	# Setup bin/pip:
-	echo "$TERMUX_PREFIX/bin/python -m ensurepip --upgrade --default-pip" >> postinst
+	echo "/usr/bin/python -m ensurepip --upgrade --default-pip" >> postinst
 
 	## PRE RM:
 	# Avoid running on update
-	echo "#!$TERMUX_PREFIX/bin/sh" > prerm:
+	echo "#!/system/bin/sh" > prerm:
 	echo 'if [ $1 != "remove" ]; then exit 0; fi' >> prerm
 	# Uninstall everything installed through pip:
 	echo "pip freeze 2> /dev/null | xargs pip uninstall -y > /dev/null 2> /dev/null" >> prerm
 	# Cleanup __pycache__ folders:
-	echo "find $TERMUX_PREFIX/lib/python${_MAJOR_VERSION} -depth -name __pycache__ -exec rm -rf {} \;" >> prerm
+	echo "find /usr/lib/python${_MAJOR_VERSION} -depth -name __pycache__ -exec rm -rf {} \;" >> prerm
 	# Remove contents of site-packages/ folder:
-	echo "rm -Rf $TERMUX_PREFIX/lib/python${_MAJOR_VERSION}/site-packages/*" >> prerm
+	echo "rm -Rf /usr/lib/python${_MAJOR_VERSION}/site-packages/*" >> prerm
 	# Remove bin/pip (and bin/pip3* variants) installed by ensurepip in postinst:
-	echo "rm -f $TERMUX_PREFIX/bin/pip $TERMUX_PREFIX/bin/pip3*" >> prerm
+	echo "rm -f /usr/bin/pip /usr/bin/pip3*" >> prerm
 
 	echo "exit 0" >> postinst
 	echo "exit 0" >> prerm
