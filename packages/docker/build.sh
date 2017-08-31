@@ -25,10 +25,10 @@ termux_step_make(){
 }
 
 termux_step_make_install() {
-	cp go/src/github.com/docker/docker/bundles/17.06.0-dev/dynbinary-daemon/dockerd-17.06.0-dev  $TERMUX_PREFIX/bin/dockerd
+	cp go/src/github.com/docker/docker/bundles/17.06.0-dev/dynbinary-daemon/dockerd-17.06.0-dev  $TERMUX_DESTDIR/usr/bin/dockerd
 
-	mkdir -p $TERMUX_PREFIX/etc/docker/
-	cat > $TERMUX_PREFIX/etc/docker/docker.json << EOL
+	mkdir -p $TERMUX_DESTDIR/etc/docker/
+	cat > $TERMUX_DESTDIR/etc/docker/docker.json << EOL
 {
 	"storage-driver": "overlay",
 	"storage-opts": [

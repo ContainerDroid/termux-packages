@@ -24,6 +24,6 @@ termux_step_make(){
 
 
 termux_step_make_install() {
-	cp go/src/github.com/containerd/containerd/bin/containerd-shim $TERMUX_PREFIX/bin/docker-containerd-shim
-	cp go/src/github.com/containerd/containerd/bin/containerd $TERMUX_PREFIX/bin/docker-containerd
+	cp go/src/github.com/containerd/containerd/bin/containerd-shim $TERMUX_DESTDIR/usr/bin/docker-containerd-shim
+	cp go/src/github.com/containerd/containerd/bin/containerd $TERMUX_DESTDIR/usr/bin/docker-containerd
 }

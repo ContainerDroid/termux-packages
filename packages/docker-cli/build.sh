@@ -25,5 +25,5 @@ termux_step_make(){
 
 
 termux_step_make_install() {
-	cp go/src/github.com/docker/cli/build/docker-android-arm64 $TERMUX_PREFIX/bin/docker
+	cp go/src/github.com/docker/cli/build/docker-android-arm64 $TERMUX_DESTDIR/usr/bin/docker
 }

@@ -23,5 +23,5 @@ termux_step_make(){
 
 
 termux_step_make_install() {
-	cp go/src/github.com/opencontainers/runc/runc $TERMUX_PREFIX/bin/docker-runc
+	cp go/src/github.com/opencontainers/runc/runc $TERMUX_DESTDIR/usr/bin/docker-runc
 }
