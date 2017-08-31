@@ -17,39 +17,39 @@ termux_step_pre_configure () {
 termux_step_configure () {
 	cp $TERMUX_PKG_BUILDER_DIR/busybox.config .config
 	echo "CONFIG_SYSROOT=\"$TERMUX_STANDALONE_TOOLCHAIN/sysroot\"" >> .config
-	echo "CONFIG_PREFIX=\"$TERMUX_PREFIX\"" >> .config
+	echo "CONFIG_PREFIX=\"$TERMUX_DESTDIR/usr\"" >> .config
 	echo "CONFIG_CROSS_COMPILER_PREFIX=\"${TERMUX_HOST_PLATFORM}-\"" >> .config
-	echo "CONFIG_FEATURE_CROND_DIR=\"$TERMUX_PREFIX/var/spool/cron\"" >> .config
-	echo "CONFIG_SV_DEFAULT_SERVICE_DIR=\"$TERMUX_PREFIX/var/service\"" >> .config
+	echo "CONFIG_FEATURE_CROND_DIR=\"/var/spool/cron\"" >> .config
+	echo "CONFIG_SV_DEFAULT_SERVICE_DIR=\"/var/service\"" >> .config
 	make oldconfig
 }
 
 termux_step_post_make_install () {
 	# Create symlinks in $PREFIX/bin/applets to $PREFIX/bin/busybox
-	rm -Rf $TERMUX_PREFIX/bin/applets
-	mkdir -p $TERMUX_PREFIX/bin/applets
-	cd $TERMUX_PREFIX/bin/applets
+	rm -Rf $TERMUX_DESTDIR/usr/bin/applets
+	mkdir -p $TERMUX_DESTDIR/usr/bin/applets
+	cd $TERMUX_DESTDIR/usr/bin/applets
 	for f in `cat $TERMUX_PKG_SRCDIR/busybox.links`; do ln -s ../busybox `basename $f`; done
 
 	# The 'env' applet is special in that it go into $PREFIX/bin:
-	cd $TERMUX_PREFIX/bin
+	cd $TERMUX_DESTDIR/usr/bin
 	ln -f -s busybox env
 
 	# Install busybox man page
-	mkdir -p $TERMUX_PREFIX/share/man/man1
-	cp $TERMUX_PKG_SRCDIR/docs/busybox.1 $TERMUX_PREFIX/share/man/man1
+	mkdir -p $TERMUX_DESTDIR/usr/share/man/man1
+	cp $TERMUX_PKG_SRCDIR/docs/busybox.1 $TERMUX_DESTDIR/usr/share/man/man1
 
 	# Needed for 'crontab -e' to work out of the box:
-	local _CRONTABS=$TERMUX_PREFIX/var/spool/cron/crontabs
+	local _CRONTABS=$TERMUX_DESTDIR/var/spool/cron/crontabs
 	mkdir -p $_CRONTABS
 	echo "Used by the busybox crontab and crond tools" > $_CRONTABS/README.termux
 
 	# Setup some services
-	mkdir -p $TERMUX_PREFIX/var/service
-	cd $TERMUX_PREFIX/var/service
+	mkdir -p $TERMUX_DESTDIR/var/service
+	cd $TERMUX_DESTDIR/var/service
 	mkdir -p ftpd telnetd
 	echo '#!/bin/sh' > ftpd/run
-	echo 'exec tcpsvd -vE 0.0.0.0 8021 ftpd /data/data/com.termux/files/home' >> ftpd/run
+	echo 'exec tcpsvd -vE 0.0.0.0 8021 ftpd /home' >> ftpd/run
 	echo '#!/bin/sh' > telnetd/run
 	echo 'exec telnetd -F' >> telnetd/run
 	chmod +x */run
