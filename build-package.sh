@@ -1110,7 +1110,7 @@ termux_step_create_datatar() {
 
 	local HARDLINKS="$(find . -type f -links +1)"
 	if [ -n "$HARDLINKS" ]; then
-		termux_error_exit "Package contains hard links: $HARDLINKS"
+		echo "WARNING: Package contains hard links: $HARDLINKS. Will ignore and go on."
 	fi
 
 	if [ -z "${TERMUX_PKG_METAPACKAGE+x}" ] && [ "$(find . -type f)" = "" ]; then
