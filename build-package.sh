@@ -1061,7 +1061,7 @@ termux_step_massage() {
 		cd "$SUB_PKG_DIR/massage"
 		local SUB_PKG_INSTALLSIZE
 		SUB_PKG_INSTALLSIZE=$(du -sk . | cut -f 1)
-		tar -cJf "$SUB_PKG_PACKAGE_DIR/data.tar.xz" .
+		fakeroot tar -cJf "$SUB_PKG_PACKAGE_DIR/data.tar.xz" .
 
 		mkdir -p DEBIAN
 		cd DEBIAN
@@ -1116,7 +1116,7 @@ termux_step_create_datatar() {
 	if [ -z "${TERMUX_PKG_METAPACKAGE+x}" ] && [ "$(find . -type f)" = "" ]; then
 		termux_error_exit "No files in package"
 	fi
-	tar -cJf "$TERMUX_PKG_PACKAGEDIR/data.tar.xz" .
+	fakeroot tar -cJf "$TERMUX_PKG_PACKAGEDIR/data.tar.xz" .
 }
 
 termux_step_create_debscripts() {
