@@ -14,7 +14,7 @@ termux_step_pre_configure () {
 	LDFLAGS="$LDFLAGS -landroid-glob"
 
 	# remove config from previouse installs
-	rm -rf "$TERMUX_PREFIX/etc/nginx"
+	rm -rf "$TERMUX_DESTDIR/etc/nginx"
 }
 
 termux_step_configure () {
@@ -22,7 +22,7 @@ termux_step_configure () {
 	test -n "$TERMUX_DEBUG" && DEBUG_FLAG="--debug"
 
 	./configure \
-		--prefix=$TERMUX_PREFIX \
+		--prefix=$TERMUX_DESTDIR/usr \
 		--crossbuild="Linux:3.16.1:$TERMUX_ARCH" \
 		--crossfile="$TERMUX_PKG_SRCDIR/auto/cross/Android" \
 		--with-cc=$CC \
@@ -34,17 +34,17 @@ termux_step_configure () {
 		--with-file-aio \
 		--with-threads \
 		--with-ipv6 \
-		--sbin-path="$TERMUX_PREFIX/bin/nginx" \
-		--conf-path="$TERMUX_PREFIX/etc/nginx/nginx.conf" \
-		--http-log-path="$TERMUX_PREFIX/var/log/nginx/access.log" \
-		--pid-path="$TERMUX_PREFIX/tmp/nginx.pid" \
-		--lock-path="$TERMUX_PREFIX/tmp/nginx.lock" \
-		--error-log-path="$TERMUX_PREFIX/var/log/nginx/error.log" \
-		--http-client-body-temp-path="$TERMUX_PREFIX/var/lib/nginx/client-body" \
-		--http-proxy-temp-path="$TERMUX_PREFIX/var/lib/nginx/proxy" \
-		--http-fastcgi-temp-path="$TERMUX_PREFIX/var/lib/nginx/fastcgi" \
-		--http-scgi-temp-path="$TERMUX_PREFIX/var/lib/nginx/scgi" \
-		--http-uwsgi-temp-path="$TERMUX_PREFIX/var/lib/nginx/uwsgi" \
+		--sbin-path="/usr/bin/nginx" \
+		--conf-path="/etc/nginx/nginx.conf" \
+		--http-log-path="/var/log/nginx/access.log" \
+		--pid-path="/tmp/nginx.pid" \
+		--lock-path="/tmp/nginx.lock" \
+		--error-log-path="/var/log/nginx/error.log" \
+		--http-client-body-temp-path="/var/lib/nginx/client-body" \
+		--http-proxy-temp-path="/var/lib/nginx/proxy" \
+		--http-fastcgi-temp-path="/var/lib/nginx/fastcgi" \
+		--http-scgi-temp-path="/var/lib/nginx/scgi" \
+		--http-uwsgi-temp-path="/var/lib/nginx/uwsgi" \
 		--with-http_auth_request_module \
 		--with-http_ssl_module \
 		--with-http_v2_module \
@@ -57,27 +57,27 @@ termux_step_post_make_install () {
 	# https://git.archlinux.org/svntogit/packages.git/tree/trunk/PKGBUILD?h=packages/nginx
 
 	# set default port to 8080
-	sed -i "s| 80;| 8080;|" "$TERMUX_PREFIX/etc/nginx/nginx.conf"
-	cp conf/mime.types "$TERMUX_PREFIX/etc/nginx/"
-	rm "$TERMUX_PREFIX"/etc/nginx/*.default
+	sed -i "s| 80;| 8080;|" "$TERMUX_DESTDIR/etc/nginx/nginx.conf"
+	cp conf/mime.types "$TERMUX_DESTDIR/etc/nginx/"
+	rm "$TERMUX_DESTDIR"/etc/nginx/*.default
 
 	# move default html dir
-	sed -e "44s|html|$TERMUX_PREFIX/share/nginx/html|" \
-		-e "54s|html|$TERMUX_PREFIX/share/nginx/html|" \
-		-i "$TERMUX_PREFIX/etc/nginx/nginx.conf"
-	rm -rf "$TERMUX_PREFIX/share/nginx"
-	mkdir -p "$TERMUX_PREFIX/share/nginx"
-	mv "$TERMUX_PREFIX/html/" "$TERMUX_PREFIX/share/nginx"
+	sed -e "44s|html|$TERMUX_DESTDIR/usr/share/nginx/html|" \
+		-e "54s|html|$TERMUX_DESTDIR/usr/share/nginx/html|" \
+		-i "$TERMUX_DESTDIR/etc/nginx/nginx.conf"
+	rm -rf "$TERMUX_DESTDIR/usr/share/nginx"
+	mkdir -p "$TERMUX_DESTDIR/usr/share/nginx"
+	mv "$TERMUX_DESTDIR/html/" "$TERMUX_DESTDIR/usr/share/nginx"
 
 	# install vim contrib
 	for i in ftdetect indent syntax; do
 		install -Dm644 "$TERMUX_PKG_SRCDIR/contrib/vim/${i}/nginx.vim" \
-			"$TERMUX_PREFIX/share/vim/vimfiles/${i}/nginx.vim"
+			"$TERMUX_DESTDIR/usr/share/vim/vimfiles/${i}/nginx.vim"
 	done
 
 	# install man pages
-	mkdir -p "$TERMUX_PREFIX/share/man/man8"
-	cp "$TERMUX_PKG_SRCDIR/man/nginx.8" "$TERMUX_PREFIX/share/man/man8/"
+	mkdir -p "$TERMUX_DESTDIR/usr/share/man/man8"
+	cp "$TERMUX_PKG_SRCDIR/man/nginx.8" "$TERMUX_DESTDIR/usr/share/man/man8/"
 }
 
 termux_step_post_massage () {
