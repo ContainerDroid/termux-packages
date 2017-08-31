@@ -26,11 +26,11 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" ac_cv_posix_semaphores_enabled=no"
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" ac_cv_buggy_getaddrinfo=no"
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" --enable-loadable-sqlite-extensions"
 TERMUX_PKG_RM_AFTER_INSTALL="
-bin/python${_MAJOR_VERSION}m bin/idle*
-lib/python${_MAJOR_VERSION}/idlelib
-lib/python${_MAJOR_VERSION}/test
-lib/python${_MAJOR_VERSION}/tkinter
-lib/python${_MAJOR_VERSION}/turtledemo
+usr/bin/python${_MAJOR_VERSION}m bin/idle*
+usr/lib/python${_MAJOR_VERSION}/idlelib
+usr/lib/python${_MAJOR_VERSION}/test
+usr/lib/python${_MAJOR_VERSION}/tkinter
+usr/lib/python${_MAJOR_VERSION}/turtledemo
 "
 
 termux_step_pre_configure() {
@@ -61,9 +61,9 @@ termux_step_post_massage () {
 	done
 
 	# Restore pyconfig.h saved away in termux_step_post_make_install() above:
-	mkdir -p $TERMUX_PKG_MASSAGEDIR/$TERMUX_DESTDIR/usr/include/python${_MAJOR_VERSION}m/
+	mkdir -p $TERMUX_PKG_MASSAGEDIR/usr/include/python${_MAJOR_VERSION}m/
 	cp $TERMUX_PKG_TMPDIR/pyconfig.h $TERMUX_DESTDIR/usr/include/python${_MAJOR_VERSION}m/
-	mv $TERMUX_PKG_TMPDIR/pyconfig.h $TERMUX_PKG_MASSAGEDIR/$TERMUX_DESTDIR/usr/include/python${_MAJOR_VERSION}m/
+	mv $TERMUX_PKG_TMPDIR/pyconfig.h $TERMUX_PKG_MASSAGEDIR/usr/include/python${_MAJOR_VERSION}m/
 
 	cd $TERMUX_PKG_MASSAGEDIR
 	find . -path '*/__pycache__*' -delete
