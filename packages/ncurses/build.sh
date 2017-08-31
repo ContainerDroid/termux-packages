@@ -35,7 +35,10 @@ usr/share/man/man7
 "
 
 termux_step_pre_configure() {
-	TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" --with-pkg-config-libdir=$PKG_CONFIG_LIBDIR"
+	echo "PRE_CONFIGURE: $PKG_CONFIG_LIBDIR"
+	# pkg-config files will actually be placed at $TERMUX_DESTDIR/usr/lib/pkgconfig
+	# Otherwise they would have been copied to $TERMUX_DESTDIR/$PKG_CONFIG_LIBDIR
+	TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" --with-pkg-config-libdir=/usr/lib/pkgconfig"
 }
 
 termux_step_post_make_install () {
