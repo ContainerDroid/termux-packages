@@ -82,9 +82,9 @@ termux_step_post_make_install () {
 
 termux_step_post_massage () {
 	# keep empty dirs which were deleted in massage
-	mkdir -p "$TERMUX_PKG_MASSAGEDIR/$TERMUX_PREFIX/var/log/nginx"
+	mkdir -p "$TERMUX_PKG_MASSAGEDIR/var/log/nginx"
 	for dir in client-body proxy fastcgi scgi uwsgi; do
-		mkdir -p "$TERMUX_PKG_MASSAGEDIR/$TERMUX_PREFIX/var/lib/nginx/$dir"
+		mkdir -p "$TERMUX_PKG_MASSAGEDIR/var/lib/nginx/$dir"
 	done
 }
 

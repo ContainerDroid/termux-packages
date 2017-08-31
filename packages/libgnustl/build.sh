@@ -16,6 +16,6 @@ termux_step_extract_into_massagedir() {
 		termux_error_exit "Unsupported arch"
 	fi
 
-	mkdir -p "$TERMUX_PKG_MASSAGEDIR/$TERMUX_PREFIX/lib"
-	cp "$_STL_LIBFILE" "$TERMUX_PKG_MASSAGEDIR/$TERMUX_PREFIX/lib"
+	mkdir -p "$TERMUX_PKG_MASSAGEDIR/usr/lib"
+	cp "$_STL_LIBFILE" "$TERMUX_PKG_MASSAGEDIR/usr/lib"
 }

@@ -9,7 +9,7 @@ termux_step_pre_configure() {
 	LDFLAGS+=" -landroid-support"
 }
 termux_step_post_massage() {
-	cd $TERMUX_PKG_MASSAGEDIR/$TERMUX_PREFIX/share/gnuit
+	cd $TERMUX_PKG_MASSAGEDIR/usr/share/gnuit
 	ln -s gnuitrc.xterm-color gnuitrc.xterm-256color
 	ln -s gnuitrc.screen gnuitrc.screen-color
 	ln -s gnuitrc.screen gnuitrc.screen-256color
