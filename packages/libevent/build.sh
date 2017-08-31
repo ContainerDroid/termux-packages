@@ -20,6 +20,7 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 termux_step_post_make_install() {
 	# Building with cmake does not install .pc files, see
 	# https://github.com/libevent/libevent/issues/443
+	echo "PKG_CONFIG_LIBDIR is $PKG_CONFIG_LIBDIR"
 	cat > "$PKG_CONFIG_LIBDIR/libevent.pc" <<-HERE
 		Name: libevent
 		Description: libevent is an asynchronous notification event loop library

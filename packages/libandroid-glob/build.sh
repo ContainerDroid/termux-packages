@@ -4,6 +4,6 @@ TERMUX_PKG_VERSION=0.4
 TERMUX_PKG_BUILD_IN_SRC=yes
 
 termux_step_make_install () {
-	cp $TERMUX_PKG_BUILDER_DIR/glob.h $TERMUX_PREFIX/include/
-	$CC $CFLAGS $CPPFLAGS $LDFLAGS $TERMUX_PKG_BUILDER_DIR/glob.c -shared -o $TERMUX_PREFIX/lib/libandroid-glob.so
+	cp $TERMUX_PKG_BUILDER_DIR/glob.h $TERMUX_DESTDIR/usr/include/
+	$CC $CFLAGS $CPPFLAGS $LDFLAGS $TERMUX_PKG_BUILDER_DIR/glob.c -shared -o $TERMUX_DESTDIR/usr/lib/libandroid-glob.so
 }

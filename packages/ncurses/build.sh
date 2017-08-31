@@ -12,7 +12,7 @@ ac_cv_header_locale_h=no
 --enable-overwrite
 --enable-pc-files
 --enable-widec
---mandir=$TERMUX_PREFIX/share/man
+--mandir=/usr/share/man
 --without-ada
 --without-cxx-binding
 --without-debug
@@ -22,16 +22,16 @@ ac_cv_header_locale_h=no
 --with-shared
 "
 TERMUX_PKG_INCLUDE_IN_DEVPACKAGE="
-share/man/man1/ncursesw6-config.1*
-bin/ncursesw6-config
+usr/share/man/man1/ncursesw6-config.1*
+usr/bin/ncursesw6-config
 "
 TERMUX_PKG_RM_AFTER_INSTALL="
-bin/captoinfo
-bin/infotocap
-share/man/man1/captoinfo.1*
-share/man/man1/infotocap.1*
-share/man/man5
-share/man/man7
+usr/bin/captoinfo
+usr/bin/infotocap
+usr/share/man/man1/captoinfo.1*
+usr/share/man/man1/infotocap.1*
+usr/share/man/man5
+usr/share/man/man7
 "
 
 termux_step_pre_configure() {
@@ -39,7 +39,7 @@ termux_step_pre_configure() {
 }
 
 termux_step_post_make_install () {
-	cd $TERMUX_PREFIX/lib
+	cd $TERMUX_DESTDIR/usr/lib
 	for lib in form menu ncurses panel; do
 		for file in lib${lib}w.so*; do 
 			ln -s -f $file `echo $file | sed 's/w//'`
@@ -48,7 +48,7 @@ termux_step_post_make_install () {
 	done
 
 	# Some packages wants this:
-	cd $TERMUX_PREFIX/include/
+	cd $TERMUX_DESTDIR/usr/include/
 	rm -Rf ncursesw
 	mkdir ncursesw
 	cd ncursesw
@@ -57,7 +57,7 @@ termux_step_post_make_install () {
 
 termux_step_post_massage () {
 	# Strip away 30 years of cruft to decrease size.
-	local TI=$TERMUX_PKG_MASSAGEDIR/$TERMUX_PREFIX/share/terminfo
+	local TI=$TERMUX_PKG_MASSAGEDIR/usr/share/terminfo
 	mv $TI $TERMUX_PKG_TMPDIR/full-terminfo
 	mkdir -p $TI/{a,d,e,n,l,p,r,s,t,v,x}
 	cp $TERMUX_PKG_TMPDIR/full-terminfo/a/ansi $TI/a/

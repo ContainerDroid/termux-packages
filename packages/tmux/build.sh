@@ -12,5 +12,5 @@ termux_step_pre_configure() {
 }
 
 termux_step_post_make_install () {
-	cp $TERMUX_PKG_BUILDER_DIR/tmux.conf $TERMUX_PREFIX/etc/tmux.conf
+	cp $TERMUX_PKG_BUILDER_DIR/tmux.conf $TERMUX_DESTDIR/etc/tmux.conf
 }
