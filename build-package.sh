@@ -407,7 +407,7 @@ termux_step_start_build() {
 
 	# Ensure folders present (but not $TERMUX_PKG_SRCDIR, it will be created in build)
 	mkdir -p "$TERMUX_COMMON_CACHEDIR" \
-		"$TERMUX_DEBDIR" \
+		 "$TERMUX_DEBDIR" \
 		 "$TERMUX_PKG_BUILDDIR" \
 		 "$TERMUX_PKG_PACKAGEDIR" \
 		 "$TERMUX_PKG_TMPDIR" \
@@ -434,7 +434,7 @@ termux_step_start_build() {
 	test -t 1 && printf "\033]0;%s...\007" "$TERMUX_PKG_NAME"
 
 	# Avoid exporting PKG_CONFIG_LIBDIR until after termux_step_host_build.
-	export TERMUX_PKG_CONFIG_LIBDIR=$TERMUX_DESTDIR/usr/lib/pkgconfig
+	export TERMUX_PKG_CONFIG_LIBDIR="$TERMUX_DESTDIR/usr/lib/pkgconfig"
 	# Add a pkg-config file for the system zlib.
 	mkdir -p "$TERMUX_PKG_CONFIG_LIBDIR"
 	cat > "$TERMUX_PKG_CONFIG_LIBDIR/zlib.pc" <<-HERE
