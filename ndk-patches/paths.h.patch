@@ -5,11 +5,9 @@ diff -u -r /home/fornwall/lib/android-ndk/sysroot/usr/include/paths.h ./usr/incl
  
  #include <sys/cdefs.h>
  
--#define	_PATH_BSHELL	"/system/bin/sh"
-+#define	_PATH_BSHELL	"@TERMUX_PREFIX@/bin/sh"
+ #define	_PATH_BSHELL	"/system/bin/sh"
  #define	_PATH_CONSOLE	"/dev/console"
--#define	_PATH_DEFPATH	"/sbin:/system/sbin:/system/bin:/system/xbin:/vendor/bin:/vendor/xbin"
-+#define	_PATH_DEFPATH	"@TERMUX_PREFIX@/bin:@TERMUX_PREFIX@/bin/applets"
+ #define	_PATH_DEFPATH	"/sbin:/system/sbin:/system/bin:/system/xbin:/vendor/bin:/vendor/xbin"
  #define	_PATH_DEV	"/dev/"
  #define	_PATH_DEVNULL	"/dev/null"
  #define	_PATH_KLOG	"/proc/kmsg"
@@ -17,9 +15,9 @@ diff -u -r /home/fornwall/lib/android-ndk/sysroot/usr/include/paths.h ./usr/incl
  #define	_PATH_TTY	"/dev/tty"
  
 +#define _PATH_STDPATH _PATH_DEFPATH
-+#define _PATH_TMP "@TERMUX_PREFIX@/tmp/"
-+#define _PATH_VARDB "@TERMUX_PREFIX@/var/db/"
-+#define _PATH_VARRUN "@TERMUX_PREFIX@/var/run/"
-+#define _PATH_VARTMP "@TERMUX_PREFIX@/var/tmp/"
++#define _PATH_TMP "/tmp/"
++#define _PATH_VARDB "/var/db/"
++#define _PATH_VARRUN "/var/run/"
++#define _PATH_VARTMP "/var/tmp/"
 +
  #endif /* !_PATHS_H_ */
