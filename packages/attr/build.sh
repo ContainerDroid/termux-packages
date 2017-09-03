@@ -8,4 +8,4 @@ TERMUX_PKG_BUILD_IN_SRC=yes
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="--enable-gettext=no"
 TERMUX_PKG_MAKE_INSTALL_TARGET="install install-lib"
 # attr.5 man page is in linux-man-pages:
-TERMUX_PKG_RM_AFTER_INSTALL="share/man/man5/attr.5"
+TERMUX_PKG_RM_AFTER_INSTALL="usr/share/man/man5/attr.5"

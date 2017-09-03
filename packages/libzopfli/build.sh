@@ -8,6 +8,6 @@ TERMUX_PKG_FOLDERNAME=zopfli-zopfli-${TERMUX_PKG_VERSION}
 TERMUX_PKG_BUILD_IN_SRC=yes
 
 termux_step_post_make_install () {
-	mkdir -p $TERMUX_PREFIX/include/zopfli/
-	cp $TERMUX_PKG_SRCDIR/src/zopfli/*h $TERMUX_PREFIX/include/zopfli/
+	mkdir -p $TERMUX_DESTDIR/usr/include/zopfli/
+	cp $TERMUX_PKG_SRCDIR/src/zopfli/*h $TERMUX_DESTDIR/usr/include/zopfli/
 }

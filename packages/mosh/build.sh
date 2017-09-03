@@ -12,10 +12,10 @@ termux_step_pre_configure () {
 }
 
 termux_step_post_make_install () {
-	cd $TERMUX_PREFIX/bin
+	cd $TERMUX_DESTDIR/usr/bin
 	mv mosh mosh.pl
 	$CXX $CXXFLAGS $LDFLAGS \
-		-isystem $TERMUX_PREFIX/include \
+		-isystem $TERMUX_DESTDIR/usr/include \
 		-lutil \
 		-DPACKAGE_VERSION=\"$TERMUX_PKG_VERSION\" \
 		-std=c++11 -Wall -Wextra -Werror \

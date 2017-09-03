@@ -9,9 +9,9 @@ TERMUX_PKG_SRCURL=https://dl.bintray.com/termux/upstream/dash-${TERMUX_PKG_VERSI
 
 termux_step_post_make_install () {
 	# Symlink sh -> dash
-	rm -f $TERMUX_PREFIX/bin/sh $TERMUX_PREFIX/share/man/man1/sh.1
-	cd $TERMUX_PREFIX/bin
+	rm -f $TERMUX_DESTDIR/usr/bin/sh $TERMUX_DESTDIR/usr/share/man/man1/sh.1
+	cd $TERMUX_DESTDIR/usr/bin
 	ln -s dash sh
-	cd $TERMUX_PREFIX/share/man/man1
+	cd $TERMUX_DESTDIR/usr/share/man/man1
 	ln -s dash.1 sh.1
 }

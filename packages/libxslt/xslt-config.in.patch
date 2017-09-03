@@ -9,7 +9,7 @@ diff -u -r ../libxslt-1.1.29/xslt-config.in ./xslt-config.in
 +the_libs="@XSLT_LIBS@ @EXTRA_LIBS@"
  if test "$includedir" != "/usr/include"; then
 -    the_flags="$the_flags -I$includedir `@XML_CONFIG@ --cflags`"
-+    the_flags="$the_flags -I$includedir `@TERMUX_PREFIX@/bin/xml2-config --cflags`"
++    the_flags="$the_flags -I$includedir `@TERMUX_DESTDIR@/usr/bin/xml2-config --cflags`"
  else
      the_flags="$the_flags `@XML_CONFIG@ --cflags`"
  fi

@@ -15,14 +15,14 @@ termux_step_pre_configure() {
 	CXXFLAGS+=" $CPPFLAGS"
 
 	# The column(1) utility is used by oh-my-fish, so we bundle column.c from bsdmainutils with it:
-	$CC $CFLAGS $LDFLAGS -DLINE_MAX=_POSIX2_LINE_MAX $TERMUX_PKG_BUILDER_DIR/column.c -o $TERMUX_PREFIX/bin/column
+	$CC $CFLAGS $LDFLAGS -DLINE_MAX=_POSIX2_LINE_MAX $TERMUX_PKG_BUILDER_DIR/column.c -o $TERMUX_DESTDIR/usr/bin/column
 }
 
 termux_step_post_make_install () {
-	cat >> $TERMUX_PREFIX/etc/fish/config.fish <<HERE
+	cat >> $TERMUX_DESTDIR/etc/fish/config.fish <<HERE
 
 function __fish_command_not_found_handler --on-event fish_command_not_found
-	$TERMUX_PREFIX/libexec/termux/command-not-found \$argv[1]
+	/usr/libexec/termux/command-not-found \$argv[1]
 end
 HERE
 }

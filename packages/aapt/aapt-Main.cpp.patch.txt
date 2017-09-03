@@ -6,7 +6,7 @@ diff -u -r ../../src-pristine/aapt/Main.cpp ./Main.cpp
      bundle.setCompressionMethod(ZipEntry::kCompressDeflated);
  
 +    // Convenience when using aapt in termux.
-+    bundle.addPackageInclude("@TERMUX_PREFIX@/share/aapt/android.jar");
++    bundle.addPackageInclude("/usr/share/aapt/android.jar");
 +
      if (argc < 2) {
          wantUsage = true;

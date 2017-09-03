@@ -16,11 +16,11 @@ termux_step_pre_configure () {
 
 termux_step_configure () {
 	$TERMUX_PKG_SRCDIR/configure \
-		--prefix=$TERMUX_PREFIX \
+		--prefix="$TERMUX_DESTDIR/usr" \
 		--host=$TERMUX_HOST_PLATFORM \
 		--json \
 		--disable-internal-sqlite \
-		--with-openssl=$TERMUX_PREFIX \
+		--with-openssl="$TERMUX_DESTDIR/usr" \
 		--with-zlib=auto
 }
 

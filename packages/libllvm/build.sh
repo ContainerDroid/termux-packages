@@ -42,7 +42,7 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -DCLANG_DEFAULT_CXX_STDLIB=libc++
 -DCLANG_INCLUDE_TESTS=OFF
 -DCLANG_TOOL_C_INDEX_TEST_BUILD=OFF
--DC_INCLUDE_DIRS=$TERMUX_PREFIX/include
+-DC_INCLUDE_DIRS=$TERMUX_DESTDIR/usr/include
 -DLLVM_LINK_LLVM_DYLIB=ON
 -DLLVM_TABLEGEN=$TERMUX_PKG_HOSTBUILD_DIR/bin/llvm-tblgen
 -DCLANG_TABLEGEN=$TERMUX_PKG_HOSTBUILD_DIR/bin/clang-tblgen"
@@ -91,7 +91,7 @@ termux_step_pre_configure () {
 }
 
 termux_step_post_make_install () {
-	cd $TERMUX_PREFIX/bin
+	cd $TERMUX_DESTDIR/usr/bin
 
 	for tool in clang clang++ cc c++ cpp gcc g++ ${TERMUX_HOST_PLATFORM}-{clang,clang++,gcc,g++,cpp}; do
 		ln -f -s clang-${_PKG_MAJOR_VERSION} $tool
@@ -105,16 +105,15 @@ termux_step_post_make_install () {
 	fi
 
 	local OPENMP_PATH=lib64/clang/5.0/lib/linux/$OPENMP_ARCH/libomp.a
-	cp $TERMUX_STANDALONE_TOOLCHAIN/$OPENMP_PATH $TERMUX_PREFIX/lib
+	cp $TERMUX_STANDALONE_TOOLCHAIN/$OPENMP_PATH $TERMUX_DESTDIR/usr/lib
 }
 
 termux_step_post_massage () {
 	sed $TERMUX_PKG_BUILDER_DIR/llvm-config.in \
 		-e "s|@_PKG_MAJOR_VERSION@|$_PKG_MAJOR_VERSION|g" \
-		-e "s|@TERMUX_PREFIX@|$TERMUX_PREFIX|g" \
 		-e "s|@TERMUX_PKG_SRCDIR@|$TERMUX_PKG_SRCDIR|g" \
 		-e "s|@LLVM_TARGET_ARCH@|$LLVM_TARGET_ARCH|g" \
 		-e "s|@LLVM_DEFAULT_TARGET_TRIPLE@|$LLVM_DEFAULT_TARGET_TRIPLE|g" \
-		-e "s|@TERMUX_ARCH@|$TERMUX_ARCH|g" > $TERMUX_PREFIX/bin/llvm-config
-	chmod 755 $TERMUX_PREFIX/bin/llvm-config
+		-e "s|@TERMUX_ARCH@|$TERMUX_ARCH|g" > $TERMUX_DESTDIR/usr/bin/llvm-config
+	chmod 755 $TERMUX_DESTDIR/usr/bin/llvm-config
 }

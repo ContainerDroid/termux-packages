@@ -17,11 +17,11 @@ termux_step_configure () {
 termux_step_make () {
 	cd $TERMUX_PKG_SRCDIR/glkterm
 	patch -p1 < $TERMUX_PKG_BUILDER_DIR/glkterm.patch.special
-	CC="$CC $CFLAGS $CPPFLAGS $LDFLAGS" PREFIX=$TERMUX_PREFIX make -j 1
+	CC="$CC $CFLAGS $CPPFLAGS $LDFLAGS" PREFIX=$TERMUX_DESTDIR/usr make -j 1
 
 	cd ..
 	make
-	cp glulxe $TERMUX_PREFIX/bin
+	cp glulxe $TERMUX_DESTDIR/usr/bin
 }
 
 termux_step_make_install () {

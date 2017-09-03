@@ -8,10 +8,10 @@ TERMUX_PKG_BUILD_IN_SRC=yes
 TERMUX_PKG_PLATFORM_INDEPENDENT=yes
 
 termux_step_make_install () {
-        cp pastebinit $TERMUX_PREFIX/bin/
+        cp pastebinit $TERMUX_DESTDIR/usr/bin/
 	xsltproc -''-nonet /usr/share/sgml/docbook/stylesheet/xsl/nwalsh/manpages/docbook.xsl pastebinit.xml
-	cp pastebinit.1 $TERMUX_PREFIX/share/man/man1/
+	cp pastebinit.1 $TERMUX_DESTDIR/usr/share/man/man1/
 
-	rm -Rf $TERMUX_PREFIX/etc/pastebin.d
-	mv pastebin.d $TERMUX_PREFIX/etc
+	rm -Rf $TERMUX_DESTDIR/etc/pastebin.d
+	mv pastebin.d $TERMUX_DESTDIR/etc
 }

@@ -9,8 +9,8 @@ TERMUX_PKG_SHA256=7a2880968088b4aeec43b6b6680fef0e065e1dddcce9b409390157e9766b69
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 ac_cv_func_dn_expand=no
 --with-openssl
---with-expat=$TERMUX_PREFIX
---with-readline=$TERMUX_PREFIX
+--with-expat=$TERMUX_DESTDIR/usr
+--with-readline=$TERMUX_DESTDIR/usr
 "
 TERMUX_PKG_DEPENDS="libexpat, openssl, readline, libutil, libidn"
 

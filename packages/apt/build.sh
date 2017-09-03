@@ -30,23 +30,31 @@ termux_step_pre_configure () {
 }
 
 termux_step_make_install () {
-	cp $TERMUX_PKG_BUILDDIR/build/bin/apt{,-get,-cache,-config,-key} $TERMUX_PREFIX/bin/
-	cp $TERMUX_PKG_BUILDDIR/build/bin/libapt-{pkg.so.5.0.0,private.so.0.0} $TERMUX_PREFIX/lib/
-	(cd $TERMUX_PREFIX/lib; ln -s -f libapt-pkg.so.5.0.0 libapt-pkg.so.5.0; ln -s -f libapt-pkg.so.5.0.0 libapt-pkg.so )
-	mkdir -p $TERMUX_PREFIX/lib/apt/methods $TERMUX_PREFIX/share/man/man{5,8}
-	cp $TERMUX_PKG_BUILDDIR/build/docs/apt{,-cache,-get}.8 $TERMUX_PREFIX/share/man/man8/
-	cp $TERMUX_PKG_BUILDDIR/build/docs/{apt.conf,sources.list}.5 $TERMUX_PREFIX/share/man/man5/
-	cp $TERMUX_PKG_BUILDDIR/build/bin/methods/{copy,file,gpgv,gzip,http,https,rsh,store} $TERMUX_PREFIX/lib/apt/methods
-	(cd $TERMUX_PREFIX/lib/apt/methods; ln -f -s gzip xz)
-	(cd $TERMUX_PREFIX/lib/apt/methods; ln -f -s rsh ssh)
+	cp $TERMUX_PKG_BUILDDIR/build/bin/apt{,-get,-cache,-config,-key} $TERMUX_DESTDIR/usr/bin/
+	cp $TERMUX_PKG_BUILDDIR/build/bin/libapt-{pkg.so.5.0.0,private.so.0.0} $TERMUX_DESTDIR/usr/lib/
+	(cd $TERMUX_DESTDIR/usr/lib; ln -s -f libapt-pkg.so.5.0.0 libapt-pkg.so.5.0; ln -s -f libapt-pkg.so.5.0.0 libapt-pkg.so )
+	mkdir -p $TERMUX_DESTDIR/usr/lib/apt/methods $TERMUX_DESTDIR/usr/share/man/man{5,8}
+	cp $TERMUX_PKG_BUILDDIR/build/docs/apt{,-cache,-get}.8 $TERMUX_DESTDIR/usr/share/man/man8/
+	cp $TERMUX_PKG_BUILDDIR/build/docs/{apt.conf,sources.list}.5 $TERMUX_DESTDIR/usr/share/man/man5/
+	cp $TERMUX_PKG_BUILDDIR/build/bin/methods/{copy,file,gpgv,gzip,http,https,rsh,store} $TERMUX_DESTDIR/usr/lib/apt/methods
+	(cd $TERMUX_DESTDIR/usr/lib/apt/methods; ln -f -s gzip xz)
+	(cd $TERMUX_DESTDIR/usr/lib/apt/methods; ln -f -s rsh ssh)
 
-	mkdir -p $TERMUX_PREFIX/etc/apt
-	printf "# The main termux repository:\ndeb [arch=all,${TERMUX_ARCH}] http://termux.net stable main\n" > $TERMUX_PREFIX/etc/apt/sources.list
+	mkdir -p $TERMUX_DESTDIR/etc/apt
+	cat << EOF > "$TERMUX_DESTDIR/etc/apt/sources.list"
+# The main termux repository:
+deb [arch=all,${TERMUX_ARCH}] http://apt.lineageosplus.org stable main
+EOF
 
 	# The trusted.gpg was created with "apt-key add public-key.key":
-	cp $TERMUX_PKG_BUILDER_DIR/trusted.gpg $TERMUX_PREFIX/etc/apt/
+	cp $TERMUX_PKG_BUILDER_DIR/trusted.gpg $TERMUX_DESTDIR/etc/apt/
 
-	mkdir -p $TERMUX_PREFIX/etc/bash_completion.d/
+	mkdir -p $TERMUX_DESTDIR/etc/bash_completion.d/
 	cp $TERMUX_PKG_SRCDIR/completions/bash/apt \
-	   $TERMUX_PREFIX/etc/bash_completion.d/
+	   $TERMUX_DESTDIR/etc/bash_completion.d/
+}
+
+termux_step_post_massage() {
+	mkdir -p etc/apt/apt.conf.d
+	mkdir -p etc/apt/preferences.d
 }

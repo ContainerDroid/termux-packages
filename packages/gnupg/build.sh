@@ -8,11 +8,17 @@ TERMUX_PKG_SRCURL=ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-${TERMUX_PKG_VERSION}.t
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="--disable-endian-check --without-readline ac_cv_sys_symbol_underscore=no"
 # ac_cv_header_sys_shm_h is to avoid USE_SHM_COPROCESSING getting defined due to <sys/shm.h>,
 #                        which it does on android-21 (but shmat(2) does not exist)
-TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" ac_cv_header_sys_shm_h=no"
+# am_cv_func_iconv=no is for disabling linking with libiconv (libandroid-support).
+# This is to work around probable libtool bug, which links with absolute path of libiconv.so,
+# despite configuring with --disable-rpath
+TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" ac_cv_header_sys_shm_h=no am_cv_func_iconv=no"
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" --disable-bzip2"
+TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" --disable-gnupg-iconv"
 # Assembly issues on at least arm:
 TERMUX_PKG_CLANG=no
 
 termux_step_pre_configure() {
 	CFLAGS+=" -D__LITTLE_ENDIAN__"
+	export prefix="$TERMUX_DESTDIR/usr"
+	export exec_prefix="$TERMUX_DESTDIR"
 }

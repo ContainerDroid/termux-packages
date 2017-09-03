@@ -17,7 +17,7 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -DPKG_CONFIG_EXECUTABLE=`which pkg-config`
 -DXGETTEXT_PRG=`which xgettext`
 -DPREFER_LUA=ON
--DLUA_INCLUDE_DIR=$TERMUX_PREFIX/include
+-DLUA_INCLUDE_DIR=$TERMUX_DESTDIR/usr/include
 "
 TERMUX_PKG_CONFFILES="share/nvim/sysinit.vim"
 
@@ -36,7 +36,7 @@ termux_step_host_build () {
 }
 
 termux_step_post_make_install () {
-	local _CONFIG_DIR=$TERMUX_PREFIX/share/nvim
+	local _CONFIG_DIR=$TERMUX_DESTDIR/usr/share/nvim
 	mkdir -p $_CONFIG_DIR
 	cp $TERMUX_PKG_BUILDER_DIR/sysinit.vim $_CONFIG_DIR/
 }

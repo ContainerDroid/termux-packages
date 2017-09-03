@@ -10,5 +10,5 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 --enable-iconv=no
 --disable-docs
 --with-default-fonts=/system/fonts
---with-add-fonts=$TERMUX_PREFIX/share/fonts
+--with-add-fonts=/usr/share/fonts
 "

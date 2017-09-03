@@ -1,14 +1,12 @@
 diff -u -r ../multitail-6.4.1/Makefile ./Makefile
 --- ../multitail-6.4.1/Makefile	2015-02-12 03:32:35.000000000 -0500
 +++ ./Makefile	2015-05-18 13:02:14.796497473 -0400
-@@ -1,14 +1,14 @@
+@@ -1,14 +1,12 @@
  include version
  
  UTF8_SUPPORT=yes
 -DESTDIR=
 -PREFIX=/usr
-+DESTDIR=/data/data/com.termux/files/usr
-+PREFIX=
  CONFIG_FILE=$(DESTDIR)/etc/multitail.conf
  
  CC?=gcc

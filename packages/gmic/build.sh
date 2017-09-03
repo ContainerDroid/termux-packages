@@ -16,9 +16,9 @@ termux_step_make () {
 	make cli 
 }
 termux_step_make_install() {
-	cp src/gmic $TERMUX_PREFIX/bin/gmic
-	cp src/*.h $TERMUX_PREFIX/include/
+	cp src/gmic $TERMUX_DESTDIR/usr/bin/gmic
+	cp src/*.h $TERMUX_DESTDIR/usr/include/
 	gunzip man/gmic.1.gz
-	cp man/gmic.1 $TERMUX_PREFIX/share/man/man1
+	cp man/gmic.1 $TERMUX_DESTDIR/usr/share/man/man1
 }
 

@@ -2,7 +2,7 @@ Only in .: install.pl
 diff -u -r ../cowsay-3.03+dfsg1/install.sh ./install.sh
 --- ../cowsay-3.03+dfsg1/install.sh	1999-11-01 15:19:21.000000000 -0500
 +++ ./install.sh	2016-04-14 21:14:44.715683710 -0400
-@@ -14,55 +14,8 @@
+@@ -14,55 +14,6 @@
  
  filelist='cows'
  
@@ -55,8 +55,6 @@ diff -u -r ../cowsay-3.03+dfsg1/install.sh ./install.sh
 -fi
 -
 -PREFIX=${prefix:-/usr/local}
-+usethisperl=/data/data/com.termux/files/usr/bin/perl
-+PREFIX=/data/data/com.termux/files/usr
  
  echo Okay, time to install this puppy.
  

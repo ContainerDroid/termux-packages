@@ -3,7 +3,7 @@ TERMUX_PKG_DESCRIPTION="Suggest installation of packages in interactive shell se
 TERMUX_PKG_VERSION=1.25
 
 termux_step_make_install () {
-	TERMUX_LIBEXEC_DIR=$TERMUX_PREFIX/libexec/termux
+	TERMUX_LIBEXEC_DIR=$TERMUX_DESTDIR/usr/libexec
 	mkdir -p $TERMUX_LIBEXEC_DIR
 	$CC -Wall -Wextra -Werror -pedantic $CFLAGS $LDFLAGS -std=c11 $TERMUX_PKG_BUILDER_DIR/command-not-found.c \
 	        -o $TERMUX_LIBEXEC_DIR/command-not-found

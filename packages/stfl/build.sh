@@ -10,5 +10,5 @@ TERMUX_PKG_BUILD_IN_SRC=yes
 termux_step_configure() {
 	export CC="$CC $CPPFLAGS"
 	export CFLAGS="-I. -fPIC -Wall -Os -ggdb"
-	export LDFLAGS="-L${TERMUX_PREFIX}/lib -lncursesw -liconv"
+	export LDFLAGS="-L$TERMUX_DESTDIR/usr/lib -lncursesw -liconv"
 }

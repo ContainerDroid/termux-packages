@@ -1,6 +1,6 @@
 TERMUX_PKG_HOMEPAGE=https://www.gnu.org/software/bash/
 TERMUX_PKG_DESCRIPTION="A sh-compatible shell that incorporates useful features from the Korn shell (ksh) and C shell (csh)"
-TERMUX_PKG_DEPENDS="ncurses, readline, libandroid-support, termux-tools, command-not-found"
+TERMUX_PKG_DEPENDS="ncurses, readline, libandroid-support, command-not-found"
 _MAIN_VERSION=4.4
 _PATCH_VERSION=12
 TERMUX_PKG_VERSION=${_MAIN_VERSION}.${_PATCH_VERSION}
@@ -21,7 +21,7 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" bash_cv_dev_fd=whacky"
 # - https://github.com/termux/termux-app/issues/200
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" bash_cv_getcwd_malloc=yes"
 
-TERMUX_PKG_RM_AFTER_INSTALL="share/man/man1/bashbug.1 bin/bashbug"
+TERMUX_PKG_RM_AFTER_INSTALL="usr/share/man/man1/bashbug.1 usr/bin/bashbug"
 
 termux_step_pre_configure () {
 	declare -A PATCH_CHECKSUMS
@@ -49,13 +49,7 @@ termux_step_pre_configure () {
 }
 
 termux_step_post_make_install () {
-	sed "s|@TERMUX_PREFIX@|$TERMUX_PREFIX|" $TERMUX_PKG_BUILDER_DIR/etc-profile > $TERMUX_PREFIX/etc/profile
-	sed "s|@TERMUX_PREFIX@|$TERMUX_PREFIX|" \
-		$TERMUX_PKG_BUILDER_DIR/etc-profile | \
-		sed "s|@TERMUX_HOME@|$TERMUX_ANDROID_HOME|" > \
-		$TERMUX_PREFIX/etc/profile
+	cp $TERMUX_PKG_BUILDER_DIR/etc-profile $TERMUX_DESTDIR/etc/profile
 	# /etc/bash.bashrc - System-wide .bashrc file for interactive shells. (config-top.h in bash source, patched to enable):
-	sed "s|@TERMUX_PREFIX@|$TERMUX_PREFIX|" \
-		$TERMUX_PKG_BUILDER_DIR/etc-bash.bashrc > \
-		$TERMUX_PREFIX/etc/bash.bashrc
+	cp $TERMUX_PKG_BUILDER_DIR/etc-bash.bashrc $TERMUX_DESTDIR/etc/bash.bashrc
 }

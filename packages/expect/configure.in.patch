@@ -1,19 +1,6 @@
 diff -u -r ../expect5.45/configure.in ./configure.in
 --- ../expect5.45/configure.in	2010-08-27 17:51:53.000000000 -0400
 +++ ./configure.in	2016-04-18 00:23:36.618635535 -0400
-@@ -347,11 +347,7 @@
- fi
- 
- AC_MSG_CHECKING([stty to use])
--if test -r /usr/local/bin/stty ; then
--  STTY_BIN=/usr/local/bin/stty
--else
--  STTY_BIN=/bin/stty
--fi
-+STTY_BIN=@TERMUX_PREFIX@/bin/applets/stty
- AC_MSG_RESULT($STTY_BIN)
- 
- AC_MSG_CHECKING([if stty reads stdout])
 @@ -481,7 +477,7 @@
  ,
  	AC_MSG_RESULT(no)

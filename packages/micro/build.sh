@@ -21,5 +21,5 @@ termux_step_make_install() {
 
 	cd $MICRO_SRC
 	make build-quick
-	mv micro $TERMUX_PREFIX/bin/micro
+	mv micro $TERMUX_DESTDIR/usr/bin/micro
 }

@@ -14,7 +14,7 @@ termux_step_configure () {
 	# Put the android libpng-config script in the path (before the host one):
 	TERMUX_PKG_LIBPNG_CONFIG_DIR=$TERMUX_PKG_TMPDIR/libpng-config
 	mkdir -p $TERMUX_PKG_LIBPNG_CONFIG_DIR
-	cp $TERMUX_PREFIX/bin/libpng-config $TERMUX_PKG_LIBPNG_CONFIG_DIR/
+	cp $TERMUX_DESTDIR/usr/bin/libpng-config $TERMUX_PKG_LIBPNG_CONFIG_DIR/
 	export PATH=$TERMUX_PKG_LIBPNG_CONFIG_DIR:$PATH
 
 	# See $SRC/doc/INSTALL about netpbm build system. For automatic builds it recommends just copying config.mk.in

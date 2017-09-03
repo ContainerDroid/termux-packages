@@ -285,8 +285,8 @@ termux_step_setup_variables() {
 	TERMUX_DEBDIR="$TERMUX_SCRIPTDIR/debs"
 	TERMUX_ELF_CLEANER=$TERMUX_COMMON_CACHEDIR/termux-elf-cleaner
 
-	export prefix="/usr"
-	export PREFIX="/usr"
+	export prefix="$TERMUX_DESTDIR/usr"
+	export PREFIX="$TERMUX_DESTDIR/usr"
 
 	TERMUX_PKG_BUILDDIR=$TERMUX_TOPDIR/$TERMUX_PKG_NAME/build
 	TERMUX_PKG_CACHEDIR=$TERMUX_TOPDIR/$TERMUX_PKG_NAME/cache
@@ -737,7 +737,9 @@ termux_step_patch_package() {
 	# Suffix patch with ".patch32" or ".patch64" to only apply for these bitnesses:
 	shopt -s nullglob
 	for patch in $TERMUX_PKG_BUILDER_DIR/*.patch{$TERMUX_ARCH_BITS,}; do
-		test -f "$patch" && sed "s%\@TERMUX_HOME\@%${TERMUX_ANDROID_HOME}%g" "$patch" | \
+		test -f "$patch" && \
+			sed "s%\@TERMUX_DESTDIR\@%${TERMUX_DESTDIR}%g" "$patch" | \
+			sed "s%\@TERMUX_HOME\@%${TERMUX_ANDROID_HOME}%g" | \
 			patch --silent -p1
 	done
 	shopt -u nullglob
@@ -844,7 +846,7 @@ termux_step_configure_autotools () {
 	env $AVOID_GNULIB "$TERMUX_PKG_SRCDIR/configure" \
 		--disable-dependency-tracking \
 		--prefix=$PREFIX \
-		--disable-rpath --disable-rpath-hack \
+		--disable-rpath --disable-rpath-hack --without-rpath \
 		$HOST_FLAG \
 		$TERMUX_PKG_EXTRA_CONFIGURE_ARGS \
 		$DISABLE_NLS \
@@ -874,10 +876,10 @@ termux_step_configure_cmake () {
 		-DCMAKE_C_FLAGS="$CFLAGS $CPPFLAGS" \
 		-DCMAKE_CXX_FLAGS="$CXXFLAGS $CPPFLAGS" \
 		-DCMAKE_LINKER="$TERMUX_STANDALONE_TOOLCHAIN/bin/$LD $LDFLAGS" \
-		-DCMAKE_FIND_ROOT_PATH=$TERMUX_DESTDIR/usr \
+		-DCMAKE_FIND_ROOT_PATH="$TERMUX_DESTDIR" \
 		-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY \
 		-DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY \
-		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_PREFIX="$TERMUX_DESTDIR/usr" \
 		-DCMAKE_MAKE_PROGRAM=`which make` \
 		-DCMAKE_SYSTEM_PROCESSOR=$CMAKE_PROC \
 		-DCMAKE_SYSTEM_NAME=Android \
@@ -894,7 +896,7 @@ termux_step_configure_meson () {
 		$TERMUX_PKG_SRCDIR \
 		$TERMUX_PKG_BUILDDIR \
 		--cross-file $TERMUX_MESON_CROSSFILE \
-		--prefix $TERMUX_PREFIX \
+		--prefix $PREFIX \
 		--libdir lib \
 		--buildtype minsize \
 		--strip \
@@ -930,9 +932,9 @@ termux_step_make_install() {
 		: "${TERMUX_PKG_MAKE_INSTALL_TARGET:="install"}"
 		# Some packages have problem with parallell install, and it does not buy much, so use -j 1.
 		if [ -z "$TERMUX_PKG_EXTRA_MAKE_ARGS" ]; then
-			make -j 1 ${TERMUX_PKG_MAKE_INSTALL_TARGET} DESTDIR="$TERMUX_DESTDIR"
+			make -j 1 ${TERMUX_PKG_MAKE_INSTALL_TARGET}
 		else
-			make -j 1 ${TERMUX_PKG_EXTRA_MAKE_ARGS} ${TERMUX_PKG_MAKE_INSTALL_TARGET} DESTDIR="$TERMUX_DESTDIR"
+			make -j 1 ${TERMUX_PKG_EXTRA_MAKE_ARGS} ${TERMUX_PKG_MAKE_INSTALL_TARGET}
 		fi
 	elif test -f build.ninja; then
 		ninja install
@@ -950,7 +952,7 @@ termux_step_extract_into_massagedir() {
 	# Build diff tar with what has changed during the build:
 	cd $TERMUX_DESTDIR
 	tar -N "$TERMUX_BUILD_TS_FILE" \
-		--exclude='lib/libc++_shared.so' --exclude='lib/libstdc++.so' \
+		--exclude='usr/lib/libc++_shared.so' --exclude='usr/lib/libstdc++.so' \
 		-czf "$TARBALL_ORIG" .
 
 	# Extract tar in order to massage it

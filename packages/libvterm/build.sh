@@ -14,6 +14,6 @@ termux_step_make () {
 
 termux_step_make_install () {
 	cd $TERMUX_PKG_SRCDIR/src
-	$CC -std=c99 -shared -fPIC $LDFLAGS -o $TERMUX_PREFIX/lib/libvterm.so *.c -I../include -I.
-	cp ../include/*.h $TERMUX_PREFIX/include/
+	$CC -std=c99 -shared -fPIC $LDFLAGS -o $TERMUX_DESTDIR/usr/lib/libvterm.so *.c -I../include -I.
+	cp ../include/*.h $TERMUX_DESTDIR/usr/include/
 }

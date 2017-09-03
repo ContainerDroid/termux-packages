@@ -7,7 +7,7 @@ TERMUX_PKG_SRCURL="http://erlang.org/download/otp_src_${TERMUX_PKG_VERSION}.tar.
 TERMUX_PKG_FOLDERNAME="otp_src_$TERMUX_PKG_VERSION"
 TERMUX_PKG_HOSTBUILD="yes"
 TERMUX_PKG_BUILD_IN_SRC="yes"
-TERMUX_PKG_EXTRA_CONFIGURE_ARGS="--without-javac --with-ssl=${TERMUX_PREFIX} --with-termcap"
+TERMUX_PKG_EXTRA_CONFIGURE_ARGS="--without-javac --with-ssl=${TERMUX_DESTDIR}/usr --with-termcap"
 TERMUX_PKG_EXTRA_MAKE_ARGS="noboot"
 
 termux_step_post_extract_package() {

@@ -8,11 +8,11 @@ TERMUX_PKG_BUILD_IN_SRC="yes"
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="--with-compiler=termux-host"
 
 termux_step_pre_configure() {
-	# Unset CPPFLAGS to avoid -I$TERMUX_PREFIX/include. This is because
+	# Unset CPPFLAGS to avoid -I$TERMUX_DESTDIR/usr/include. This is because
 	# radare2 build will put it's own -I flags after ours, which causes
 	# problems due to name clashes (binutils header files).
 	unset CPPFLAGS
 
 	# Remove old libs which may mess with new build:
-	rm -f $TERMUX_PREFIX/lib/libr_*
+	rm -f $TERMUX_DESTDIR/usr/lib/libr_*
 }

@@ -10,11 +10,11 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="--with-ncursesw --enable-widec --with-pkg-confi
 
 termux_step_pre_configure () {
 	# Put a temporary link for libtinfo.so
-	ln -s -f $TERMUX_PREFIX/lib/libncursesw.so $TERMUX_PREFIX/lib/libtinfo.so
+	ln -s -f $TERMUX_DESTDIR/usr/lib/libncursesw.so $TERMUX_DESTDIR/usr/lib/libtinfo.so
 }
 
 termux_step_post_make_install () {
-	rm $TERMUX_PREFIX/lib/libtinfo.so
-	cd $TERMUX_PREFIX/bin
+	rm $TERMUX_DESTDIR/usr/lib/libtinfo.so
+	cd $TERMUX_DESTDIR/usr/bin
 	ln -f -s dialog whiptail
 }

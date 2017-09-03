@@ -9,7 +9,7 @@ TERMUX_PKG_BUILD_IN_SRC=yes
 TERMUX_PKG_PLATFORM_INDEPENDENT=yes
 
 termux_step_make_install () {
-        python3.6 setup.py install --prefix=$TERMUX_PREFIX --force
+        python3.6 setup.py install --prefix=$TERMUX_DESTDIR/usr --force
 }
 
 termux_step_post_massage () {

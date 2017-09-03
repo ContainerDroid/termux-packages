@@ -14,7 +14,7 @@ termux_step_pre_configure () {
 
 #termux_step_configure () {
         # From socat_buildscript_for_android.sh in socat source:
-#./configure --host --disable-unix --disable-openssl --prefix=$TERMUX_PREFIX
+#./configure --host --disable-unix --disable-openssl --prefix=$TERMUX_DESTDIR/usr
         # Replace misconfigured values in config.h and enable PTY functions
 #mv config.h config.old
 #cat config.old \

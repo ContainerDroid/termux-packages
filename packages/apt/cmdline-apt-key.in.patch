@@ -13,16 +13,7 @@ diff -u -r ../apt-1.1.6/cmdline/apt-key.in ./cmdline/apt-key.in
  }
  
  command_available() {
-@@ -231,7 +228,7 @@
- 	if [ -s "$TRUSTEDFILE" ]; then
- 	    $ACTION "$TRUSTEDFILE" "$@"
- 	fi
--	local TRUSTEDPARTS="/etc/apt/trusted.gpg.d"
-+	local TRUSTEDPARTS="@TERMUX_PREFIX@/etc/apt/trusted.gpg.d"
- 	eval "$(apt-config shell TRUSTEDPARTS Dir::Etc::TrustedParts/d)"
- 	if [ -d "$TRUSTEDPARTS" ]; then
- 	    # strip / suffix as gpg will double-slash in that case (#665411)
-@@ -301,11 +298,11 @@
+@@ -301,7 +298,7 @@
      # if a --keyring was given, just use this one
      if [ -n "$FORCED_KEYRING" ]; then
  	if [ -s "$FORCED_KEYRING" ]; then
@@ -31,11 +22,6 @@ diff -u -r ../apt-1.1.6/cmdline/apt-key.in ./cmdline/apt-key.in
  	fi
      else
  	# otherwise all known keyrings are merged
--	local TRUSTEDPARTS="/etc/apt/trusted.gpg.d"
-+	local TRUSTEDPARTS="@TERMUX_PREFIX@/etc/apt/trusted.gpg.d"
- 	eval $(apt-config shell TRUSTEDPARTS Dir::Etc::TrustedParts/d)
- 	if [ -d "$TRUSTEDPARTS" ]; then
- 	    # ignore errors mostly for non-existing $TRUSTEDFILE
 @@ -316,7 +313,7 @@
  	       done
  	    } > "$PUBRING" 2>/dev/null
@@ -45,12 +31,3 @@ diff -u -r ../apt-1.1.6/cmdline/apt-key.in ./cmdline/apt-key.in
  	fi
      fi
  
-@@ -460,7 +457,7 @@
- done
- 
- if [ -z "$TRUSTEDFILE" ]; then
--   TRUSTEDFILE="/etc/apt/trusted.gpg"
-+   TRUSTEDFILE="@TERMUX_PREFIX@/etc/apt/trusted.gpg"
-    eval $(apt-config shell TRUSTEDFILE Apt::GPGV::TrustedKeyring)
-    eval $(apt-config shell TRUSTEDFILE Dir::Etc::Trusted/f)
- fi

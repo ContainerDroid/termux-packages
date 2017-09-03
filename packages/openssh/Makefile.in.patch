@@ -1,0 +1,12 @@
+diff -u -r ../openssh-7.5p1/Makefile.in ./Makefile.in
+--- ../openssh-7.5p1/Makefile.in	2017-03-20 03:39:27.000000000 +0100
++++ ./Makefile.in	2017-03-23 11:18:49.800171062 +0100
+@@ -18,7 +18,7 @@
+ piddir=@piddir@
+ srcdir=@srcdir@
+ top_srcdir=@top_srcdir@
+ 
+-DESTDIR=
++DESTDIR=@TERMUX_DESTDIR@
+ VPATH=@srcdir@
+ SSH_PROGRAM=@bindir@/ssh

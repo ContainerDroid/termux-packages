@@ -9,16 +9,16 @@ TERMUX_PKG_DEPENDS="libpcap, pcre, openssl, resolv-conf, netcat, liblua"
 # --without-nmap-update to avoid linking against libsvn_client:
 # --without-zenmap to avoid python scripts for graphical gtk frontend:
 # --without-ndiff to avoid python2-using ndiff utility:
-TERMUX_PKG_EXTRA_CONFIGURE_ARGS="--enable-static --with-liblua=$TERMUX_PREFIX --without-nmap-update --without-zenmap --without-ndiff"
+TERMUX_PKG_EXTRA_CONFIGURE_ARGS="--enable-static --with-liblua=$TERMUX_DESTDIR/usr --without-nmap-update --without-zenmap --without-ndiff"
 TERMUX_PKG_BUILD_IN_SRC="yes"
 
 termux_step_post_make_install () {
 	# Setup 'netcat' and 'nc' as symlink to 'ncat', since the other netcat implementations
 	# are outdated (gnu-netcat) or non-portable (openbsd-netcat).
 	for prog in netcat nc; do
-		cd $TERMUX_PREFIX/bin
+		cd $TERMUX_DESTDIR/usr/bin
 		ln -s -f ncat $prog
-		cd $TERMUX_PREFIX/share/man/man1
+		cd $TERMUX_DESTDIR/usr/share/man/man1
 		ln -s -f ncat.1 ${prog}.1
 	done
 }

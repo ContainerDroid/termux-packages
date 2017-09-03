@@ -3,6 +3,6 @@ TERMUX_PKG_DESCRIPTION="Resolver configuration file"
 TERMUX_PKG_VERSION=1.0
 
 termux_step_make_install () {
-	_RESOLV_CONF=$TERMUX_PREFIX/etc/resolv.conf
+	_RESOLV_CONF=$TERMUX_DESTDIR/etc/resolv.conf
 	printf "nameserver 8.8.8.8\nnameserver 8.8.4.4" > $_RESOLV_CONF
 }

@@ -5,7 +5,7 @@ TERMUX_PKG_SRCURL=http://www.cpan.org/src/5.0/perl-${TERMUX_PKG_VERSION}.tar.gz
 TERMUX_PKG_SHA256=ebe7c66906d4fb55449380ab1b7e004eeef52c38d3443fa301f8e17a1a4cb67f
 TERMUX_PKG_BUILD_IN_SRC="yes"
 TERMUX_MAKE_PROCESSES=1
-TERMUX_PKG_RM_AFTER_INSTALL="bin/perl${TERMUX_PKG_VERSION}"
+TERMUX_PKG_RM_AFTER_INSTALL="usr/bin/perl${TERMUX_PKG_VERSION}"
 TERMUX_PKG_NO_DEVELSPLIT=yes
 
 termux_step_post_extract_package () {
@@ -23,7 +23,7 @@ termux_step_post_extract_package () {
 	cp -Rf * ../
 
 	# Remove old installation to force fresh:
-	rm -rf $TERMUX_PREFIX/lib/perl5
+	rm -rf $TERMUX_DESTDIR/usr/lib/perl5
 
 	# Export variable used by Kid.pm.patch:
 	export TERMUX_PKG_SRCDIR
@@ -44,39 +44,32 @@ termux_step_configure () {
 	ORIG_RANLIB=$RANLIB; unset RANLIB
 	ORIG_LD=$LD; unset LD
 
-	# Since we specify $TERMUX_PREFIX/bin/sh below for the shell
-	# it will be run during the build, so temporarily (removed in
-	# termux_step_post_make_install below) setup symlink:
-	rm -f $TERMUX_PREFIX/bin/sh
-	ln -s /bin/sh $TERMUX_PREFIX/bin/sh
-
 	cd $TERMUX_PKG_BUILDDIR
 	$TERMUX_PKG_SRCDIR/configure \
 		--target=$TERMUX_HOST_PLATFORM \
 		-Dsysroot=$TERMUX_STANDALONE_TOOLCHAIN/sysroot \
-		-Dprefix=$TERMUX_PREFIX \
-		-Dsh=$TERMUX_PREFIX/bin/sh \
+		-Dprefix="$TERMUX_DESTDIR/usr" \
 		-Dcc=$ORIG_CC \
 		-Duseshrplib
 }
 
 termux_step_post_make_install () {
 	# Replace hardlinks with symlinks:
-	cd $TERMUX_PREFIX/share/man/man1
+	cd $TERMUX_DESTDIR/usr/share/man/man1
 	rm perlbug.1
 	ln -s perlthanks.1 perlbug.1
 
 	# Cleanup:
-	rm $TERMUX_PREFIX/bin/sh
+	rm $TERMUX_DESTDIR/usr/bin/sh
 
-	cd $TERMUX_PREFIX/lib
+	cd $TERMUX_DESTDIR/usr/lib
 	ln -f -s perl5/${TERMUX_PKG_VERSION}/${TERMUX_ARCH}-android/CORE/libperl.so libperl.so
 
-	cd $TERMUX_PREFIX/include
+	cd $TERMUX_DESTDIR/usr/include
 	ln -f -s ../lib/perl5/${TERMUX_PKG_VERSION}/${TERMUX_ARCH}-android/CORE perl
 	cd ../lib/perl5/${TERMUX_PKG_VERSION}/${TERMUX_ARCH}-android/
 	chmod +w Config_heavy.pl
-	sed 's',"--sysroot=$TERMUX_STANDALONE_TOOLCHAIN"/sysroot,"-I/data/data/com.termux/files/usr/include",'g' Config_heavy.pl > Config_heavy.pl.new
-	sed 's',"$TERMUX_STANDALONE_TOOLCHAIN"/sysroot,"-I/data/data/com.termux/files",'g' Config_heavy.pl.new > Config_heavy.pl
+	sed 's',"--sysroot=$TERMUX_STANDALONE_TOOLCHAIN"/sysroot,"-I$TERMUX_DESTDIR/usr/include",'g' Config_heavy.pl > Config_heavy.pl.new
+	sed 's',"$TERMUX_STANDALONE_TOOLCHAIN"/sysroot,"-I$TERMUX_DESTDIR",'g' Config_heavy.pl.new > Config_heavy.pl
 	rm Config_heavy.pl.new
 }

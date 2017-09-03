@@ -9,7 +9,7 @@ TERMUX_PKG_RM_AFTER_INSTALL="bin/gawk-* bin/igawk share/man/man1/igawk.1"
 
 termux_step_pre_configure () {
 	# Remove old symlink to force a fresh timestamp:
-	rm -f $TERMUX_PREFIX/bin/awk
+	rm -f $TERMUX_DESTDIR/usr/bin/awk
 
 	# http://cross-lfs.org/view/CLFS-2.1.0/ppc64-64/temp-system/gawk.html
 	cp -v extension/Makefile.in{,.orig}

@@ -11,7 +11,7 @@ TERMUX_PKG_RM_AFTER_INSTALL="share/locale"
 
 termux_step_pre_configure () {
 	# Put a temporary link for libtinfo.so
-	ln -s -f $TERMUX_PREFIX/lib/libncursesw.so $TERMUX_PREFIX/lib/libtinfo.so
+	ln -s -f $TERMUX_DESTDIR/usr/lib/libncursesw.so $TERMUX_DESTDIR/usr/lib/libtinfo.so
 }
 
 termux_step_configure () {
@@ -20,5 +20,5 @@ termux_step_configure () {
 }
 
 termux_step_post_make_install () {
-	rm $TERMUX_PREFIX/lib/libtinfo.so
+	rm $TERMUX_DESTDIR/usr/lib/libtinfo.so
 }

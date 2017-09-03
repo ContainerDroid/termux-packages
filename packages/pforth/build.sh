@@ -24,5 +24,5 @@ termux_step_pre_configure () {
 	export CC="$CC $CFLAGS"
 }
 termux_step_make_install () {
-	cp $TERMUX_PKG_BUILDDIR/pforth_standalone $TERMUX_PREFIX/bin/pforth
+	cp $TERMUX_PKG_BUILDDIR/pforth_standalone $TERMUX_DESTDIR/usr/bin/pforth
 }

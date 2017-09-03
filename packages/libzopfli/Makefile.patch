@@ -11,7 +11,17 @@ diff -u -r ../zopfli-zopfli-1.0.1/Makefile ./Makefile
  ZOPFLILIB_SRC = src/zopfli/blocksplitter.c src/zopfli/cache.c\
                  src/zopfli/deflate.c src/zopfli/gzip_container.c\
                  src/zopfli/hash.c src/zopfli/katajainen.c\
-@@ -20,22 +14,22 @@
+@@ -16,27 +10,39 @@
+ ZOPFLIPNGLIB_SRC := src/zopflipng/zopflipng_lib.cc
+ ZOPFLIPNGBIN_SRC := src/zopflipng/zopflipng_bin.cc
+ 
+-.PHONY: zopfli zopflipng
++.PHONY: all zopfli zopflipng
++
++all: libzopfli libzopflipng
++
++clean:
++	rm -f zopflipng zopfli $(ZOPFLILIB_OBJ) libzopfli*
  
  # Zopfli binary
  zopfli:
@@ -19,11 +29,10 @@ diff -u -r ../zopfli-zopfli-1.0.1/Makefile ./Makefile
 +	$(CC) $(ZOPFLILIB_SRC) $(ZOPFLIBIN_SRC) $(CFLAGS) -o zopfli -lm
  
  # Zopfli shared library
--libzopfli:
-+install:
+ libzopfli:
  	$(CC) $(ZOPFLILIB_SRC) $(CFLAGS) -fPIC -c
 -	$(CC) $(ZOPFLILIB_OBJ) $(CFLAGS) -shared -Wl,-soname,libzopfli.so.1 -o libzopfli.so.1.0.1
-+	$(CC) $(ZOPFLILIB_OBJ) $(CFLAGS) -shared -o @TERMUX_PREFIX@/lib/libzopfli.so -lm
++	$(CC) $(ZOPFLILIB_OBJ) $(CFLAGS) -shared -o libzopfli.so -lm
  
  # ZopfliPNG binary
  zopflipng:
@@ -31,11 +40,19 @@ diff -u -r ../zopfli-zopfli-1.0.1/Makefile ./Makefile
 -	$(CXX) $(ZOPFLILIB_OBJ) $(LODEPNG_SRC) $(ZOPFLIPNGLIB_SRC) $(ZOPFLIPNGBIN_SRC) $(CFLAGS) -o zopflipng
 +	$(CXX) $(ZOPFLILIB_OBJ) $(LODEPNG_SRC) $(ZOPFLIPNGLIB_SRC) $(ZOPFLIPNGBIN_SRC) $(CFLAGS) -o zopflipng -lm
  
- # ZopfliPNG shared library
+-# ZopfliPNG shared library
++ # ZopfliPNG shared library
  libzopflipng:
  	$(CC) $(ZOPFLILIB_SRC) $(CFLAGS) -fPIC -c
--	$(CXX) $(ZOPFLILIB_OBJ) $(LODEPNG_SRC) $(ZOPFLIPNGLIB_SRC) $(CFLAGS) -fPIC --shared -Wl,-soname,libzopflipng.so.1 -o libzopflipng.so.1.0.0
-+	$(CXX) $(ZOPFLILIB_OBJ) $(LODEPNG_SRC) $(ZOPFLIPNGLIB_SRC) $(CFLAGS) -fPIC --shared -Wl,-soname,libzopflipng.so.1 -o libzopflipng.so -lm
+ 	$(CXX) $(ZOPFLILIB_OBJ) $(LODEPNG_SRC) $(ZOPFLIPNGLIB_SRC) $(CFLAGS) -fPIC --shared -Wl,-soname,libzopflipng.so.1 -o libzopflipng.so.1.0.0
++	$(CXX) $(ZOPFLILIB_OBJ) $(LODEPNG_SRC) $(ZOPFLIPNGLIB_SRC) $(CFLAGS) -fPIC --shared -o libzopflipng.so -lm
  
  # Remove all libraries and binaries
  clean:
+ 	rm -f zopflipng zopfli $(ZOPFLILIB_OBJ) libzopfli*
++
++install:
++	#install -m 0755 -D zopfli $(DESTDIR)$(PREFIX)/bin/zopfli
++	#install -m 0755 -D zopflipng $(DESTDIR)$(PREFIX)/bin/zopflipng
++	install -m 0755 -D libzopfli.so $(DESTDIR)$(PREFIX)/lib/libzopfli.so
++	install -m 0755 -D libzopflipng.so $(DESTDIR)$(PREFIX)/lib/libzopflipng.so

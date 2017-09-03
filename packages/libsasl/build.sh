@@ -10,12 +10,12 @@ ac_cv_func_syslog=no
 ac_cv_header_syslog_h=no
 --disable-gssapi
 --disable-otp
---sysconfdir=$TERMUX_PREFIX/etc
+--sysconfdir=/etc
 --with-dblib=none
---with-dbpath=$TERMUX_PREFIX/var/lib/sasldb
+--with-dbpath=/var/lib/sasldb
 --without-des
 --without-saslauthd
---with-plugindir=$TERMUX_PREFIX/lib/sasl2
+--with-plugindir=/usr/lib/sasl2
 "
 TERMUX_PKG_RM_AFTER_INSTALL="bin/pluginviewer"
 

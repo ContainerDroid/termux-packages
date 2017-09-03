@@ -12,7 +12,7 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 --with-libjson=no
 --with-libtool
 --with-libxml2=no
---with-openssl=$TERMUX_PREFIX
+--with-openssl=$TERMUX_DESTDIR/usr
 --with-randomdev=/dev/random
 --with-readline=-lreadline
 "
@@ -25,7 +25,7 @@ termux_step_pre_configure () {
 	export BUILD_LDFLAGS=
 	export BUILD_RANLIB=
 
-	_RESOLV_CONF=$TERMUX_PREFIX/etc/resolv.conf
+	_RESOLV_CONF=$TERMUX_DESTDIR/etc/resolv.conf
 	CFLAGS+=" $CPPFLAGS -DRESOLV_CONF=\\\"$_RESOLV_CONF\\\""
 	LDFLAGS+=" -llog"
 }

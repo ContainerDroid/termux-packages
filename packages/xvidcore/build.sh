@@ -8,7 +8,7 @@ TERMUX_PKG_FOLDERNAME=xvidcore
 TERMUX_PKG_BUILD_IN_SRC=yes
 
 termux_step_pre_configure () {
-	rm -f $TERMUX_PREFIX/lib/libxvid*
+	rm -f $TERMUX_DESTDIR/usr/lib/libxvid*
 	export TERMUX_PKG_BUILDDIR=$TERMUX_PKG_BUILDDIR/build/generic
 	export TERMUX_PKG_SRCDIR=$TERMUX_PKG_BUILDDIR
 

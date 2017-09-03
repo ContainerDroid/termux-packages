@@ -12,12 +12,12 @@ TERMUX_PKG_EXTRA_MAKE_ARGS="MULTI=1"
 TERMUX_PKG_BUILD_IN_SRC="yes"
 
 termux_step_create_debscripts () {
-        echo "#!$TERMUX_PREFIX/bin/sh" > postinst
-	echo "mkdir -p $TERMUX_PREFIX/etc/dropbear" >> postinst
-        echo "for a in rsa dss ecdsa; do" >> postinst
-        echo "    KEYFILE=$TERMUX_PREFIX/etc/dropbear/dropbear_\${a}_host_key" >> postinst
-        echo "    test ! -f \$KEYFILE && dropbearkey -t \$a -f \$KEYFILE" >> postinst
-        echo "done" >> postinst
-        echo "exit 0" >> postinst
-        chmod 0755 postinst
+	echo "#!/bin/sh" > postinst
+	echo "mkdir -p /etc/dropbear" >> postinst
+	echo "for a in rsa dss ecdsa; do" >> postinst
+	echo "    KEYFILE=/etc/dropbear/dropbear_\${a}_host_key" >> postinst
+	echo "    test ! -f \$KEYFILE && dropbearkey -t \$a -f \$KEYFILE" >> postinst
+	echo "done" >> postinst
+	echo "exit 0" >> postinst
+	chmod 0755 postinst
 }

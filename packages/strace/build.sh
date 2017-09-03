@@ -3,7 +3,7 @@ TERMUX_PKG_DESCRIPTION="Debugging utility to monitor the system calls used by a 
 TERMUX_PKG_VERSION=4.16
 TERMUX_PKG_SRCURL=http://downloads.sourceforge.net/project/strace/strace/${TERMUX_PKG_VERSION}/strace-${TERMUX_PKG_VERSION}.tar.xz
 TERMUX_PKG_SHA256=98487cb5178ec1259986cc9f6e2a844f50e5d1208c112cc22431a1e4d9adf0ef
-TERMUX_PKG_RM_AFTER_INSTALL=bin/strace-graph # This is a perl script
+TERMUX_PKG_RM_AFTER_INSTALL=usr/bin/strace-graph # This is a perl script
 # Without st_cv_m32_mpers=no the build fails if gawk is installed.
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="st_cv_m32_mpers=no"
 

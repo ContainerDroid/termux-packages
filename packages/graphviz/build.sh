@@ -20,8 +20,8 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 --enable-sharp=no
 --enable-swig=no
 --enable-tcl=no
---with-ltdl-include=$TERMUX_PREFIX/include
---with-ltdl-lib=$TERMUX_PREFIX/lib
+--with-ltdl-include=$TERMUX_DESTDIR/usr/include
+--with-ltdl-lib=$TERMUX_DESTDIR/usr/lib
 --with-pangocairo=yes
 --with-pic
 --with-poppler=no
@@ -36,14 +36,14 @@ termux_step_pre_configure() {
 
 termux_step_post_make_install() {
 	# Some binaries (dot_builtins, gvpack) links against these:
-	cd $TERMUX_PREFIX/lib
+	cd $TERMUX_DESTDIR/usr/lib
 	for lib in graphviz/*.so.*; do
 		ln -s -f $lib `basename $lib`
 	done
 }
 
 termux_step_create_debscripts () {
-	echo "#!$TERMUX_PREFIX/bin/sh" > postinst
+	echo "#!/bin/sh" > postinst
 	echo "dot -c" >> postinst
 	echo "exit 0" >> postinst
 	chmod 0755 postinst

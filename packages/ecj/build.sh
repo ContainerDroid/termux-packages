@@ -16,10 +16,10 @@ termux_step_make () {
 			9953dc2be829732e1b939106a71de018f660891220dbca559a5c7bff84883e51
 	fi
 
-        mkdir -p $TERMUX_PREFIX/share/{dex,java}
+        mkdir -p $TERMUX_DESTDIR/usr/share/{dex,java}
 	$TERMUX_DX \
 		--dex \
-		--output=$TERMUX_PREFIX/share/dex/ecj.jar \
+		--output=$TERMUX_DESTDIR/usr/share/dex/ecj.jar \
 		$RAW_JAR
 
 	cd $TERMUX_PKG_TMPDIR
@@ -33,7 +33,7 @@ termux_step_make () {
 	rm -Rf android.jar resources.arsc res assets
 	zip -q -r android.jar .
 
-	cp $TERMUX_PKG_TMPDIR/android-jar/android.jar $TERMUX_PREFIX/share/java/android.jar
+	cp $TERMUX_PKG_TMPDIR/android-jar/android.jar $TERMUX_DESTDIR/usr/share/java/android.jar
 
 	# Bundle in an android.jar from an older API also, for those who want to
 	# build apps that run on older Android versions.
@@ -42,9 +42,8 @@ termux_step_make () {
 	unzip -q android.jar
 	rm -Rf android.jar resources.arsc res assets
 	zip -q -r android-16.jar .
-	cp $TERMUX_PKG_TMPDIR/android-jar/android-16.jar $TERMUX_PREFIX/share/java/
+	cp $TERMUX_PKG_TMPDIR/android-jar/android-16.jar $TERMUX_DESTDIR/usr/share/java/
 
-	rm -Rf $TERMUX_PREFIX/bin/javac
-	install $TERMUX_PKG_BUILDER_DIR/ecj $TERMUX_PREFIX/bin/ecj
-	perl -p -i -e "s%\@TERMUX_PREFIX\@%${TERMUX_PREFIX}%g" $TERMUX_PREFIX/bin/ecj
+	rm -Rf $TERMUX_DESTDIR/usr/bin/javac
+	install $TERMUX_PKG_BUILDER_DIR/ecj $TERMUX_DESTDIR/usr/bin/ecj
 }

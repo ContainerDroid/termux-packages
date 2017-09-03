@@ -10,7 +10,7 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS=" --disable-python-plugins"
 TERMUX_PKG_BUILD_IN_SRC=yes
 
 termux_step_pre_configure() {
-  CPPFLAGS+=" -I$TERMUX_PREFIX/include/python3.6m"
+  CPPFLAGS+=" -I$TERMUX_DESTDIR/usr/include/python3.6m"
   LDFLAGS+=" -lpython3.6m"
 }
 

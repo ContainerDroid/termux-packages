@@ -9,7 +9,7 @@ diff -u -r ../git-2.7.4/perl/Makefile.PL ./perl/Makefile.PL
  	$pm_path =~ s{^\./}{};
  
 -	$pm{$pm_path} = '$(INST_LIBDIR)/'.$pm_path;
-+	$pm{$pm_path} = '@TERMUX_PREFIX@/share/git-perl/'.$pm_path;
++	$pm{$pm_path} = '/usr/share/git-perl/'.$pm_path;
  }, "Git", "Git.pm";
  
  
@@ -18,7 +18,7 @@ diff -u -r ../git-2.7.4/perl/Makefile.PL ./perl/Makefile.PL
 -if ( !eval { require Error } || $Error::VERSION < 0.15009) {
 -	$pm{'private-Error.pm'} = '$(INST_LIBDIR)/Error.pm';
 -}
-+	$pm{'private-Error.pm'} = '@TERMUX_PREFIX@/share/git-perl/Error.pm';
++	$pm{'private-Error.pm'} = '/usr/share/git-perl/Error.pm';
  
  # redirect stdout, otherwise the message "Writing perl.mak for Git"
  # disrupts the output for the target 'instlibdir'

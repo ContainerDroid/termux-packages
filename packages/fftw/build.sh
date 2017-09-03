@@ -7,9 +7,15 @@ TERMUX_PKG_SHA256=1ef4aa8427d9785839bc767f3eb6a84fcb5e9a37c31ed77a04e7e047519a18
 # ac_cv_func_clock_gettime=no avoids having clock_gettime(CLOCK_SGI_CYCLE, &t)
 # being used. It's not supported on Android but fails at runtime and, fftw
 # does not check the return value so gets bogus values.
-TERMUX_PKG_EXTRA_CONFIGURE_ARGS="--enable-threads ac_cv_func_clock_gettime=no"
-TERMUX_PKG_RM_AFTER_INSTALL="include/fftw*.f*"
-TERMUX_PKG_INCLUDE_IN_DEVPACKAGE="bin/ share/man/"
+TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
+--enable-threads
+ac_cv_func_clock_gettime=no
+--bindir=$TERMUX_DESTDIR/usr/bin
+--includedir=$TERMUX_DESTDIR/usr/include
+--libdir=$TERMUX_DESTDIR/usr/lib
+--datarootdir=$TERMUX_DESTDIR/usr/share"
+TERMUX_PKG_RM_AFTER_INSTALL="usr/include/fftw*.f*"
+TERMUX_PKG_INCLUDE_IN_DEVPACKAGE="usr/bin/ usr/share/man/"
 
 termux_step_post_make_install() {
 	local COMMON_ARGS="$TERMUX_PKG_EXTRA_CONFIGURE_ARGS"

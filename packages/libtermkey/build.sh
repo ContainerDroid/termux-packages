@@ -16,11 +16,11 @@ termux_step_make_install () {
 	$CC $CFLAGS $CPPFLAGS -c -fPIC driver-csi.c -o driver-csi.o
 	$CC $CFLAGS $CPPFLAGS -c -fPIC driver-ti.c -o driver-ti.o
 
-	$CC -shared -fPIC $LDFLAGS -o $TERMUX_PREFIX/lib/libtermkey.so termkey.o driver-csi.o driver-ti.o -lunibilium
+	$CC -shared -fPIC $LDFLAGS -o $TERMUX_DESTDIR/usr/lib/libtermkey.so termkey.o driver-csi.o driver-ti.o -lunibilium
 
 	chmod u+w termkey.h
-	cp termkey.h $TERMUX_PREFIX/include/
-	cat termkey.pc.in | sed "s|@INCDIR@|$TERMUX_PREFIX/include|" | \
-	                    sed "s|@LIBDIR@|$TERMUX_PREFIX/lib|" > \
+	cp termkey.h $TERMUX_DESTDIR/usr/include/
+	cat termkey.pc.in | sed "s|@INCDIR@|$TERMUX_DESTDIR/usr/include|" | \
+	                    sed "s|@LIBDIR@|$TERMUX_DESTDIR/usr/lib|" > \
 			    $PKG_CONFIG_LIBDIR/termkey.pc
 }

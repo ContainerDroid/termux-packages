@@ -6,7 +6,7 @@ diff -u -r ../tinyscheme-1.41/scheme.c ./scheme.c
  
  #ifndef InitFile
 -# define InitFile "init.scm"
-+# define InitFile "@TERMUX_PREFIX@/share/tinyscheme/init.scm"
++# define InitFile "/usr/share/tinyscheme/init.scm"
  #endif
  
  #ifndef FIRST_CELLSEGS

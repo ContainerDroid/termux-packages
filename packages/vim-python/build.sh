@@ -24,14 +24,14 @@ vim_cv_tty_group=world
 "
 TERMUX_PKG_BUILD_IN_SRC="yes"
 TERMUX_PKG_RM_AFTER_INSTALL="
-bin/rview
-bin/rvim
-bin/ex
-share/man/man1/evim.1
-share/icons
-share/vim/vim80/spell/en.ascii*
-share/vim/vim80/print
-share/vim/vim80/tools
+usr/bin/rview
+usr/bin/rvim
+usr/bin/ex
+usr/share/man/man1/evim.1
+usr/share/icons
+usr/share/vim/vim80/spell/en.ascii*
+usr/share/vim/vim80/print
+usr/share/vim/vim80/tools
 "
 TERMUX_PKG_CONFFILES="share/vim/vimrc"
 

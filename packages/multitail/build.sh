@@ -9,4 +9,6 @@ TERMUX_PKG_BUILD_IN_SRC=yes
 termux_step_pre_configure () {
 	CFLAGS+=" -DNCURSES_WIDECHAR"
 	LDFLAGS+=" -landroid-glob"
+	export DESTDIR="$TERMUX_DESTDIR"
+	export PREFIX="/usr"
 }

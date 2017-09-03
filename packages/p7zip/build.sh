@@ -16,9 +16,9 @@ termux_step_configure () {
 }
 
 termux_step_make () {
-	LD="$CC $LDFLAGS" CC="$CC $CFLAGS $CPPFLAGS $LDFLAGS" make -j $TERMUX_MAKE_PROCESSES all3 OPTFLAGS="${CXXFLAGS}" DEST_HOME=$TERMUX_PREFIX
+	LD="$CC $LDFLAGS" CC="$CC $CFLAGS $CPPFLAGS $LDFLAGS" make -j $TERMUX_MAKE_PROCESSES all3 OPTFLAGS="${CXXFLAGS}"
 }
 
 termux_step_make_install () {
-	make install DEST_HOME=$TERMUX_PREFIX DEST_MAN=$TERMUX_PREFIX/share/man
+	make install DEST_HOME="$TERMUX_DESTDIR/usr" DEST_MAN="$TERMUX_DESTDIR/usr/share/man"
 }

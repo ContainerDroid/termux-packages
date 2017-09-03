@@ -15,7 +15,7 @@ diff -u -r ../netpbm-advanced-r2935/buildtools/installnetpbm.pl ./buildtools/ins
      }
  
 -    my $response = prompt("install prefix", $default);
-+    my $response = "@TERMUX_PREFIX@";
++    my $response = "@TERMUX_DESTDIR@/usr";
  
      my $prefix;
  

@@ -12,12 +12,12 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="--with-readline
 --without-system-verto
 --with-netlib=-lc
 --enable-dns-for-realm
---sbindir=$TERMUX_PREFIX/bin
+--sbindir=$TERMUX_DESTDIR/usr/bin
 --with-size-optimizations
 --with-system-db
-DEFCCNAME=$TERMUX_PREFIX/tmp/krb5cc_%{uid}
-DEFKTNAME=$TERMUX_PREFIX/etc/krb5.keytab
-DEFCKTNAME=$TERMUX_PREFIX/var/krb5/user/%{euid}/client.keytab
+DEFCCNAME=/tmp/krb5cc_%{uid}
+DEFKTNAME=/etc/krb5.keytab
+DEFCKTNAME=/var/krb5/user/%{euid}/client.keytab
 "
 
 termux_step_pre_configure () {
@@ -38,12 +38,12 @@ termux_step_post_make_install () {
 	echo -e "\tdefault = STDERR" >> $TERMUX_PKG_SRCDIR/config-files/krb5.conf
 
 	# Sample KDC config file
-	install -dm 700 $TERMUX_PREFIX/var/krb5kdc
-	install -pm 600 $TERMUX_PKG_SRCDIR/config-files/kdc.conf $TERMUX_PREFIX/var/krb5kdc/kdc.conf
+	install -dm 700 $TERMUX_DESTDIR/var/krb5kdc
+	install -pm 600 $TERMUX_PKG_SRCDIR/config-files/kdc.conf $TERMUX_DESTDIR/var/krb5kdc/kdc.conf
 
 	# Default configuration file
-	install -pm 600 $TERMUX_PKG_SRCDIR/config-files/krb5.conf $TERMUX_PREFIX/etc/krb5.conf
+	install -pm 600 $TERMUX_PKG_SRCDIR/config-files/krb5.conf $TERMUX_DESTDIR/etc/krb5.conf
 
-	install -dm 700 $TERMUX_PREFIX/share/aclocal
-	install -m 600 $TERMUX_PKG_SRCDIR/util/ac_check_krb5.m4 $TERMUX_PREFIX/share/aclocal
+	install -dm 700 $TERMUX_DESTDIR/usr/share/aclocal
+	install -m 600 $TERMUX_PKG_SRCDIR/util/ac_check_krb5.m4 $TERMUX_DESTDIR/share/aclocal
 }

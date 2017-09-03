@@ -13,5 +13,6 @@ termux_step_pre_configure () {
 
 termux_step_post_make_install () {
 	# use default config
-	mv "$TERMUX_PREFIX/etc/tor/torrc.sample" "$TERMUX_PREFIX/etc/tor/torrc"
+	mv "$TERMUX_DESTDIR/usr/etc/tor" "$TERMUX_DESTDIR/etc/tor"
+	mv "$TERMUX_DESTDIR/etc/tor/torrc.sample" "$TERMUX_DESTDIR/etc/tor/torrc"
 }

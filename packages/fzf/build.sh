@@ -15,8 +15,8 @@ termux_step_make() {
 
 termux_step_make_install () {
 	termux_setup_golang
-	export CGO_CFLAGS="-I$TERMUX_PREFIX/include"
-	export CGO_LDFLAGS="-L$TERMUX_PREFIX/lib"
+	export CGO_CFLAGS="-I$TERMUX_DESTDIR/usr/include"
+	export CGO_LDFLAGS="-L$TERMUX_DESTDIR/usr/lib"
 
 	# See the fzf Makefile:
 	local _BINARY="target/fzf-${GOOS}_"
@@ -33,29 +33,29 @@ termux_step_make_install () {
 	fi
 
 	LDFLAGS="-pie" make $_BINARY
-	cp $_BINARY $TERMUX_PREFIX/bin/fzf
+	cp $_BINARY $TERMUX_DESTDIR/usr/bin/fzf
 
 	# Install fzf-tmux, a bash script for launching fzf in a tmux pane:
-	cp $TERMUX_PKG_SRCDIR/bin/fzf-tmux $TERMUX_PREFIX/bin
+	cp $TERMUX_PKG_SRCDIR/bin/fzf-tmux $TERMUX_DESTDIR/usr/bin
 
 	# Install the fzf.1 man page:
-	mkdir -p $TERMUX_PREFIX/share/man/man1/
-	cp $TERMUX_PKG_SRCDIR/man/man1/fzf.1 $TERMUX_PREFIX/share/man/man1/
+	mkdir -p $TERMUX_DESTDIR/usr/share/man/man1/
+	cp $TERMUX_PKG_SRCDIR/man/man1/fzf.1 $TERMUX_DESTDIR/usr/share/man/man1/
 
 	# Install the vim plugin:
-	mkdir -p $TERMUX_PREFIX/share/vim/vim80/plugin
-	cp $TERMUX_PKG_SRCDIR/plugin/fzf.vim $TERMUX_PREFIX/share/vim/vim80/plugin/fzf.vim
+	mkdir -p $TERMUX_DESTDIR/usr/share/vim/vim80/plugin
+	cp $TERMUX_PKG_SRCDIR/plugin/fzf.vim $TERMUX_DESTDIR/usr/share/vim/vim80/plugin/fzf.vim
 
 	# Install bash, zsh and fish helper scripts:
-	mkdir -p "$TERMUX_PREFIX/share/fzf"
-	cp $TERMUX_PKG_SRCDIR/shell/* "$TERMUX_PREFIX/share/fzf"
+	mkdir -p "$TERMUX_DESTDIR/usr/share/fzf"
+	cp $TERMUX_PKG_SRCDIR/shell/* "$TERMUX_DESTDIR/usr/share/fzf"
 
 	# Install the nvim plugin:
-	mkdir -p $TERMUX_PREFIX/share/nvim/runtime/plugin
-	cp $TERMUX_PKG_SRCDIR/plugin/fzf.vim $TERMUX_PREFIX/share/nvim/runtime/plugin/
+	mkdir -p $TERMUX_DESTDIR/usr/share/nvim/runtime/plugin
+	cp $TERMUX_PKG_SRCDIR/plugin/fzf.vim $TERMUX_DESTDIR/usr/share/nvim/runtime/plugin/
 }
 
 termux_step_post_massage () {
 	# Remove so that the vim build doesn't add it to vim-runtime:
-	rm $TERMUX_PREFIX/share/vim/vim80/plugin/fzf.vim
+	rm $TERMUX_DESTDIR/usr/share/vim/vim80/plugin/fzf.vim
 }

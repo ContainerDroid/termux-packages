@@ -21,7 +21,7 @@ ac_cv_func_unshare=yes
 --disable-libmount
 "
 # bin/column is currently bundled in the fish package:
-TERMUX_PKG_RM_AFTER_INSTALL="bin/column share/man/man1/column.1"
+TERMUX_PKG_RM_AFTER_INSTALL="usr/bin/column usr/share/man/man1/column.1"
 
 termux_step_pre_configure() {
 	if [ $TERMUX_ARCH_BITS = 64 ]; then

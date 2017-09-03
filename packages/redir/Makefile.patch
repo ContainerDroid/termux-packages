@@ -24,8 +24,8 @@
  	${CC} ${LDFLAGS} -o redir ${OBJS} ${LIBS}
  
 +install: all
-+	install redir $(PREFIX)/bin
-+	install redir.man $(PREFIX)/share/man/man1/redir.1
++	install redir $(DESTDIR)$(PREFIX)/bin
++	install redir.man $(DESTDIR)$(PREFIX)/share/man/man1/redir.1
  
  
  

@@ -10,6 +10,6 @@ termux_step_pre_configure () {
 }
 
 termux_step_post_make_install () {
-	cd $TERMUX_PREFIX/lib
+	cd $TERMUX_DESTDIR/usr/lib
 	ln -f -s expect${TERMUX_PKG_VERSION}/libexpect${TERMUX_PKG_VERSION}.so .
 }

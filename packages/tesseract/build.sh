@@ -9,7 +9,7 @@ TERMUX_PKG_FOLDERNAME=tesseract-${TERMUX_PKG_VERSION}
 
 termux_step_pre_configure() {
 	# http://blog.matt-swain.com/post/26419042500/installing-tesseract-ocr-on-mac-os-x-lion
-	export LIBLEPT_HEADERSDIR=${TERMUX_PREFIX}/include/leptonica
+	export LIBLEPT_HEADERSDIR="$TERMUX_DESTDIR/usr/include/leptonica"
 
 	perl -p -i -e 's|ADD_RT], true|ADD_RT], false|g' configure.ac
 	./autogen.sh
@@ -17,7 +17,7 @@ termux_step_pre_configure() {
 
 termux_step_post_make_install() {
 	# download english trained data
-	cd "${TERMUX_PREFIX}/share/tessdata"
+	cd "$TERMUX_DESTDIR/usr/share/tessdata"
 	rm -f eng.*
 	for f in cube.{bigrams,fold,lm,nn,params,size,word-freq} tesseract_cube.nn traineddata; do
 		f=eng.$f

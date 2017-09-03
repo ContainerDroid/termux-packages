@@ -17,7 +17,7 @@ termux_step_make_install () {
 	./bootstrap.py
 
 	./waf configure \
-		--prefix=$TERMUX_PREFIX \
+		--prefix="$TERMUX_DESTDIR/usr" \
 		--disable-gl \
 		--disable-jpeg \
 		--disable-lcms2 \
@@ -32,8 +32,8 @@ termux_step_make_install () {
 	./waf install
 
 	# Use opensles audio out be default:
-	mkdir -p $TERMUX_PREFIX/etc/mpv
-	cp $TERMUX_PKG_BUILDER_DIR/mpv.conf $TERMUX_PREFIX/etc/mpv/mpv.conf
+	mkdir -p $TERMUX_DESTDIR/etc/mpv
+	cp $TERMUX_PKG_BUILDER_DIR/mpv.conf $TERMUX_DESTDIR/etc/mpv/mpv.conf
 
 	# Try to work around OpenSL ES library clashes:
 	# Linking against libOpenSLES causes indirect linkage against
@@ -41,26 +41,26 @@ termux_step_make_install () {
 	# libpng.so, which are not compatible with the Termux ones.
 	#
 	# On Android N also liblzma seems to conflict.
-	mkdir -p $TERMUX_PREFIX/libexec
-	mv $TERMUX_PREFIX/bin/mpv $TERMUX_PREFIX/libexec
+	mkdir -p $TERMUX_DESTDIR/usr/libexec
+	mv $TERMUX_DESTDIR/usr/bin/mpv $TERMUX_DESTDIR/usr/libexec
 
 	local SYSTEM_LIBFOLDER=lib64
 	if [ $TERMUX_ARCH_BITS = 32 ]; then SYSTEM_LIBFOLDER=lib; fi
 
-	echo "#!/bin/sh" > $TERMUX_PREFIX/bin/mpv
+	echo "#!/bin/sh" > $TERMUX_DESTDIR/usr/bin/mpv
 
 	# Work around issues on devices having ffmpeg libraries
 	# in a system vendor dir, reported by live_the_dream on #termux:
 	local FFMPEG_LIBS="" lib
 	for lib in avcodec avfilter avformat avutil postproc swresample swscale; do
 		if [ -n "$FFMPEG_LIBS" ]; then FFMPEG_LIBS+=":"; fi
-		FFMPEG_LIBS+="$TERMUX_PREFIX/lib/lib${lib}.so"
+		FFMPEG_LIBS+="$TERMUX_DESTDIR/usr/lib/lib${lib}.so"
 	done
-	echo "export LD_PRELOAD=$FFMPEG_LIBS" >> $TERMUX_PREFIX/bin/mpv
+	echo "export LD_PRELOAD=$FFMPEG_LIBS" >> $TERMUX_DESTDIR/usr/bin/mpv
 
 	# /system/vendor/lib(64) needed for libqc-opt.so on
 	# a xperia z5 c, reported by BrainDamage on #termux:
-	echo "LD_LIBRARY_PATH=/system/$SYSTEM_LIBFOLDER:/system/vendor/$SYSTEM_LIBFOLDER:$TERMUX_PREFIX/lib $TERMUX_PREFIX/libexec/mpv \"\$@\"" >> $TERMUX_PREFIX/bin/mpv
+	echo "LD_LIBRARY_PATH=/system/$SYSTEM_LIBFOLDER:/system/vendor/$SYSTEM_LIBFOLDER:/usr/lib /usr/libexec/mpv \"\$@\"" >> $TERMUX_DESTDIR/usr/bin/mpv
 
-	chmod +x $TERMUX_PREFIX/bin/mpv
+	chmod +x $TERMUX_DESTDIR/usr/bin/mpv
 }

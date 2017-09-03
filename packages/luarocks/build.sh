@@ -8,7 +8,7 @@ TERMUX_PKG_BUILD_IN_SRC=yes
 TERMUX_PKG_PLATFORM_INDEPENDENT=yes
 
 termux_step_configure () {
-	./configure --prefix=$TERMUX_PREFIX \
-		--with-lua=$TERMUX_PREFIX \
+	./configure --prefix="$TERMUX_DESTDIR/usr" \
+		--with-lua=$TERMUX_DESTDIR \
 		--lua-version=5.3
 }

@@ -7,7 +7,7 @@ TERMUX_PKG_DEPENDS="ncurses"
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 hw_cv_func_snprintf_c99=yes
 hw_cv_func_vsnprintf_c99=yes
---with-ncurses=$TERMUX_PREFIX
+--with-ncurses=$TERMUX_DESTDIR/usr
 "
 
 termux_step_pre_configure() {

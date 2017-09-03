@@ -13,8 +13,8 @@ termux_step_make_install() {
 
 	./script/build
 
-	cp bin/hub $TERMUX_PREFIX/bin/
-	mkdir -p $TERMUX_PREFIX/share/man/man1/
-	cp man/hub.1 $TERMUX_PREFIX/share/man/man1/
+	cp bin/hub $TERMUX_DESTDIR/usr/bin/
+	mkdir -p $TERMUX_DESTDIR/usr/share/man/man1/
+	cp man/hub.1 $TERMUX_DESTDIR/usr/share/man/man1/
 }
 

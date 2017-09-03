@@ -16,10 +16,10 @@ termux_step_pre_configure() {
 }
 
 termux_step_make () {
-	CC="$CC $CFLAGS $CPPFLAGS $LDFLAGS" PREFIX=$TERMUX_PREFIX make -j $TERMUX_MAKE_PROCESSES install
+	CC="$CC $CFLAGS $CPPFLAGS $LDFLAGS" PREFIX=$TERMUX_DESTDIR/usr make -j $TERMUX_MAKE_PROCESSES install
 }
 
 termux_step_make_install () {
-	cp $TERMUX_PKG_BUILDER_DIR/zgames $TERMUX_PREFIX/bin/zgames
-	chmod +x $TERMUX_PREFIX/bin/zgames
+	cp $TERMUX_PKG_BUILDER_DIR/zgames $TERMUX_DESTDIR/usr/bin/zgames
+	chmod +x $TERMUX_DESTDIR/usr/bin/zgames
 }

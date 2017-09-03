@@ -46,15 +46,6 @@ diff -u -r ../ttyrec-1.0.8/ttyrec.c ./ttyrec.c
  #if defined(SVR4) && !defined(CDEL)
  #if defined(_POSIX_VDISABLE)
  #define CDEL _POSIX_VDISABLE
-@@ -156,7 +185,7 @@
- 
- 	shell = getenv("SHELL");
- 	if (shell == NULL)
--		shell = "/bin/sh";
-+		shell = "@TERMUX_PREFIX@/bin/sh";
- 
- 	getmaster();
- 	fixtty();
 @@ -203,11 +232,7 @@
  void
  finish()

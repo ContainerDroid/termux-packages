@@ -11,10 +11,10 @@ termux_step_make () {
 }
 
 termux_step_make_install () {
-	CFLAGS+=" -DTERMINFO_DIRS=\"$TERMUX_PREFIX/share/terminfo/\""
+	CFLAGS+=" -DTERMINFO_DIRS=\"$TERMUX_DESTDIR/usr/share/terminfo/\""
 	$CC $CFLAGS -c -fPIC unibilium.c -o unibilium.o
 	$CC $CFLAGS -c -fPIC uninames.c -o uninames.o
 	$CC $CFLAGS -c -fPIC uniutil.c -o uniutil.o
-	$CC -shared -fPIC $LDFLAGS -o $TERMUX_PREFIX/lib/libunibilium.so unibilium.o uninames.o uniutil.o
-	cp unibilium.h $TERMUX_PREFIX/include/
+	$CC -shared -fPIC $LDFLAGS -o $TERMUX_DESTDIR/usr/lib/libunibilium.so unibilium.o uninames.o uniutil.o
+	cp unibilium.h $TERMUX_DESTDIR/usr/include/
 }

@@ -25,7 +25,7 @@ TERMUX_PKG_RM_AFTER_INSTALL="share/icons share/emacs/${TERMUX_PKG_VERSION}/etc/i
 # Remove ctags from the emacs package to prevent conflicting with
 # the Universal Ctags from the 'ctags' package (the bin/etags
 # program still remain in the emacs package):
-TERMUX_PKG_RM_AFTER_INSTALL+=" bin/ctags share/man/man1/ctags.1"
+TERMUX_PKG_RM_AFTER_INSTALL+=" usr/bin/ctags usr/share/man/man1/ctags.1"
 
 termux_step_post_extract_package () {
 	# XXX: We have to start with new host build each time
@@ -34,7 +34,7 @@ termux_step_post_extract_package () {
 
 	# Termux only use info pages for emacs. Remove the info directory
 	# to get a clean Info directory file dir.
-	rm -Rf $TERMUX_PREFIX/share/info
+	rm -Rf $TERMUX_DESTDIR/usr/share/info
 
 	# We cannot run a dumped emacs on Android 5.0+ due to the pie requirement.
 	# Also, the native emacs we build (bootstrap-emacs) cannot used dumps when
@@ -60,5 +60,5 @@ termux_step_post_configure () {
 }
 
 termux_step_post_make_install () {
-	cp $TERMUX_PKG_BUILDER_DIR/site-init.el $TERMUX_PREFIX/share/emacs/${TERMUX_PKG_VERSION}/lisp/emacs-lisp/
+	cp $TERMUX_PKG_BUILDER_DIR/site-init.el $TERMUX_DESTDIR/usr/share/emacs/${TERMUX_PKG_VERSION}/lisp/emacs-lisp/
 }

@@ -1,4 +1,4 @@
-#!@TERMUX_PREFIX@/bin/sh
+#!/bin/sh
 
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
@@ -39,7 +39,7 @@ for arg in "$@" ; do
 done
 
 if [ -z "$ANT_HOME" ]; then
-  ANT_HOME=@TERMUX_PREFIX@/share/ant
+  ANT_HOME=/usr/share/ant
 fi
 
 if ! $no_config ; then

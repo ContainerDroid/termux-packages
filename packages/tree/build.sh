@@ -18,6 +18,6 @@ termux_step_make () {
 
 termux_step_make_install () {
 	make install \
-		prefix="$TERMUX_PREFIX" \
-		MANDIR="$TERMUX_PREFIX/share/man/man1"
+		prefix="$TERMUX_DESTDIR/usr" \
+		MANDIR="$TERMUX_DESTDIR/usr/share/man/man1"
 }

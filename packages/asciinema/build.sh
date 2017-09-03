@@ -14,8 +14,8 @@ termux_step_make () {
 }
 
 termux_step_make_install () {
-	export PYTHONPATH=$TERMUX_PREFIX/lib/python3.6/site-packages/
-	python3.6 setup.py install --prefix=$TERMUX_PREFIX --force
+	export PYTHONPATH="$TERMUX_DESTDIR/usr/lib/python3.6/site-packages/"
+	python3.6 setup.py install --prefix=$TERMUX_DESTDIR/usr --force
 }
 
 termux_step_post_massage () {

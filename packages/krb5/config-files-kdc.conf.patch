@@ -14,9 +14,9 @@
 -		key_stash_file = /usr/local/var/krb5kdc/.k5.ATHENA.MIT.EDU
 -		kdc_listen = 88
 -		kdc_tcp_listen = 88
-+		database_name = @TERMUX_PREFIX@/var/krb5kdc/principal
-+		acl_file = @TERMUX_PREFIX@/var/krb5kdc/kadm5.acl
-+		key_stash_file = @TERMUX_PREFIX@/var/krb5kdc/.k5.ATHENA.MIT.EDU
++		database_name = /var/krb5kdc/principal
++		acl_file = /var/krb5kdc/kadm5.acl
++		key_stash_file = /var/krb5kdc/.k5.ATHENA.MIT.EDU
 +		kdc_listen = 1088
 +		kdc_tcp_listen = 1088
  		max_life = 10h 0m 0s

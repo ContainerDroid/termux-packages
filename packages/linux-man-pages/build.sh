@@ -4,7 +4,7 @@ TERMUX_PKG_DEPENDS="man"
 TERMUX_PKG_VERSION=4.11
 TERMUX_PKG_SRCURL=https://www.kernel.org/pub/linux/docs/man-pages/man-pages-${TERMUX_PKG_VERSION}.tar.xz
 TERMUX_PKG_SHA256=adde80495f5efb26d077f4e5309bafdc4859e080b7529263720f7cb5f403f524
-TERMUX_PKG_EXTRA_MAKE_ARGS="prefix=$TERMUX_PREFIX"
+TERMUX_PKG_EXTRA_MAKE_ARGS="prefix=$TERMUX_DESTDIR/usr"
 # man.7 and mdoc.7 is included with mandoc:
 # getconf man page included with the getconf package:
 TERMUX_PKG_RM_AFTER_INSTALL="share/man/man1 share/man/man8 share/man/man7/man.7 share/man/man7/mdoc.7 share/man/man1p/getconf.1p"

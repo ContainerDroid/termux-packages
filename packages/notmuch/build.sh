@@ -13,8 +13,8 @@ termux_step_configure () {
 	export PYTHON=python3
 
 	cd $TERMUX_PKG_SRCDIR
-	XAPIAN_CONFIG=$TERMUX_PREFIX/bin/xapian-config ./configure \
-		--prefix=$TERMUX_PREFIX \
+	XAPIAN_CONFIG=$TERMUX_DESTDIR/usr/bin/xapian-config ./configure \
+		--prefix=$TERMUX_DESTDIR/usr \
 		--without-api-docs \
 		--without-desktop \
 		--without-emacs \

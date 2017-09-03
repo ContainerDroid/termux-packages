@@ -7,10 +7,10 @@ TERMUX_PKG_BUILD_IN_SRC="yes"
 
 termux_step_configure () {
 	# Force fresh install:
-	rm -f $TERMUX_PREFIX/include/talloc.h
+	rm -f $TERMUX_DESTDIR/usr/include/talloc.h
 
 	# Make sure symlinks are installed:
-	rm $TERMUX_PREFIX/lib/libtalloc* || true
+	rm $TERMUX_DESTDIR/usr/lib/libtalloc* || true
 
 	cd $TERMUX_PKG_SRCDIR
 
@@ -42,7 +42,7 @@ Checking for HAVE_INCOHERENT_MMAP: OK
 Checking getconf large file support flags work: OK
 EOF
 
-	./configure --prefix=$TERMUX_PREFIX \
+	./configure --prefix="$TERMUX_DESTDIR/usr" \
 		--disable-rpath \
 		--disable-python \
 		--cross-compile \

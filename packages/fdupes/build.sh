@@ -7,6 +7,7 @@ TERMUX_PKG_FOLDERNAME=fdupes-${TERMUX_PKG_VERSION}
 TERMUX_PKG_BUILD_IN_SRC=yes
 
 termux_step_configure() {
-    sed -i "s,PREFIX = /usr/local,PREFIX = ${TERMUX_PREFIX}," "$TERMUX_PKG_SRCDIR/Makefile"
+	sed -i "s,PREFIX = /usr/local,PREFIX = /usr," "$TERMUX_PKG_SRCDIR/Makefile"
+	export DESTDIR="$TERMUX_DESTDIR"
 }
 

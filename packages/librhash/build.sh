@@ -17,6 +17,6 @@ termux_step_make () {
 }
 
 termux_step_make_install () {
-	make -C librhash install-lib-shared install-headers PREFIX=$TERMUX_PREFIX
-	ln -sf $TERMUX_PREFIX/lib/librhash.so.0 $TERMUX_PREFIX/lib/librhash.so
+	make -C librhash install-lib-shared install-headers PREFIX=$TERMUX_DESTDIR/usr
+	ln -sf $TERMUX_DESTDIR/usr/lib/librhash.so.0 $TERMUX_DESTDIR/usr/lib/librhash.so
 }

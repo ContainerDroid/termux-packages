@@ -11,7 +11,7 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="tcl_cv_strtod_buggy=ok tcl_cv_strstr_unbroken=o
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" ac_cv_func_strtod=yes tcl_cv_strtod_unbroken=ok"
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" ac_cv_func_strtoul=yes tcl_cv_strtoul_unbroken=ok"
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" ac_cv_func_memcmp=yes ac_cv_func_memcmp_working=yes"
-TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" --mandir=$TERMUX_PREFIX/share/man --enable-man-symlinks"
+TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" --mandir=$TERMUX_DESTDIR/usr/share/man --enable-man-symlinks"
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" --disable-rpath"
 
 termux_step_pre_configure () {
@@ -19,18 +19,18 @@ termux_step_pre_configure () {
 }
 
 termux_step_post_make_install () {
-	cd $TERMUX_PREFIX/bin
+	cd $TERMUX_DESTDIR/usr/bin
 	ln -f -s tclsh$_MAJOR_VERSION tclsh
 
 	# Hack to use system libsqlite (https://www.sqlite.org/howtocompile.html#tcl)
 	# since --with-system-sqlite fails to build:
-	local NEW_LIBDIR=$TERMUX_PREFIX/lib/tcl$_MAJOR_VERSION/sqlite
+	local NEW_LIBDIR=$TERMUX_DESTDIR/usr/lib/tcl$_MAJOR_VERSION/sqlite
 	mkdir -p $NEW_LIBDIR
 	$CC $CFLAGS $CPPFLAGS $LDFLAGS \
 		-DUSE_SYSTEM_SQLITE=1 \
 		-o $NEW_LIBDIR/libtclsqlite3.so \
 		-shared \
-		$TERMUX_PREFIX/src/libsqlite/tclsqlite3.c \
+		$TERMUX_DESTDIR/usr/src/libsqlite/tclsqlite3.c \
 		-ltcl$_MAJOR_VERSION -lsqlite3
 	local LIBSQLITE_VERSION=`$PKG_CONFIG --modversion sqlite3`
 	echo "package ifneeded sqlite3 $LIBSQLITE_VERSION [list load [file join \$dir libtclsqlite3.so] Sqlite3]" > \

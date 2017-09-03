@@ -1,15 +1,6 @@
 diff -u -r ../lynx2-8-8/userdefs.h ./userdefs.h
 --- ../lynx2-8-8/userdefs.h	2014-03-09 22:43:10.000000000 +0100
 +++ ./userdefs.h	2014-07-02 10:03:04.780137325 +0200
-@@ -366,7 +366,7 @@
-  * the "TMPDIR" (unix), or "TEMP" or "TMP" (Windows,DOS,OS/2)
-  * variable.
-  */
--#define TEMP_SPACE "/tmp/"
-+#define TEMP_SPACE "@TERMUX_PREFIX@/tmp/"
- 
- /********************************
-  * Comment this line out to disable code that implements command logging
 @@ -738,7 +738,7 @@
   *     RFC 1345 Mnemonic                  mnemonic
   *     Transparent                        x-transparent

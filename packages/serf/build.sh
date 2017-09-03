@@ -8,15 +8,15 @@ TERMUX_PKG_DEPENDS="apr-util, openssl"
 TERMUX_PKG_BUILD_IN_SRC=yes
 
 termux_step_make_install () {
-	scons APR=$TERMUX_PREFIX \
-	      APU=$TERMUX_PREFIX \
+	scons APR=$TERMUX_DESTDIR/usr \
+	      APU=$TERMUX_DESTDIR/usr \
 	      CC=`which $CC` \
 	      CFLAGS="$CFLAGS" \
 	      CPPFLAGS="$CPPFLAGS -std=c11" \
 	      LINKFLAGS="$LDFLAGS" \
-	      OPENSSL=$TERMUX_PREFIX \
-	      PREFIX=$TERMUX_PREFIX \
+	      OPENSSL=$TERMUX_DESTDIR/usr \
+	      PREFIX=$TERMUX_DESTDIR/usr \
 	      install
 	# Avoid specifying -lcrypt:
-	perl -p -i -e 's/-lcrypt //' $TERMUX_PREFIX/lib/pkgconfig/serf-1.pc
+	perl -p -i -e 's/-lcrypt //' $TERMUX_DESTDIR/usr/lib/pkgconfig/serf-1.pc
 }

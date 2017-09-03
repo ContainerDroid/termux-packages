@@ -7,15 +7,15 @@ TERMUX_PKG_FOLDERNAME=play-audio-$TERMUX_PKG_VERSION
 TERMUX_PKG_BUILD_IN_SRC=yes
 
 termux_step_post_make_install () {
-	local LIBEXEC_BINARY=$TERMUX_PREFIX/libexec/play-audio
-	local BIN_BINARY=$TERMUX_PREFIX/bin/play-audio
+	local LIBEXEC_BINARY=$TERMUX_DESTDIR/usr/libexec/play-audio
+	local BIN_BINARY=$TERMUX_DESTDIR/usr/bin/play-audio
 	mv $BIN_BINARY $LIBEXEC_BINARY
 
 	cat << EOF > $BIN_BINARY
 #!/bin/sh
 
 # Avoid linker errors due to libOpenSLES.so:
-LD_PRELOAD=$TERMUX_PREFIX/lib/libc++_shared.so LD_LIBRARY_PATH= exec $LIBEXEC_BINARY "\$@"
+LD_PRELOAD=/usr/lib/libc++_shared.so LD_LIBRARY_PATH= exec $LIBEXEC_BINARY "\$@"
 EOF
 
 	chmod +x $BIN_BINARY

@@ -3,7 +3,6 @@ TERMUX_PKG_DESCRIPTION="Valgrind is an instrumentation framework for building dy
 TERMUX_PKG_VERSION=3.13.0
 TERMUX_PKG_SRCURL=ftp://sourceware.org/pub/valgrind/valgrind-${TERMUX_PKG_VERSION}.tar.bz2
 TERMUX_PKG_SHA256=d76680ef03f00cd5e970bbdcd4e57fb1f6df7d2e2c071635ef2be74790190c3b
-TERMUX_PKG_EXTRA_CONFIGURE_ARGS="--with-tmpdir=$TERMUX_PREFIX/tmp"
 # - Does not build on x86_64 due to lacking upstream support of that arch on android.
 #   See https://bugs.kde.org/show_bug.cgi?id=348342
 TERMUX_PKG_BLACKLISTED_ARCHES="x86_64"

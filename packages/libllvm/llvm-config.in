@@ -34,15 +34,15 @@ Options:
   --has-global-isel Print whether or not LLVM was built with global-isel support (YES or NO).
   --shared-mode     Print how the provided components can be collectively linked (\`shared\` or \`static\`).
   --link-shared     Link the components as shared libraries.
-  --link-static     Link the component libraries statically.                                                                                                                                 
-Typical components:                                                                                                                                                                          
-  all               All LLVM libraries (default).                                                                                                                                            
+  --link-static     Link the component libraries statically.
+Typical components:
+  all               All LLVM libraries (default).
   engine            Either a native JIT or a bitcode interpreter."
 }
 
 arch=@TERMUX_ARCH@
 version=@_PKG_MAJOR_VERSION@
-prefix=@TERMUX_PREFIX@
+prefix=/usr
 has_rtti=NO
 CPPFLAGS="-I${prefix}/include -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS"
 CFLAGS="${CPPFLAGS} -Os -fPIC -Wall -W -Wno-unused-parameter -Wwrite-strings -Wmissing-field-initializers"

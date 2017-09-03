@@ -59,24 +59,24 @@ termux_step_make_install () {
 		$CC -o ../lib/ht -shared -rdynamic -fuse-ld=bfd ${TERMUX_PKG_EXTRA_MAKE_ARGS}.ht.o
 	fi
 
-	mkdir -p $TERMUX_PREFIX/share/man/man1
-	cp $TERMUX_PKG_SRCDIR/../man/man1/{pil,picolisp}.1 $TERMUX_PREFIX/share/man/man1/
+	mkdir -p $TERMUX_DESTDIR/usr/share/man/man1
+	cp $TERMUX_PKG_SRCDIR/../man/man1/{pil,picolisp}.1 $TERMUX_DESTDIR/usr/share/man/man1/
 
-	rm -Rf $TERMUX_PREFIX/lib/picolisp
-	mkdir -p $TERMUX_PREFIX/lib/picolisp
+	rm -Rf $TERMUX_DESTDIR/usr/lib/picolisp
+	mkdir -p $TERMUX_DESTDIR/usr/lib/picolisp
 
-	cp -Rf $TERMUX_PKG_SRCDIR/../* $TERMUX_PREFIX/lib/picolisp/
-	rm -Rf $TERMUX_PREFIX/lib/picolisp/{src,man,java,ersatz}
+	cp -Rf $TERMUX_PKG_SRCDIR/../* $TERMUX_DESTDIR/usr/lib/picolisp/
+	rm -Rf $TERMUX_DESTDIR/usr/lib/picolisp/{src,man,java,ersatz}
 
 	# Replace first line "#!/usr/bin/picolisp /usr/lib/picolisp/lib.l":
-	sed -i "1 s|^.*$|#!$TERMUX_PREFIX/bin/picolisp $TERMUX_PREFIX/lib/picolisp/lib.l|g" $TERMUX_PREFIX/lib/picolisp/bin/pil
+	sed -i "1 s|^.*$|#!$TERMUX_DESTDIR/usr/bin/picolisp $TERMUX_DESTDIR/usr/lib/picolisp/lib.l|g" $TERMUX_DESTDIR/usr/lib/picolisp/bin/pil
 
-	( cd $TERMUX_PREFIX/bin && ln -f -s ../lib/picolisp/bin/picolisp picolisp && ln -f -s ../lib/picolisp/bin/pil pil )
+	( cd $TERMUX_DESTDIR/usr/bin && ln -f -s ../lib/picolisp/bin/picolisp picolisp && ln -f -s ../lib/picolisp/bin/pil pil )
 
 	# Bundled tools:
-	$CC $ORIG_CFLAGS $CPPFLAGS $LDFLAGS -o $TERMUX_PREFIX/lib/picolisp/bin/ssl ../src/ssl.c -lssl -lcrypto
-	$CC $ORIG_CFLAGS $CPPFLAGS $LDFLAGS -o $TERMUX_PREFIX/lib/picolisp/bin/httpGate ../src/httpGate.c -lssl -lcrypto
+	$CC $ORIG_CFLAGS $CPPFLAGS $LDFLAGS -o $TERMUX_DESTDIR/usr/lib/picolisp/bin/ssl ../src/ssl.c -lssl -lcrypto
+	$CC $ORIG_CFLAGS $CPPFLAGS $LDFLAGS -o $TERMUX_DESTDIR/usr/lib/picolisp/bin/httpGate ../src/httpGate.c -lssl -lcrypto
 
 	# Man pages:
-	cp $TERMUX_PKG_SRCDIR/../man/man1/{pil,picolisp}.1 $TERMUX_PREFIX/share/man/man1/
+	cp $TERMUX_PKG_SRCDIR/../man/man1/{pil,picolisp}.1 $TERMUX_DESTDIR/usr/share/man/man1/
 }

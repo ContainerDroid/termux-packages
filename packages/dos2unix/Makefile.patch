@@ -10,15 +10,6 @@ diff -u -r ../dos2unix-7.3.3/Makefile ./Makefile
  # Large File Support (LFS)
  LFS             = 1
  # DEBUG=1 adds the -g option to CFLAGS, for adding debug symbols.
-@@ -73,7 +73,7 @@
- LINK		= ln -sf
- LINK_MAN	= $(LINK)
- 
--prefix		= /usr
-+prefix		= @TERMUX_PREFIX@
- exec_prefix	= $(prefix)
- bindir		= $(exec_prefix)/bin
- datarootdir	= $(prefix)/share
 @@ -350,8 +350,6 @@
  	EXTRA_CFLAGS += -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
  endif

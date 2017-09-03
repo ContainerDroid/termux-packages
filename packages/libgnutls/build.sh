@@ -10,7 +10,7 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 --disable-cxx
 --disable-hardware-acceleration
 --disable-openssl-compatibility
---with-default-trust-store-file=$TERMUX_PREFIX/etc/tls/cert.pem
+--with-default-trust-store-file=$TERMUX_DESTDIR/etc/tls/cert.pem
 --with-included-libtasn1
 --without-p11-kit
 "

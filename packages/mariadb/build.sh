@@ -12,9 +12,9 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -DHAVE_UCONTEXT_H=False
 -DIMPORT_EXECUTABLES=$TERMUX_PKG_HOSTBUILD_DIR/import_executables.cmake
 -DINSTALL_LAYOUT=DEB
--DINSTALL_UNIX_ADDRDIR=$TERMUX_PREFIX/tmp/mysqld.sock
--DINSTALL_SBINDIR=$TERMUX_PREFIX/bin
--DMYSQL_DATADIR=$TERMUX_PREFIX/var/lib/mysql
+-DINSTALL_UNIX_ADDRDIR=$TERMUX_DESTDIR/tmp/mysqld.sock
+-DINSTALL_SBINDIR=$TERMUX_DESTDIR/usr/bin
+-DMYSQL_DATADIR=/var/lib/mysql
 -DPLUGIN_AUTH_GSSAPI_CLIENT=NO
 -DPLUGIN_AUTH_GSSAPI=NO
 -DPLUGIN_CONNECT=NO
@@ -24,7 +24,7 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -DPLUGIN_ROCKSDB=NO
 -DPLUGIN_TOKUDB=NO
 -DSTACK_DIRECTION=-1
--DTMPDIR=$TERMUX_PREFIX/tmp
+-DTMPDIR=/tmp
 -DWITH_EXTRA_CHARSETS=complex
 -DWITH_JEMALLOC=OFF
 -DWITH_MARIABACKUP=OFF
@@ -70,15 +70,15 @@ termux_step_pre_configure () {
 
 termux_step_post_make_install () {
 	# files not needed
-	rm -r $TERMUX_PREFIX/{mysql-test,sql-bench}
-	rm $TERMUX_PREFIX/share/man/man1/mysql-test-run.pl.1
+	rm -r $TERMUX_DESTDIR/usr/{mysql-test,sql-bench}
+	rm $TERMUX_DESTDIR/usr/share/man/man1/mysql-test-run.pl.1
 }
 
 termux_step_create_debscripts () {
-	echo "if [ ! -e "$TERMUX_PREFIX/var/lib/mysql" ]; then" > postinst
+	echo "if [ ! -e /var/lib/mysql ]; then" > postinst
 	echo "  echo 'Initializing mysql data directory...'" >> postinst
-	echo "  mkdir -p $TERMUX_PREFIX/var/lib/mysql" >> postinst
-	echo "  $TERMUX_PREFIX/bin/mysql_install_db --user=\`whoami\` --datadir=$TERMUX_PREFIX/var/lib/mysql --basedir=$TERMUX_PREFIX" >> postinst
+	echo "  mkdir -p /var/lib/mysql" >> postinst
+	echo "  /usr/bin/mysql_install_db --user=\`whoami\` --datadir=/var/lib/mysql --basedir=/usr" >> postinst
 	echo "fi" >> postinst
 	echo "exit 0" >> postinst
 	chmod 0755 postinst

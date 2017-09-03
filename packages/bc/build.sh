@@ -6,8 +6,8 @@ TERMUX_PKG_SHA256=62adfca89b0a1c0164c2cdca59ca210c1d44c3ffc46daf9931cf4942664cb0
 TERMUX_PKG_DEPENDS="readline,flex"
 TERMUX_PKG_HOSTBUILD=true
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
---infodir=$TERMUX_PREFIX/share/info
---mandir=$TERMUX_PREFIX/share/man
+--infodir=$TERMUX_DESTDIR/usr/share/info
+--mandir=$TERMUX_DESTDIR/usr/share/man
 --with-readline
 "
 

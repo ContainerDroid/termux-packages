@@ -17,7 +17,7 @@ ac_cv_header_stdio_ext_h=no
 TERMUX_PKG_DEPENDS="ncurses"
 # https://bugs.launchpad.net/ubuntu/+source/coreutils/+bug/141168:
 # "For compatibility between distributions, can we have /bin/kill made available from coreutils?"
-TERMUX_PKG_RM_AFTER_INSTALL="bin/kill share/man/man1/kill.1 usr/bin/w share/man/man1/w.1 usr/bin/slabtop share/man/man1/slabtop.1"
+TERMUX_PKG_RM_AFTER_INSTALL="usr/bin/kill usr/share/man/man1/kill.1 usr/bin/w usr/share/man/man1/w.1 usr/bin/slabtop usr/share/man/man1/slabtop.1"
 
 termux_step_pre_configure() {
 	CFLAGS+=" -DHOST_NAME_MAX=255"

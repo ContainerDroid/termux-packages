@@ -10,5 +10,5 @@ TERMUX_PKG_CONFFILES="etc/mime.types"
 TERMUX_PKG_CONFLICTS="mutt (<< 1.8.3-1)"
 
 termux_step_make_install() {
-	cp $TERMUX_PKG_SRCDIR/mime.types $TERMUX_PREFIX/etc
+	cp $TERMUX_PKG_SRCDIR/mime.types $TERMUX_DESTDIR/etc
 }

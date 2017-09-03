@@ -12,13 +12,13 @@ termux_step_make () {
 }
 
 termux_step_make_install () {
-	$CC $CFLAGS $LDFLAGS -lidn -o $TERMUX_PREFIX/bin/tracepath tracepath.c
-	local MANDIR=$TERMUX_PREFIX/share/man/man8
+	$CC $CFLAGS $LDFLAGS -lidn -o $TERMUX_DESTDIR/usr/bin/tracepath tracepath.c
+	local MANDIR=$TERMUX_DESTDIR/usr/share/man/man8
 	mkdir -p $MANDIR
 	cp $TERMUX_PKG_BUILDER_DIR/tracepath.8 $MANDIR/
 	# Setup traceroute as an alias for tracepath, since traceroute
 	# requires root which most Termux user does not have, and tracepath
 	# is probably good enough for most:
-	(cd $TERMUX_PREFIX/bin && ln -f -s tracepath traceroute)
+	(cd $TERMUX_DESTDIR/usr/bin && ln -f -s tracepath traceroute)
 	(cd $MANDIR && ln -f -s tracepath.8 traceroute.8)
 }

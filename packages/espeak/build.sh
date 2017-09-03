@@ -15,13 +15,13 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="--without-async"
 termux_step_host_build() {
 	cp -Rf $TERMUX_PKG_SRCDIR/* .
 	unset MAKEFLAGS
-	./configure --prefix=$TERMUX_PREFIX
+	./configure --prefix=$TERMUX_DESTDIR/usr
 	make -j$TERMUX_MAKE_PROCESSES src/{e,}speak-ng
 
 	# Man pages require the ronn ruby program.
 	#make src/espeak-ng.1
-	#cp src/espeak-ng.1 $TERMUX_PREFIX/share/man/man1
-	#(cd $TERMUX_PREFIX/share/man/man1 && ln -s -f espeak-ng.1 espeak.1)
+	#cp src/espeak-ng.1 $TERMUX_DESTDIR/usr/share/man/man1
+	#(cd $TERMUX_DESTDIR/usr/share/man/man1 && ln -s -f espeak-ng.1 espeak.1)
 
 	make install
 }
@@ -33,7 +33,7 @@ termux_step_make() {
 }
 
 termux_step_make_install() {
-	rm $TERMUX_PREFIX/bin/{e,}speak{,-ng}
-	cp src/.libs/espeak-ng $TERMUX_PREFIX/bin/espeak
-	cp src/.libs/libespeak-ng.so $TERMUX_PREFIX/lib/libespeak-ng.so.1.1.49
+	rm $TERMUX_DESTDIR/usr/bin/{e,}speak{,-ng}
+	cp src/.libs/espeak-ng $TERMUX_DESTDIR/usr/bin/espeak
+	cp src/.libs/libespeak-ng.so $TERMUX_DESTDIR/usr/lib/libespeak-ng.so.1.1.49
 }

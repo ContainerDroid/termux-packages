@@ -10,7 +10,7 @@ TERMUX_PKG_DEPENDS="littlecms, libjasper"
 
 termux_step_make_install () {
 	# See the "install" script for flags:
-	$CC $CFLAGS $CPPFLAGS $LDFLAGS dcraw.c $TERMUX_PKG_BUILDER_DIR/swab.c -lm -ljasper -ljpeg -llcms2 -o $TERMUX_PREFIX/bin/dcraw
+	$CC $CFLAGS $CPPFLAGS $LDFLAGS dcraw.c $TERMUX_PKG_BUILDER_DIR/swab.c -lm -ljasper -ljpeg -llcms2 -o $TERMUX_DESTDIR/usr/bin/dcraw
         chmod +w dcraw.1 # Add missing write permission
-	cp dcraw.1 $TERMUX_PREFIX/share/man/man1/
+	cp dcraw.1 $TERMUX_DESTDIR/usr/share/man/man1/
 }

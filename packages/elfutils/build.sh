@@ -12,7 +12,7 @@ TERMUX_PKG_CLANG=no
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="--program-prefix='eu-'
 --disable-symbol-versioning"
 # The ar.c file is patched away for now:
-TERMUX_PKG_RM_AFTER_INSTALL="bin/eu-ar"
+TERMUX_PKG_RM_AFTER_INSTALL="usr/bin/eu-ar"
 
 termux_step_pre_configure() {
 	CFLAGS+=" -Wno-error=unused-value -Wno-error=format-nonliteral -Wno-error"

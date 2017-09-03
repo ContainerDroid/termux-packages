@@ -12,4 +12,4 @@ ac_cv_lib_ncursesw6_addnwstr=yes ac_cv_file__dev_ptmx=yes
 ac_cv_func_setpgrp_void=true ac_cv_rl_version=7
 ac_cv_file__proc_self_status=yes
 "
-TERMUX_PKG_RM_AFTER_INSTALL="share/applications share/pixmaps"
+TERMUX_PKG_RM_AFTER_INSTALL="usr/share/applications usr/share/pixmaps"

@@ -60,7 +60,7 @@ termux_step_configure () {
 		--enable-libxvid \
 		--enable-libvpx \
 		--enable-shared \
-		--prefix=$TERMUX_PREFIX \
+		--prefix=$TERMUX_DESTDIR/usr \
 		--target-os=android \
 		$_EXTRA_CONFIGURE_FLAGS
 }

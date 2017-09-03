@@ -45,7 +45,7 @@ termux_step_configure () {
 
 	# See note above TERMUX_PKG_DEPENDS why we do not use a shared libuv.
 	./configure \
-		--prefix=$TERMUX_PREFIX \
+		--prefix="$TERMUX_DESTDIR/usr" \
 		--dest-cpu=$DEST_CPU \
 		--dest-os=android \
 		--shared-cares \

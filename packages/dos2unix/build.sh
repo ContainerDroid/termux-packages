@@ -5,3 +5,7 @@ TERMUX_PKG_SRCURL=http://waterlan.home.xs4all.nl/dos2unix/dos2unix-${TERMUX_PKG_
 TERMUX_PKG_SHA256=a72caa2fb5cb739403315472fe522eda41aabab2a02ad6f5589639330af262e5
 TERMUX_PKG_BUILD_IN_SRC=yes
 TERMUX_PKG_DEPENDS="libandroid-support"
+
+termux_step_post_configure() {
+	export DESTDIR="$TERMUX_DESTDIR"
+}

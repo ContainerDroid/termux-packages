@@ -4,9 +4,9 @@ TERMUX_PKG_VERSION=5.4.1
 TERMUX_PKG_SHA256=94cbd57508287e8faa081424509738d496f5f41e32ed890e3a5498ce05d3633b
 TERMUX_PKG_SRCURL=https://fossies.org/linux/misc/zsh-${TERMUX_PKG_VERSION}.tar.xz
 # Remove hard link to bin/zsh as Android does not support hard links:
-TERMUX_PKG_RM_AFTER_INSTALL="bin/zsh-${TERMUX_PKG_VERSION}"
-TERMUX_PKG_DEPENDS="libandroid-support, ncurses, termux-tools, command-not-found"
-TERMUX_PKG_EXTRA_CONFIGURE_ARGS="--enable-etcdir=$TERMUX_PREFIX/etc --disable-gdbm --disable-pcre ac_cv_header_utmp_h=no"
+TERMUX_PKG_RM_AFTER_INSTALL="usr/bin/zsh-${TERMUX_PKG_VERSION}"
+TERMUX_PKG_DEPENDS="libandroid-support, ncurses, command-not-found"
+TERMUX_PKG_EXTRA_CONFIGURE_ARGS="--enable-etcdir=/etc --disable-gdbm --disable-pcre ac_cv_header_utmp_h=no"
 TERMUX_PKG_CONFFILES="etc/zshrc"
 
 termux_step_post_configure () {
@@ -28,8 +28,8 @@ termux_step_post_configure () {
 
 termux_step_post_make_install () {
 	# /etc/zshrc - Run for interactive shells (http://zsh.sourceforge.net/Guide/zshguide02.html):
-	sed "s|@TERMUX_PREFIX@|$TERMUX_PREFIX|" $TERMUX_PKG_BUILDER_DIR/etc-zshrc > $TERMUX_PREFIX/etc/zshrc
+	cp $TERMUX_PKG_BUILDER_DIR/etc-zshrc $TERMUX_DESTDIR/etc/zshrc
 
 	# Remove zsh.new/zsh.old/zsh-$version if any exists:
-	rm -f $TERMUX_PREFIX/{zsh-*,zsh.*}
+	rm -f $TERMUX_DESTDIR/usr/{zsh-*,zsh.*}
 }

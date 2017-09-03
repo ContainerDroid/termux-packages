@@ -6,5 +6,5 @@ TERMUX_PKG_DEPENDS="alsa-lib, pulseaudio"
 TERMUX_PKG_EXTRA_MAKE_ARGS='SUBDIRS=pulse'
 
 termux_step_post_make_install () {
-    cp $TERMUX_PKG_BUILDER_DIR/asound.conf $TERMUX_PREFIX/etc
+    cp $TERMUX_PKG_BUILDER_DIR/asound.conf etc
 }

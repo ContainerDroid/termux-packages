@@ -8,7 +8,7 @@ TERMUX_PKG_FOLDERNAME=libvpx-${TERMUX_PKG_VERSION}
 
 termux_step_configure () {
 	# Force fresh install of header files:
-	rm -Rf $TERMUX_PREFIX/include/vpx
+	rm -Rf $TERMUX_DESTDIR/usr/include/vpx
 
 	export LD=$CC
 
@@ -35,7 +35,7 @@ termux_step_configure () {
 	#CROSS=${TERMUX_HOST_PLATFORM}- CC=clang CXX=clang++ $TERMUX_PKG_SRCDIR/configure \
 	$TERMUX_PKG_SRCDIR/configure \
 		$_CONFIGURE_TARGET \
-		--prefix=$TERMUX_PREFIX \
+		--prefix="$TERMUX_DESTDIR/usr" \
 		--disable-examples \
 		--disable-realtime-only \
 		--disable-unit-tests \

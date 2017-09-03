@@ -10,8 +10,8 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 --without-ldap
 --without-pthread
 --without-tcl
---with-system-pinerc=${TERMUX_PREFIX}/etc/pine.conf
---with-passfile=$TERMUX_ANDROID_HOME/.pine-passfile 
+--with-system-pinerc=$TERMUX_DESTDIR/etc/pine.conf
+--with-passfile=$TERMUX_ANDROID_HOME/.pine-passfile
 "
 TERMUX_PKG_BUILD_IN_SRC=yes
 TERMUX_PKG_SHA256=6030b6881b8168546756ab3a5e43628d8d564539b0476578e287775573a77438
@@ -30,7 +30,7 @@ termux_step_post_extract_package() {
 termux_step_pre_configure () {
 	export TCC=$CC
 	export TRANLIB=$RANLIB
-	export SPELLPROG=${TERMUX_PREFIX}/bin/hunspell
+	export SPELLPROG=${TERMUX_DESTDIR}/usr/bin/hunspell
 	export alpine_SSLVERSION=old
 	export TPATH=$PATH
 
@@ -38,7 +38,7 @@ termux_step_pre_configure () {
 
 	cp $TERMUX_PKG_BUILDER_DIR/getpass.c $TERMUX_PKG_SRCDIR/include/
 	cp $TERMUX_PKG_BUILDER_DIR/getpass.h $TERMUX_PKG_SRCDIR/include/
-	cp $TERMUX_PKG_BUILDER_DIR/pine.conf $TERMUX_PREFIX/etc/pine.conf
+	cp $TERMUX_PKG_BUILDER_DIR/pine.conf $TERMUX_DESTDIR/etc/pine.conf
 
 	touch $TERMUX_PKG_SRCDIR/imap/lnxok
 }

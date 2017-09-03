@@ -7,4 +7,5 @@ TERMUX_PKG_BUILD_IN_SRC=yes
 
 termux_step_pre_configure () {
 	LD=$CC
+	export DESTDIR="$TERMUX_DESTDIR"
 }

@@ -8,5 +8,5 @@ TERMUX_PKG_RM_AFTER_INSTALL="lib/openjpeg-2.1/*.cmake"
 
 termux_step_pre_configure () {
 	# Force symlinks to be overwritten:
-	rm -Rf $TERMUX_PREFIX/lib/libopenjp2.so*
+	rm -Rf $TERMUX_DESTDIR/usr/lib/libopenjp2.so*
 }

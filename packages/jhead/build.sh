@@ -6,6 +6,6 @@ TERMUX_PKG_SHA256=88cc01da018e242fe2e05db73f91b6288106858dd70f27506c4989a575d289
 TERMUX_PKG_BUILD_IN_SRC=yes
 
 termux_step_make_install () {
-	cp jhead $TERMUX_PREFIX/bin/jhead
-	cp -f jhead.1 $TERMUX_PREFIX/share/man/man1/jhead.1
+	cp jhead $TERMUX_DESTDIR/usr/bin/jhead
+	cp -f jhead.1 $TERMUX_DESTDIR/usr/share/man/man1/jhead.1
 }

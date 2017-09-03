@@ -8,6 +8,6 @@ TERMUX_PKG_BUILD_IN_SRC=yes
 TERMUX_PKG_FOLDERNAME=sl-${TERMUX_PKG_VERSION}
 
 termux_step_make_install () {
-	install sl $TERMUX_PREFIX/bin/
-	cp sl.1 $TERMUX_PREFIX/share/man/man1
+	install sl $TERMUX_DESTDIR/usr/bin/
+	cp sl.1 $TERMUX_DESTDIR/usr/share/man/man1
 }

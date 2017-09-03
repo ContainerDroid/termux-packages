@@ -10,7 +10,7 @@ diff -u -r ../git-2.7.4/Makefile ./Makefile
  	    -e '	s|#!.*perl|#!$(PERL_PATH_SQ)|' \
  	    -e '	h' \
 -	    -e '	s=.*=use lib (split(/$(pathsep)/, $$ENV{GITPERLLIB} || "'"$$INSTLIBDIR"'"));=' \
-+	    -e '	s=.*=use lib (split(/$(pathsep)/, $$ENV{GITPERLLIB} || "'"@TERMUX_PREFIX@/share/git-perl"'"));=' \
++	    -e '	s=.*=use lib (split(/$(pathsep)/, $$ENV{GITPERLLIB} || "'"/usr/share/git-perl"'"));=' \
  	    -e '	H' \
  	    -e '	x' \
  	    -e '}' \

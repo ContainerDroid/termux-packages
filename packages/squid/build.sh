@@ -24,10 +24,10 @@ ac_cv_dbopen_libdb=no
 --with-size-optimizations
 --without-libxml2
 --without-gnutls
---libexecdir=$TERMUX_PREFIX/libexec/squid
---sysconfdir=$TERMUX_PREFIX/etc/squid
---datarootdir=$TERMUX_PREFIX/share/squid
---mandir=$TERMUX_PREFIX/share/man
+--libexecdir=$TERMUX_DESTDIR/usr/libexec/squid
+--sysconfdir=$TERMUX_DESTDIR/etc/squid
+--datarootdir=$TERMUX_DESTDIR/usr/share/squid
+--mandir=$TERMUX_DESTDIR/usr/share/man
 squid_cv_gnu_atomics=yes
 "
 

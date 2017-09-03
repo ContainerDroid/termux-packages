@@ -10,7 +10,7 @@ TERMUX_PKG_SHA256=1b29fedb8bfad775e70eafac5b0590621683b2d9869db994568e6401f4034c
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 --disable-gpg-test
 --enable-languages=no
---with-gpg=$TERMUX_PREFIX/bin/gpg2
+--with-gpg=$TERMUX_DESTDIR/usr/bin/gpg2
 --without-g13
 --without-gpgconf
 --without-gpgsm

@@ -8,8 +8,8 @@ TERMUX_PKG_PLATFORM_INDEPENDENT=yes
 termux_step_make_install () {
 	termux_download \
 		https://beyondgrep.com/ack-${TERMUX_PKG_VERSION}-single-file \
-		$TERMUX_PREFIX/bin/ack \
+		$TERMUX_DESTDIR/usr/bin/ack \
 		6e41057c8f50f661d800099471f769209480efa53b8a886969d7ec6db60a2208
-	touch $TERMUX_PREFIX/bin/ack
-	chmod +x $TERMUX_PREFIX/bin/ack
+	touch $TERMUX_DESTDIR/usr/bin/ack
+	chmod +x $TERMUX_DESTDIR/usr/bin/ack
 }

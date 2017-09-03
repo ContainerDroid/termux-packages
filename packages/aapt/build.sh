@@ -28,7 +28,7 @@ termux_step_make_install () {
 		"https://android.googlesource.com/platform/system/core/+archive/android-$_TAGNAME/base/include/android-base.tar.gz" \
 		$ANDROID_BASE_INCLUDE_TARFILE
 
-	local AOSP_INCLUDE_DIR=$TERMUX_PREFIX/include/aosp
+	local AOSP_INCLUDE_DIR=$TERMUX_DESTDIR/usr/include/aosp
 	mkdir -p $AOSP_INCLUDE_DIR
 	cd $AOSP_INCLUDE_DIR
 	rm -Rf *
@@ -94,7 +94,7 @@ termux_step_make_install () {
 		properties.c \
 		-llog \
 		-shared \
-		-o $TERMUX_PREFIX/lib/libandroid-cutils.so
+		-o $TERMUX_DESTDIR/usr/lib/libandroid-cutils.so
 
 
 
@@ -144,14 +144,14 @@ termux_step_make_install () {
 		-std=c++11 \
 		'-DALOG_ASSERT(a,...)=' \
 		-Dtypeof=decltype \
-		-isystem $TERMUX_PREFIX/include/aosp \
+		-isystem $TERMUX_DESTDIR/usr/include/aosp \
 		-isystem $SAFE_IOP_DIR/include \
 		$SAFE_IOP_DIR/src/safe_iop.cpp \
 		$commonSources \
 		-landroid-cutils \
 		-llog \
 		-shared \
-		-o $TERMUX_PREFIX/lib/libandroid-utils.so
+		-o $TERMUX_DESTDIR/usr/lib/libandroid-utils.so
 
 
 
@@ -163,8 +163,8 @@ termux_step_make_install () {
 	mkdir -p $TERMUX_PKG_SRCDIR/libbase
 	cd $TERMUX_PKG_SRCDIR/libbase
 	tar xf $LIBBASE_TARFILE
-	rm -Rf $TERMUX_PREFIX/include/aosp/android-base
-	mv include/android-base $TERMUX_PREFIX/include/aosp
+	rm -Rf $TERMUX_DESTDIR/usr/include/aosp/android-base
+	mv include/android-base $TERMUX_DESTDIR/usr/include/aosp
 	patch -p1 < $TERMUX_PKG_BUILDER_DIR/libbase-patch.txt
 	#logging.cpp \
 	libbase_src_files="\
@@ -184,7 +184,7 @@ termux_step_make_install () {
 		$libbase_src_files $libbase_linux_src_files \
 		-llog \
 		-shared \
-		-o $TERMUX_PREFIX/lib/libandroid-base.so
+		-o $TERMUX_DESTDIR/usr/lib/libandroid-base.so
 
 
 	# Build libziparchive:
@@ -209,7 +209,7 @@ termux_step_make_install () {
 		-lz \
 		-llog \
 		-shared \
-		-o $TERMUX_PREFIX/lib/libandroid-ziparchive.so
+		-o $TERMUX_DESTDIR/usr/lib/libandroid-ziparchive.so
 
 
 
@@ -244,7 +244,7 @@ termux_step_make_install () {
 		-llog \
 		-lz \
 		-shared \
-		-o $TERMUX_PREFIX/lib/libandroid-fw.so
+		-o $TERMUX_DESTDIR/usr/lib/libandroid-fw.so
 
 	# Build aapt:
 	AAPT_TARFILE=$TERMUX_PKG_CACHEDIR/aapt_${_TAGNAME}.tar.gz
@@ -254,7 +254,7 @@ termux_step_make_install () {
 	mkdir $TERMUX_PKG_SRCDIR/aapt
 	cd $TERMUX_PKG_SRCDIR/aapt
 	tar xf $AAPT_TARFILE
-	sed "s%\@TERMUX_PREFIX\@%${TERMUX_PREFIX}%g" $TERMUX_PKG_BUILDER_DIR/aapt-Main.cpp.patch.txt | patch -p1
+	cat $TERMUX_PKG_BUILDER_DIR/aapt-Main.cpp.patch.txt | patch -p1
 	$CXX $CXXFLAGS $CPPFLAGS $LDFLAGS \
 		-std=c++11 \
 		-include memory \
@@ -267,7 +267,7 @@ termux_step_make_install () {
 		-llog \
 		-lm -lz -lpng -lexpat \
 		-pie \
-		-o $TERMUX_PREFIX/bin/aapt
+		-o $TERMUX_DESTDIR/usr/bin/aapt
 
 
 
@@ -287,7 +287,7 @@ termux_step_make_install () {
 		-lm -lz -llog \
 		-lzopfli \
 		-pie \
-		-o $TERMUX_PREFIX/bin/zipalign
+		-o $TERMUX_DESTDIR/usr/bin/zipalign
 
 
 	# Remove this one for now:
@@ -300,6 +300,6 @@ termux_step_make_install () {
 	cd android-jar
 	cp $ANDROID_HOME/platforms/android-26/android.jar .
 	unzip -q android.jar
-	mkdir -p $TERMUX_PREFIX/share/aapt
-	zip -q $TERMUX_PREFIX/share/aapt/android.jar AndroidManifest.xml resources.arsc
+	mkdir -p $TERMUX_DESTDIR/usr/share/aapt
+	zip -q $TERMUX_DESTDIR/usr/share/aapt/android.jar AndroidManifest.xml resources.arsc
 }

@@ -21,7 +21,7 @@ diff -u -r ../openssh-7.2p1/sshd.c ./sshd.c
  	rexec_argc = ac;
  	saved_argv = xcalloc(ac + 1, sizeof(*saved_argv));
 -	for (i = 0; i < ac; i++)
-+        saved_argv[0] = "@TERMUX_PREFIX@/bin/sshd";
++       saved_argv[0] = "/usr/bin/sshd";
 +	for (i = 1; i < ac; i++)
  		saved_argv[i] = xstrdup(av[i]);
  	saved_argv[i] = NULL;

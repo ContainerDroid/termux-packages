@@ -7,7 +7,7 @@ diff -u -r ../node-v6.3.1/src/node_main.cc ./src/node_main.cc
    setvbuf(stderr, nullptr, _IONBF, 0);
 +  if (getenv("TMPDIR") == NULL) {
 +    // Give javascript programs (such as updated versions of npm) a working tmpdir.
-+    putenv("TMPDIR=@TERMUX_PREFIX@/tmp");
++    putenv("TMPDIR=/tmp");
 +  }
    return node::Start(argc, argv);
  }

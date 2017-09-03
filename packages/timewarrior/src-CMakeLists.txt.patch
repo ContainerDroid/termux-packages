@@ -3,7 +3,7 @@ diff -u -r ../timew-1.0.0/src/CMakeLists.txt ./src/CMakeLists.txt
 +++ ./src/CMakeLists.txt	2016-09-05 17:53:00.643967527 -0400
 @@ -1,4 +1,5 @@
  cmake_minimum_required (VERSION 2.8)
-+include_directories(SYSTEM "@TERMUX_PREFIX@/include")
++include_directories(SYSTEM "@TERMUX_DESTDIR@/usr/include")
  include_directories (${CMAKE_SOURCE_DIR}
                       ${CMAKE_SOURCE_DIR}/src
                       ${CMAKE_SOURCE_DIR}/src/commands

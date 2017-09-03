@@ -19,5 +19,5 @@ termux_step_pre_configure () {
 
 termux_step_post_configure() {
 	echo '#define HAVE_SVR4_PTYS 1' >> $TERMUX_PKG_BUILDDIR/config.h
-	echo 'mousetrack on' > "$TERMUX_PREFIX/etc/screenrc"
+	echo 'mousetrack on' > "$TERMUX_DESTDIR/etc/screenrc"
 }

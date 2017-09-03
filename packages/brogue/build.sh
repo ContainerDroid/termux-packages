@@ -13,5 +13,5 @@ termux_step_pre_configure () {
 }
 
 termux_step_make_install () {
-	cp bin/brogue $TERMUX_PREFIX/bin
+	cp bin/brogue $TERMUX_DESTDIR/usr/bin
 }

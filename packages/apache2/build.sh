@@ -25,9 +25,9 @@ etc/apache2/magic
 TERMUX_PKG_MAINTAINER="Vishal Biswas @vishalbiswas"
 # providing manual paths to libs because it picks up host libs on some systems
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
---with-apr=$TERMUX_PREFIX
---with-apr-util=$TERMUX_PREFIX
---with-pcre=$TERMUX_PREFIX
+--with-apr=$TERMUX_DESTDIR/usr
+--with-apr-util=$TERMUX_DESTDIR/usr
+--with-pcre=$TERMUX_DESTDIR/usr
 --enable-suexec
 --enable-layout=Termux
 --enable-so
@@ -58,19 +58,19 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 --with-sslport=8443
 --enable-unixd
 --without-libxml2
---libexecdir=$TERMUX_PREFIX/libexec/apache2
+--libexecdir=$TERMUX_DESTDIR/usr/libexec/apache2
 ac_cv_func_getpwnam=yes
 ac_cv_have_threadsafe_pollset=no
 "
 TERMUX_PKG_BUILD_IN_SRC=true
-TERMUX_PKG_RM_AFTER_INSTALL="share/apache2/manual etc/apache2/original share/man/man8/suexec.8 libexec/httpd.exp"
-TERMUX_PKG_INCLUDE_IN_DEVPACKAGE="share/apache2/build"
+TERMUX_PKG_RM_AFTER_INSTALL="usr/share/apache2/manual etc/apache2/original usr/share/man/man8/suexec.8 usr/libexec/httpd.exp"
+TERMUX_PKG_INCLUDE_IN_DEVPACKAGE="usr/share/apache2/build"
 TERMUX_PKG_EXTRA_MAKE_ARGS="-s"
 
 termux_step_pre_configure () {
 	# remove old files
-	rm -rf "$TERMUX_PREFIX"/{libexec,share,etc}/apache2
-	rm -rf "$TERMUX_PREFIX"/lib/cgi-bin
+	rm -rf "$TERMUX_DESTDIR/usr"/{libexec,share,etc}/apache2
+	rm -rf "$TERMUX_DESTDIR/usr"/lib/cgi-bin
 
 	if [ $TERMUX_ARCH_BITS -eq 32 ]; then
 		export ap_cv_void_ptr_lt_long=4
@@ -91,7 +91,7 @@ termux_step_post_configure () {
 }
 
 termux_step_post_make_install () {
-	sed -e "s#/$TERMUX_PREFIX/libexec/apache2/#modules/#" \
+	sed -e "s#/usr/libexec/apache2/#modules/#" \
 		-e 's|#\(LoadModule negotiation_module \)|\1|' \
 		-e 's|#\(LoadModule include_module \)|\1|' \
 		-e 's|#\(LoadModule userdir_module \)|\1|' \
@@ -104,13 +104,13 @@ termux_step_post_make_install () {
 		-e 's|#\(Include extra/httpd-mpm.conf\)|\1|' \
 		-e 's|User daemon|#User daemon|' \
 		-e 's|Group daemon|#Group daemon|' \
-		-i "$TERMUX_PREFIX/etc/apache2/httpd.conf"
+		-i "$TERMUX_DESTDIR/etc/apache2/httpd.conf"
 }
 
 termux_step_post_massage () {
-	# sometimes it creates a $TERMUX_PREFIX/bin/sh -> /bin/sh
-	rm ${TERMUX_PKG_MASSAGEDIR}${TERMUX_PREFIX}/bin/sh || true
+	# sometimes it creates a $TERMUX_DESTDIR/bin/sh -> /bin/sh
+	rm ${TERMUX_PKG_MASSAGEDIR}/bin/sh || true
 
-	mkdir -p ${TERMUX_PKG_MASSAGEDIR}${TERMUX_PREFIX}/var/run/apache2
-	mkdir -p ${TERMUX_PKG_MASSAGEDIR}${TERMUX_PREFIX}/var/log/apache2
+	mkdir -p ${TERMUX_PKG_MASSAGEDIR}/var/run/apache2
+	mkdir -p ${TERMUX_PKG_MASSAGEDIR}/var/log/apache2
 }

@@ -17,7 +17,7 @@ diff -u -r ../figlet-2.2.5/Makefile ./Makefile
  
  # Where to install files
 -prefix	= /usr/local
-+prefix	= @TERMUX_PREFIX@
++prefix	= /usr
  
  # Where the executables should be put
  BINDIR	= $(prefix)/bin

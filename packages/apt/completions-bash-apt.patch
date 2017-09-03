@@ -1,15 +1,6 @@
 diff -u -r ../apt-1.2/completions/bash/apt ./completions/bash/apt
 --- ../apt-1.2/completions/bash/apt	2016-01-15 13:53:52.000000000 -0500
 +++ ./completions/bash/apt	2016-01-25 06:15:46.747246153 -0500
-@@ -2,7 +2,7 @@
- 
- _apt()
- {
--    local sourcesdir="/etc/apt/sources.list.d"
-+    local sourcesdir="@TERMUX_PREFIX@/etc/apt/sources.list.d"
-     local cur prev words cword
-     _init_completion || return
- 
 @@ -66,14 +66,9 @@
      if [[ -n $command ]]; then
          case $command in

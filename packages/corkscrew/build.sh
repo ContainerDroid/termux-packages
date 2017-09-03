@@ -7,6 +7,6 @@ TERMUX_PKG_SHA256=0d0fcbb41cba4a81c4ab494459472086f377f9edb78a2e2238ed19b58956b0
 
 termux_step_post_make_install () {
 	# Corkscrew does not distribute a man page, use one from debian:
-	mkdir -p $TERMUX_PREFIX/share/man/man1
-	cp $TERMUX_PKG_BUILDER_DIR/corkscrew.1 $TERMUX_PREFIX/share/man/man1
+	mkdir -p $TERMUX_DESTDIR/usr/share/man/man1
+	cp $TERMUX_PKG_BUILDER_DIR/corkscrew.1 $TERMUX_DESTDIR/usr/share/man/man1
 }

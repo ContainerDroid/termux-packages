@@ -19,5 +19,5 @@ termux_step_post_extract_package() {
 termux_step_post_massage() {
 	# Hack to fix problem with building arm c++ code
 	# which should not use this libunwind:
-	rm $TERMUX_PREFIX/lib/libunwind*
+	rm $TERMUX_DESTDIR/usr/lib/libunwind*
 }

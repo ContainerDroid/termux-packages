@@ -12,7 +12,7 @@ ac_cv_header_locale_h=no
 --enable-overwrite
 --enable-pc-files
 --enable-widec
---mandir=/usr/share/man
+--mandir=$TERMUX_DESTDIR/usr/share/man
 --without-ada
 --without-cxx-binding
 --without-debug
@@ -33,12 +33,8 @@ usr/share/man/man1/infotocap.1*
 usr/share/man/man5
 usr/share/man/man7
 "
-
 termux_step_pre_configure() {
-	echo "PRE_CONFIGURE: $PKG_CONFIG_LIBDIR"
-	# pkg-config files will actually be placed at $TERMUX_DESTDIR/usr/lib/pkgconfig
-	# Otherwise they would have been copied to $TERMUX_DESTDIR/$PKG_CONFIG_LIBDIR
-	TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" --with-pkg-config-libdir=/usr/lib/pkgconfig"
+	TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" --with-pkg-config-libdir=$PKG_CONFIG_LIBDIR"
 }
 
 termux_step_post_make_install () {

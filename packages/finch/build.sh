@@ -15,10 +15,10 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 --disable-perl
 --disable-tcl
 --without-zephyr
---with-ncurses-headers=$TERMUX_PREFIX/include
+--with-ncurses-headers=$TERMUX_DESTDIR/usr/include
 --without-python
 "
-TERMUX_PKG_RM_AFTER_INSTALL="share/sounds/purple lib/purple-2/libmsn.so"
+TERMUX_PKG_RM_AFTER_INSTALL="usr/share/sounds/purple usr/lib/purple-2/libmsn.so"
 
 termux_step_pre_configure () {
 	# For arpa:
@@ -27,7 +27,7 @@ termux_step_pre_configure () {
 
 termux_step_post_configure () {
         # Hack to compile first version of libpurple-ciphers.la
-        cp $TERMUX_PREFIX/lib/libxml2.so $TERMUX_PREFIX/lib/libpurple.so
+        cp $TERMUX_DESTDIR/usr/lib/libxml2.so $TERMUX_DESTDIR/usr/lib/libpurple.so
 
         cd $TERMUX_PKG_BUILDDIR/libpurple/ciphers
         make libpurple-ciphers.la
@@ -35,13 +35,13 @@ termux_step_post_configure () {
         make libpurple.la
 
         # Put a more proper version in lib:
-        cp .libs/libpurple.so $TERMUX_PREFIX/lib/
+        cp .libs/libpurple.so $TERMUX_DESTDIR/usr/lib/
 
         make clean
 }
 
 termux_step_post_make_install () {
-        cd $TERMUX_PREFIX/lib
+        cd $TERMUX_DESTDIR/usr/lib
         for lib in jabber oscar ymsg; do
                 ln -f -s purple-2/lib${lib}.so.0 .
         done

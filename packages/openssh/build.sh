@@ -17,14 +17,14 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 --disable-utmpx
 --disable-wtmp
 --disable-wtmpx
---sysconfdir=$TERMUX_PREFIX/etc/ssh
+--sysconfdir=/etc/ssh
 --with-cflags=-Dfd_mask=int
 --with-ldns
 --with-libedit
 --without-ssh1
 --without-stackprotect
---with-pid-dir=$TERMUX_PREFIX/var/run
---with-privsep-path=$TERMUX_PREFIX/var/empty
+--with-pid-dir=/var/run
+--with-privsep-path=/var/empty
 ac_cv_func_endgrent=yes
 ac_cv_func_fmt_scaled=no
 ac_cv_func_getlastlogxbyname=no
@@ -34,7 +34,7 @@ ac_cv_header_sys_un_h=yes
 ac_cv_search_getrrsetbyname=no
 "
 TERMUX_PKG_MAKE_INSTALL_TARGET="install-nokeys"
-TERMUX_PKG_RM_AFTER_INSTALL="bin/slogin share/man/man1/slogin.1"
+TERMUX_PKG_RM_AFTER_INSTALL="usr/bin/slogin usr/share/man/man1/slogin.1"
 
 termux_step_pre_configure() {
 	autoreconf
@@ -42,44 +42,57 @@ termux_step_pre_configure() {
 	CPPFLAGS+=" -DHAVE_ATTRIBUTE__SENTINEL__=1"
 	LD=$CC # Needed to link the binaries
 	LDFLAGS+=" -llog" # liblog for android logging in syslog hack
+
+	# Fixup for the Termux mashup between PREFIX and DESTDIR
+	# We set DESTDIR in Makefile.in
+	PREFIX="/usr"
+	prefix="/usr"
+	exec_prefix="/usr"
 }
 
 termux_step_post_configure() {
 	# We need to remove this file before installing, since otherwise the
 	# install leaves it alone which means no updated timestamps.
-	rm -Rf $TERMUX_PREFIX/etc/moduli
+	rm -Rf $TERMUX_DESTDIR/etc/moduli
 }
 
 termux_step_post_make_install () {
 	# OpenSSH 7.0 disabled ssh-dss by default, keep it for a while in Termux:
-        echo -e "PasswordAuthentication no\nPubkeyAcceptedKeyTypes +ssh-dss\nSubsystem sftp $TERMUX_PREFIX/libexec/sftp-server" > $TERMUX_PREFIX/etc/ssh/sshd_config
-        echo "PubkeyAcceptedKeyTypes +ssh-dss" > $TERMUX_PREFIX/etc/ssh/ssh_config
-	cp $TERMUX_PKG_BUILDER_DIR/source-ssh-agent.sh $TERMUX_PREFIX/bin/source-ssh-agent
-	cp $TERMUX_PKG_BUILDER_DIR/ssh-with-agent.sh $TERMUX_PREFIX/bin/ssha
+	cat << 'EOF' > "$TERMUX_DESTDIR/etc/ssh/sshd_config"
+PasswordAuthentication no
+PubkeyAcceptedKeyTypes +ssh-dss
+Subsystem sftp /usr/libexec/sftp-server
+EOF
+
+	echo "PubkeyAcceptedKeyTypes +ssh-dss" > $TERMUX_DESTDIR/etc/ssh/ssh_config
+	#cp $TERMUX_PKG_BUILDER_DIR/source-ssh-agent.sh $TERMUX_DESTDIR/usr/bin/source-ssh-agent
+	#cp $TERMUX_PKG_BUILDER_DIR/ssh-with-agent.sh $TERMUX_DESTDIR/usr/bin/ssha
 
 	# Install ssh-copy-id:
-	cp $TERMUX_PKG_SRCDIR/contrib/ssh-copy-id.1 $TERMUX_PREFIX/share/man/man1/
-	cp $TERMUX_PKG_SRCDIR/contrib/ssh-copy-id $TERMUX_PREFIX/bin/
-	chmod +x $TERMUX_PREFIX/bin/ssh-copy-id
+	cp $TERMUX_PKG_SRCDIR/contrib/ssh-copy-id.1 $TERMUX_DESTDIR/usr/share/man/man1/
+	cp $TERMUX_PKG_SRCDIR/contrib/ssh-copy-id $TERMUX_DESTDIR/usr/bin/
+	chmod +x $TERMUX_DESTDIR/usr/bin/ssh-copy-id
 
-	mkdir -p $TERMUX_PREFIX/var/run
-	echo "OpenSSH needs this folder to put sshd.pid in" >> $TERMUX_PREFIX/var/run/README.openssh
+	mkdir -p $TERMUX_DESTDIR/var/run
+	echo "OpenSSH needs this folder to put sshd.pid in" >> $TERMUX_DESTDIR/var/run/README.openssh
 
-	mkdir -p $TERMUX_PREFIX/etc/ssh/
-	cp $TERMUX_PKG_SRCDIR/moduli $TERMUX_PREFIX/etc/ssh/moduli
+	mkdir -p $TERMUX_DESTDIR/etc/ssh/
+	cp $TERMUX_PKG_SRCDIR/moduli $TERMUX_DESTDIR/etc/ssh/moduli
 }
 
 termux_step_create_debscripts () {
-	echo "#!$TERMUX_PREFIX/bin/sh" > postinst
-	echo "mkdir -p \$HOME/.ssh" >> postinst
-	echo "touch \$HOME/.ssh/authorized_keys" >> postinst
-	echo "chmod 700 \$HOME/.ssh" >> postinst
-	echo "chmod 600 \$HOME/.ssh/authorized_keys" >> postinst
-	echo "" >> postinst
-        echo "for a in rsa dsa ecdsa ed25519; do" >> postinst
-        echo "    KEYFILE=$TERMUX_PREFIX/etc/ssh/ssh_host_\${a}_key" >> postinst
-        echo "    test ! -f \$KEYFILE && ssh-keygen -N '' -t \$a -f \$KEYFILE" >> postinst
-        echo "done" >> postinst
-        echo "exit 0" >> postinst
+	cat << 'EOF' > postinst
+#!/bin/sh
+mkdir -p $HOME/.ssh
+touch $HOME/.ssh/authorized_keys
+chmod 700 $HOME/.ssh
+chmod 600 $HOME/.ssh/authorized_keys
+
+for a in rsa dsa ecdsa ed25519; do
+    KEYFILE=/etc/ssh/ssh_host_${a}_key
+    test ! -f $KEYFILE && ssh-keygen -N '' -t $a -f $KEYFILE
+done
+exit 0
+EOF
         chmod 0755 postinst
 }

@@ -13,7 +13,7 @@ termux_step_make_install () {
 	termux_setup_golang
 
 	TERMUX_GOLANG_DIRNAME=${GOOS}_$GOARCH
-	TERMUX_GODIR=$TERMUX_PREFIX/lib/go
+	TERMUX_GODIR=$TERMUX_DESTDIR/usr/lib/go
 	rm -Rf $TERMUX_GODIR
 	mkdir -p $TERMUX_GODIR/{src,lib,pkg/tool/$TERMUX_GOLANG_DIRNAME,pkg/include,pkg/${TERMUX_GOLANG_DIRNAME}}
 
@@ -27,7 +27,7 @@ termux_step_make_install () {
 	    ./make.bash
 
 	cd ..
-	cp bin/$TERMUX_GOLANG_DIRNAME/{go,gofmt} $TERMUX_PREFIX/bin
+	cp bin/$TERMUX_GOLANG_DIRNAME/{go,gofmt} $TERMUX_DESTDIR/usr/bin
 	cp VERSION $TERMUX_GODIR/
 	cp pkg/tool/$TERMUX_GOLANG_DIRNAME/* $TERMUX_GODIR/pkg/tool/$TERMUX_GOLANG_DIRNAME/
 	cp -Rf src/* $TERMUX_GODIR/src/
