@@ -1,0 +1,16 @@
+diff -u -r a/components/engine/vendor/github.com/docker/libnetwork/sandbox_externalkey_unix.go b/components/engine/vendor/github.com/docker/libnetwork/sandbox_externalkey_unix.go
+--- a/components/engine/vendor/github.com/docker/libnetwork/sandbox_externalkey_unix.go
++++ b/components/engine/vendor/github.com/docker/libnetwork/sandbox_externalkey_unix.go
+@@ -13,11 +13,11 @@
+ 	"github.com/docker/libnetwork/types"
+ 	"github.com/opencontainers/runc/libcontainer/configs"
+ 	"github.com/sirupsen/logrus"
+ )
+ 
+-const udsBase = "/run/docker/libnetwork/"
++const udsBase = "/data/docker/run/libnetwork/"
+ const success = "success"
+ 
+ // processSetKeyReexec is a private function that must be called only on an reexec path
+ // It expects 3 args { [0] = "libnetwork-setkey", [1] = <container-id>, [2] = <controller-id> }
+ // It also expects configs.HookState as a json string in <stdin>

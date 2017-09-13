@@ -1,0 +1,15 @@
+Remove -Werror (cannot avoid the warning below):
+clang50: error: argument unused during compilation: '-pie' [-Werror,-Wunused-command-line-argument]
+
+diff -u -r a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -54,6 +54,6 @@
+ endif()
+ 
+-set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99 -Werror -Wextra -Wall -pedantic-errors -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat")
++set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99 -Wextra -Wall -pedantic-errors -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat")
+ set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-Bsymbolic-functions -Wl,-z,relro -Wl,-s")
+ 
+ # Build
+---

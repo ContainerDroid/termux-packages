@@ -1,0 +1,24 @@
+diff -u -r a/components/engine/vendor/github.com/docker/libnetwork/resolvconf/resolvconf.go b/components/engine/vendor/github.com/docker/libnetwork/resolvconf/resolvconf.go
+--- a/components/engine/vendor/github.com/docker/libnetwork/resolvconf/resolvconf.go
++++ b/components/engine/vendor/github.com/docker/libnetwork/resolvconf/resolvconf.go
+@@ -51,8 +51,8 @@
+ // Get returns the contents of /etc/resolv.conf and its hash
+ func Get() (*File, error) {
+-	resolv, err := ioutil.ReadFile("/etc/resolv.conf")
++	resolv, err := ioutil.ReadFile("/@ETC@/resolv.conf")
+ 	if err != nil {
+ 		return nil, err
+ 	}
+ 	hash, err := ioutils.HashData(bytes.NewReader(resolv))
+ 	if err != nil {
+@@ -80,9 +80,9 @@
+ func GetIfChanged() (*File, error) {
+ 	lastModified.Lock()
+ 	defer lastModified.Unlock()
+ 
+-	resolv, err := ioutil.ReadFile("/etc/resolv.conf")
++	resolv, err := ioutil.ReadFile("/@ETC@/resolv.conf")
+ 	if err != nil {
+ 		return nil, err
+ 	}
+ 	newHash, err := ioutils.HashData(bytes.NewReader(resolv))

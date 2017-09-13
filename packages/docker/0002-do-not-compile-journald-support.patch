@@ -1,0 +1,27 @@
+From bcdca119d7b7ca9a9fa569540ddfca58416d6e2e Mon Sep 17 00:00:00 2001
+From: Ioana Ciornei <ciorneiioana@gmail.com>
+Date: Wed, 30 Aug 2017 21:04:25 +0300
+Subject: [PATCH 4/4] do not compile journald support
+
+Signed-off-by: Ioana Ciornei <ciorneiioana@gmail.com>
+---
+ hack/make.sh | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/components/engine/hack/make.sh b/components/engine/hack/make.sh
+--- a/components/engine/hack/make.sh
++++ b/components/engine/hack/make.sh
+@@ -112,10 +112,5 @@
+ 	exit 1
+ fi
+ 
+-if ${PKG_CONFIG} 'libsystemd >= 209' 2> /dev/null ; then
+-	DOCKER_BUILDTAGS+=" journald"
+-elif ${PKG_CONFIG} 'libsystemd-journal' 2> /dev/null ; then
+-	DOCKER_BUILDTAGS+=" journald journald_compat"
+-fi
+ 
+ # test whether "btrfs/version.h" exists and apply btrfs_noversion appropriately
+-- 
+2.7.4
+

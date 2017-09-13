@@ -1,0 +1,40 @@
+From 316a25ed2572e71b668035cff923a34ef82192ff Mon Sep 17 00:00:00 2001
+From: Vladimir Oltean <olteanv@gmail.com>
+Date: Wed, 2 May 2018 01:36:10 +0300
+Subject: [PATCH] Revert "Compile shim without cgo for size and mem usage"
+
+* We need PIE. This is Android!
+
+This reverts commit 434f0e679f67ecdb3f389329fd4bb8504ca9cf4b.
+---
+ Makefile | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 9d8cf8a..7044053 100644
+--- a/Makefile
++++ b/Makefile
+@@ -41,8 +41,7 @@ COMMANDS=ctr containerd containerd-stress containerd-release
+ BINARIES=$(addprefix bin/,$(COMMANDS))
+ 
+ GO_TAGS=$(if $(BUILDTAGS),-tags "$(BUILDTAGS)",)
+-GO_LDFLAGS=-ldflags '-s -w -X $(PKG)/version.Version=$(VERSION) -X $(PKG)/version.Revision=$(REVISION) -X $(PKG)/version.Package=$(PKG) $(EXTRA_LDFLAGS)'
+-SHIM_GO_LDFLAGS=-ldflags '-s -w -X $(PKG)/version.Version=$(VERSION) -X $(PKG)/version.Revision=$(REVISION) -X $(PKG)/version.Package=$(PKG) -extldflags "-static"'
++GO_LDFLAGS=-ldflags "-s -w -X $(PKG)/version.Version=$(VERSION) -X $(PKG)/version.Revision=$(REVISION) -X $(PKG)/version.Package=$(PKG) $(EXTRA_LDFLAGS)"
+ 
+ TESTFLAGS_RACE=
+ GO_GCFLAGS=
+@@ -132,10 +131,6 @@ bin/%: cmd/% FORCE
+ 	@echo "$(WHALE) $@${BINARY_SUFFIX}"
+ 	@go build -o $@${BINARY_SUFFIX} ${GO_LDFLAGS} ${GO_TAGS} ${GO_GCFLAGS} ./$<
+ 
+-bin/containerd-shim: cmd/containerd-shim FORCE # set !cgo and omit pie for a static shim build: https://github.com/golang/go/issues/17789#issuecomment-258542220
+-	@echo "$(WHALE) bin/containerd-shim"
+-	@CGO_ENABLED=0 go build -o bin/containerd-shim ${SHIM_GO_LDFLAGS} ${GO_TAGS} ./cmd/containerd-shim
+-
+ binaries: $(BINARIES) ## build binaries
+ 	@echo "$(WHALE) $@"
+ 
+-- 
+2.7.4
+

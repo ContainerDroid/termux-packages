@@ -1,0 +1,23 @@
+diff -u -r a/components/engine/daemon/daemon_linux.go b/components/engine/daemon/daemon_linux.go
+--- a/components/engine/daemon/daemon_linux.go
++++ b/components/engine/daemon/daemon_linux.go
+@@ -7,7 +7,8 @@
+ 	"os"
+ 	"regexp"
+ 	"strings"
++	"path/filepath"
+ 
+ 	"github.com/docker/docker/pkg/fileutils"
+ 	"github.com/docker/docker/pkg/mount"
+ 	"github.com/pkg/errors"
+@@ -17,9 +17,9 @@
+ // On Linux, plugins use a static path for storing execution state,
+ // instead of deriving path from daemon's exec-root. This is because
+ // plugin socket files are created here and they cannot exceed max
+ // path length of 108 bytes.
+ func getPluginExecRoot(root string) string {
+-	return "/run/docker/plugins"
++	return filepath.Join(root, "plugins")
+ }
+ 
+ func (daemon *Daemon) cleanupMountsByID(id string) error {

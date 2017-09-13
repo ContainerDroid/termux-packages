@@ -1,0 +1,101 @@
+From a26b96992b21e7ece36854fa3d57032cc70d4735 Mon Sep 17 00:00:00 2001
+From: Ioana Ciornei <ciorneiioana@gmail.com>
+Date: Wed, 2 May 2018 02:50:16 +0300
+Subject: [PATCH] hack: change the root dir of cgroups and device filenames
+
+* Original commit for 17.07 runc, adapted for 18.04.
+
+Signed-off-by: Ioana Ciornei <ciorneiioana@gmail.com>
+Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+---
+ libcontainer/cgroups/fs/cpuset.go | 4 ++--
+ libcontainer/cgroups/utils.go     | 3 +++
+ libcontainer/rootfs_linux.go      | 9 ++-------
+ 3 files changed, 7 insertions(+), 9 deletions(-)
+
+diff --git a/libcontainer/cgroups/fs/cpuset.go b/libcontainer/cgroups/fs/cpuset.go
+index 20c9eaf..4e0df94 100644
+--- a/libcontainer/cgroups/fs/cpuset.go
++++ b/libcontainer/cgroups/fs/cpuset.go
+@@ -31,12 +31,12 @@ func (s *CpusetGroup) Apply(d *cgroupData) error {
+ 
+ func (s *CpusetGroup) Set(path string, cgroup *configs.Cgroup) error {
+ 	if cgroup.Resources.CpusetCpus != "" {
+-		if err := writeFile(path, "cpuset.cpus", cgroup.Resources.CpusetCpus); err != nil {
++		if err := writeFile(path, "cpus", cgroup.Resources.CpusetCpus); err != nil {
+ 			return err
+ 		}
+ 	}
+ 	if cgroup.Resources.CpusetMems != "" {
+-		if err := writeFile(path, "cpuset.mems", cgroup.Resources.CpusetMems); err != nil {
++		if err := writeFile(path, "mems", cgroup.Resources.CpusetMems); err != nil {
+ 			return err
+ 		}
+ 	}
+@@ -92,11 +92,11 @@
+ }
+ 
+ func (s *CpusetGroup) getSubsystemSettings(parent string) (cpus []byte, mems []byte, err error) {
+-	if cpus, err = ioutil.ReadFile(filepath.Join(parent, "cpuset.cpus")); err != nil {
++	if cpus, err = ioutil.ReadFile(filepath.Join(parent, "cpus")); err != nil {
+ 		return
+ 	}
+-	if mems, err = ioutil.ReadFile(filepath.Join(parent, "cpuset.mems")); err != nil {
++	if mems, err = ioutil.ReadFile(filepath.Join(parent, "mems")); err != nil {
+ 		return
+ 	}
+ 	return cpus, mems, nil
+ }
+@@ -139,13 +139,13 @@
+ 	}
+ 
+ 	if s.isEmpty(currentCpus) {
+-		if err := writeFile(current, "cpuset.cpus", string(parentCpus)); err != nil {
++		if err := writeFile(current, "cpus", string(parentCpus)); err != nil {
+ 			return err
+ 		}
+ 	}
+ 	if s.isEmpty(currentMems) {
+-		if err := writeFile(current, "cpuset.mems", string(parentMems)); err != nil {
++		if err := writeFile(current, "mems", string(parentMems)); err != nil {
+ 			return err
+ 		}
+ 	}
+ 	return nil
+diff --git a/libcontainer/cgroups/utils.go b/libcontainer/cgroups/utils.go
+index 7c995ef..d5f7da2 100644
+--- a/libcontainer/cgroups/utils.go
++++ b/libcontainer/cgroups/utils.go
+@@ -82,6 +82,9 @@ func GetClosestMountpointAncestor(dir, mountinfo string) string {
+ }
+ 
+ func FindCgroupMountpointDir() (string, error) {
++	return "/dev", nil
++	/* All code below has been commented out */
++
+ 	f, err := os.Open("/proc/self/mountinfo")
+ 	if err != nil {
+ 		return "", err
+diff --git a/libcontainer/rootfs_linux.go b/libcontainer/rootfs_linux.go
+index 73ee2bd..e6c49d3 100644
+--- a/libcontainer/rootfs_linux.go
++++ b/libcontainer/rootfs_linux.go
+@@ -98,13 +98,8 @@ func prepareRootfs(pipe io.ReadWriter, iConfig *initConfig) (err error) {
+ 		return newSystemErrorWithCausef(err, "changing dir to %q", config.Rootfs)
+ 	}
+ 
+-	if config.NoPivotRoot {
+-		err = msMoveRoot(config.Rootfs)
+-	} else if config.Namespaces.Contains(configs.NEWNS) {
+-		err = pivotRoot(config.Rootfs)
+-	} else {
+-		err = chroot(config.Rootfs)
+-	}
++	/* Never use pivot_root */
++	err = msMoveRoot(config.Rootfs)
+ 	if err != nil {
+ 		return newSystemErrorWithCause(err, "jailing process inside rootfs")
+ 	}
+-- 
+2.7.4
+
