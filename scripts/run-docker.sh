@@ -29,7 +29,6 @@ docker start $CONTAINER_NAME > /dev/null 2> /dev/null || {
 	then
 		echo "Changed builder uid/gid... (this may take a while)"
 		docker exec --tty $CONTAINER_NAME chown -R $(id -u) $HOME
-		docker exec --tty $CONTAINER_NAME chown -R $(id -u) /data
 		docker exec --tty $CONTAINER_NAME usermod -u $(id -u) builder
 		docker exec --tty $CONTAINER_NAME groupmod -g $(id -g) builder
 	fi
