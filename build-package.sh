@@ -723,7 +723,7 @@ termux_step_setup_toolchain() {
                 sed "s%\@TERMUX_HOST_PLATFORM\@%${TERMUX_HOST_PLATFORM}%g" $TERMUX_SCRIPTDIR/ndk-patches/*.cpppatch | patch -p1
 		mv $_TERMUX_TOOLCHAIN_TMPDIR $TERMUX_STANDALONE_TOOLCHAIN
 
-		mkdir -p ${TERMUX_SYSROOT}/usr
+		mkdir -p ${TERMUX_SYSROOT}/usr/lib
 		termux_rsync "${TERMUX_STANDALONE_TOOLCHAIN}/sysroot/usr" "${TERMUX_SYSROOT}/usr"
 
 		# Add a pkg-config file for the system zlib.
