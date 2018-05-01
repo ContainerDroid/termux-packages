@@ -722,10 +722,11 @@ termux_step_setup_toolchain() {
 
 		# zlib is really version 1.2.8 in the Android platform (at least
 		# starting from Android 5), not older as the NDK headers claim.
-		for file in zconf.h zlib.h; do
-			curl -o usr/include/$file \
-			        https://raw.githubusercontent.com/madler/zlib/v1.2.8/$file
-		done
+		#for file in zconf.h zlib.h; do
+			#curl -o usr/include/$file \
+				#https://raw.githubusercontent.com/madler/zlib/v1.2.8/$file
+			#termux_download https://raw.githubusercontent.com/madler/zlib/v1.2.8/$file usr/include/$file
+		#done
 		unset file
 		cd $_TERMUX_TOOLCHAIN_TMPDIR/include/c++/4.9.x
                 sed "s%\@TERMUX_HOST_PLATFORM\@%${TERMUX_HOST_PLATFORM}%g" $TERMUX_SCRIPTDIR/ndk-patches/*.cpppatch | patch -p1
