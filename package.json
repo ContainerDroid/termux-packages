@@ -1,0 +1,15 @@
+{
+  "name": "eden",
+  "version": "0.0.1",
+  "description": "eden build system for android",
+  "main": "eden.js",
+  "dependencies": {
+    "yargs": "^10.0.3",
+    "mkdirp": "^0.5.1"
+  },
+  "author": {
+    "name": "Vladimir Oltean",
+    "email": "olteanv@gmail.com"
+  },
+  "license": "GPLv2"
+}
