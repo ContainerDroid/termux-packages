@@ -15,7 +15,8 @@ COPY ./setup-android-sdk.sh /tmp/setup-android-sdk.sh
 COPY ./properties.sh /tmp/properties.sh
 
 # Setup needed packages and the Android SDK and NDK:
-RUN apt-get update && \
+RUN curl -sL https://deb.nodesource.com/setup_9.x | sudo -E bash - && \
+    apt-get update && \
     apt-get -yq upgrade && \
     apt-get install -yq sudo && \
     adduser --disabled-password --shell /bin/bash --gecos "" builder && \
