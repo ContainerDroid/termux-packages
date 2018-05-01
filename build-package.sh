@@ -333,9 +333,11 @@ termux_step_setup_variables() {
 	TERMUX_CMAKE_BUILD=Ninja # Which cmake generator to use
 	TERMUX_PKG_HAS_DEBUG=yes # set to no if debug build doesn't exist or doesn't work, for example for python based packages
 
-	export USR="usr"
-	export ETC="etc"
-	export VAR="var"
+	export SHEBANG="/bin/sh"
+	export USR="data/data/com.termux/files/usr"
+	export ETC="data/data/com.termux/files/etc"
+	export VAR="data/data/com.termux/files/var"
+	export _TMP="data/data/com.termux/files/tmp"
 	export prefix="/$USR"
 	export PREFIX="/$USR"
 	export DESTDIR="$TERMUX_DESTDIR"
