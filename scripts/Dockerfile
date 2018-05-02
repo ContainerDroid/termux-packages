@@ -18,7 +18,7 @@ COPY ./properties.sh /tmp/properties.sh
 RUN curl -sL https://deb.nodesource.com/setup_9.x | sudo -E bash - && \
     apt-get update && \
     apt-get -yq upgrade && \
-    apt-get install -yq sudo && \
+    apt-get install -yq sudo rsync fakeroot && \
     adduser --disabled-password --shell /bin/bash --gecos "" builder && \
     echo "builder ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/builder && \
     chmod 0440 /etc/sudoers.d/builder && \
