@@ -261,7 +261,7 @@ termux_step_setup_variables() {
 	: "${TERMUX_SYSROOT:="${TERMUX_OUTDIR}/sysroot"}"
 	: "${TERMUX_ANDROID_HOME:="/home"}"
 	: "${TERMUX_DEBUG:=""}"
-	: "${TERMUX_PKG_API_LEVEL:="21"}"
+	: "${TERMUX_PKG_API_LEVEL:="23"}"
 	: "${TERMUX_DEBDIR:="${TERMUX_SCRIPTDIR}/debs"}"
 
 	if [ "x86_64" = "$TERMUX_ARCH" ] || [ "aarch64" = "$TERMUX_ARCH" ]; then
