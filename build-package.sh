@@ -230,8 +230,6 @@ termux_step_handle_arguments() {
 
 	# Check the package to build:
 	TERMUX_PKG_NAME=$(basename "$1")
-	export TERMUX_SCRIPTDIR
-	TERMUX_SCRIPTDIR=$(cd "$(dirname "$0")"; pwd)
 	if [[ $1 == *"/"* ]]; then
 		# Path to directory which may be outside this repo:
 		if [ ! -d "$1" ]; then termux_error_exit "'$1' seems to be a path but is not a directory"; fi
@@ -258,7 +256,7 @@ termux_step_setup_variables() {
 	: "${ANDROID_HOME:="${HOME}/lib/android-sdk"}"
 	: "${NDK:="${HOME}/lib/android-ndk"}"
 	: "${TERMUX_MAKE_PROCESSES:="$(nproc)"}"
-	: "${TERMUX_TOPDIR:="$HOME/.termux-build"}"
+	: "${TERMUX_OUTDIR:="${TERMUX_SCRIPTDIR}/out"}"
 	: "${TERMUX_ARCH:="aarch64"}" # arm, aarch64, i686 or x86_64.
 	: "${TERMUX_PREFIX:="/data/data/com.termux/files/usr"}"
 	: "${TERMUX_ANDROID_HOME:="/home"}"
@@ -290,20 +288,20 @@ termux_step_setup_variables() {
 	# the standalone toolchain.
 	TERMUX_D8=$ANDROID_HOME/build-tools/$TERMUX_ANDROID_BUILD_TOOLS_VERSION/d8
 
-	TERMUX_COMMON_CACHEDIR="$TERMUX_TOPDIR/_cache"
+	TERMUX_COMMON_CACHEDIR="$TERMUX_OUTDIR/_cache"
 	TERMUX_ELF_CLEANER=$TERMUX_COMMON_CACHEDIR/termux-elf-cleaner
 
 	export prefix=${TERMUX_PREFIX}
 	export PREFIX=${TERMUX_PREFIX}
 
-	TERMUX_PKG_BUILDDIR=$TERMUX_TOPDIR/$TERMUX_PKG_NAME/build
-	TERMUX_PKG_CACHEDIR=$TERMUX_TOPDIR/$TERMUX_PKG_NAME/cache
-	TERMUX_PKG_MASSAGEDIR=$TERMUX_TOPDIR/$TERMUX_PKG_NAME/massage
-	TERMUX_PKG_PACKAGEDIR=$TERMUX_TOPDIR/$TERMUX_PKG_NAME/package
-	TERMUX_PKG_SRCDIR=$TERMUX_TOPDIR/$TERMUX_PKG_NAME/src
+	TERMUX_PKG_BUILDDIR=$TERMUX_OUTDIR/$TERMUX_PKG_NAME/build
+	TERMUX_PKG_CACHEDIR=$TERMUX_OUTDIR/$TERMUX_PKG_NAME/cache
+	TERMUX_PKG_MASSAGEDIR=$TERMUX_OUTDIR/$TERMUX_PKG_NAME/massage
+	TERMUX_PKG_PACKAGEDIR=$TERMUX_OUTDIR/$TERMUX_PKG_NAME/package
+	TERMUX_PKG_SRCDIR=$TERMUX_OUTDIR/$TERMUX_PKG_NAME/src
 	TERMUX_PKG_SHA256=""
-	TERMUX_PKG_TMPDIR=$TERMUX_TOPDIR/$TERMUX_PKG_NAME/tmp
-	TERMUX_PKG_HOSTBUILD_DIR=$TERMUX_TOPDIR/$TERMUX_PKG_NAME/host-build
+	TERMUX_PKG_TMPDIR=$TERMUX_OUTDIR/$TERMUX_PKG_NAME/tmp
+	TERMUX_PKG_HOSTBUILD_DIR=$TERMUX_OUTDIR/$TERMUX_PKG_NAME/host-build
 	TERMUX_PKG_PLATFORM_INDEPENDENT=""
 	TERMUX_PKG_NO_DEVELSPLIT=""
 	TERMUX_PKG_REVISION="0" # http://www.debian.org/doc/debian-policy/ch-controlfields.html#s-f-Version
@@ -340,13 +338,13 @@ termux_step_setup_variables() {
 
 # Save away and restore build setups which may change between builds.
 termux_step_handle_buildarch() {
-	# If $TERMUX_PREFIX already exists, it may have been built for a different arch
-	local TERMUX_ARCH_FILE=/data/TERMUX_ARCH
+	# If $TERMUX_OUTDIR already exists, it may have been built for a different arch
+	local TERMUX_ARCH_FILE="$TERMUX_OUTDIR/TERMUX_ARCH"
 	if [ -f "${TERMUX_ARCH_FILE}" ]; then
 		local TERMUX_PREVIOUS_ARCH
 		TERMUX_PREVIOUS_ARCH=$(cat $TERMUX_ARCH_FILE)
 		if [ "$TERMUX_PREVIOUS_ARCH" != "$TERMUX_ARCH" ]; then
-			local TERMUX_DATA_BACKUPDIRS=$TERMUX_TOPDIR/_databackups
+			local TERMUX_DATA_BACKUPDIRS=$TERMUX_OUTDIR/_databackups
 			mkdir -p "$TERMUX_DATA_BACKUPDIRS"
 			local TERMUX_DATA_PREVIOUS_BACKUPDIR=$TERMUX_DATA_BACKUPDIRS/$TERMUX_PREVIOUS_ARCH
 			local TERMUX_DATA_CURRENT_BACKUPDIR=$TERMUX_DATA_BACKUPDIRS/$TERMUX_ARCH
@@ -365,7 +363,7 @@ termux_step_handle_buildarch() {
 	fi
 
 	# Keep track of current arch we are building for.
-	echo "$TERMUX_ARCH" > $TERMUX_ARCH_FILE
+	mkdir -p $TERMUX_OUTDIR && echo "$TERMUX_ARCH" > $TERMUX_ARCH_FILE
 }
 
 # Source the package build script and start building. No to be overridden by packages.
@@ -411,9 +409,9 @@ termux_step_start_build() {
 
 	if [ -z "$TERMUX_DEBUG" ] &&
 	   [ -z "${TERMUX_FORCE_BUILD+x}" ] &&
-	   [ -e "/data/data/.built-packages/$TERMUX_PKG_NAME" ]; then
-		if [ "$(cat "/data/data/.built-packages/$TERMUX_PKG_NAME")" = "$TERMUX_PKG_FULLVERSION" ]; then
-			echo "$TERMUX_PKG_NAME@$TERMUX_PKG_FULLVERSION built - skipping (rm /data/data/.built-packages/$TERMUX_PKG_NAME to force rebuild)"
+	   [ -e "$TERMUX_TOPDIR/.built-packages/$TERMUX_PKG_NAME" ]; then
+		if [ "$(cat "$TERMUX_TOPDIR/.built-packages/$TERMUX_PKG_NAME")" = "$TERMUX_PKG_FULLVERSION" ]; then
+			echo "$TERMUX_PKG_NAME@$TERMUX_PKG_FULLVERSION built - skipping (rm $TERMUX_TOPDIR/.built-packages/$TERMUX_PKG_NAME to force rebuild)"
 			exit 0
 		fi
 	fi
@@ -1119,14 +1117,14 @@ termux_step_massage() {
 		fi
 	fi
 	# Now build all sub packages
-	rm -Rf "$TERMUX_TOPDIR/$TERMUX_PKG_NAME/subpackages"
+	rm -Rf "$TERMUX_OUTDIR/$TERMUX_PKG_NAME/subpackages"
 	for subpackage in $TERMUX_PKG_BUILDER_DIR/*.subpackage.sh $TERMUX_PKG_TMPDIR/*subpackage.sh; do
 		test ! -f "$subpackage" && continue
 		local SUB_PKG_NAME
 		SUB_PKG_NAME=$(basename "$subpackage" .subpackage.sh)
 		# Default value is same as main package, but sub package may override:
 		local TERMUX_SUBPKG_PLATFORM_INDEPENDENT=$TERMUX_PKG_PLATFORM_INDEPENDENT
-		local SUB_PKG_DIR=$TERMUX_TOPDIR/$TERMUX_PKG_NAME/subpackages/$SUB_PKG_NAME
+		local SUB_PKG_DIR="$TERMUX_OUTDIR/$TERMUX_PKG_NAME/subpackages/$SUB_PKG_NAME"
 		local TERMUX_SUBPKG_DEPENDS=""
 		local TERMUX_SUBPKG_CONFLICTS=""
 		local TERMUX_SUBPKG_REPLACES=""
@@ -1270,8 +1268,8 @@ termux_step_create_debfile() {
 termux_step_finish_build() {
 	echo "termux - build of '$TERMUX_PKG_NAME' done"
 	test -t 1 && printf "\033]0;%s - DONE\007" "$TERMUX_PKG_NAME"
-	mkdir -p /data/data/.built-packages
-	echo "$TERMUX_PKG_FULLVERSION" > "/data/data/.built-packages/$TERMUX_PKG_NAME"
+	mkdir -p "$TERMUX_TOPDIR/.built-packages"
+	echo "$TERMUX_PKG_FULLVERSION" > "$TERMUX_TOPDIR/.built-packages/$TERMUX_PKG_NAME"
 	exit 0
 }
 
