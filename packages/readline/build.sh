@@ -28,9 +28,6 @@ termux_step_pre_configure () {
 }
 
 termux_step_post_make_install() {
-	mkdir -p $TERMUX_PREFIX/lib/pkgconfig
-	cp readline.pc $TERMUX_PREFIX/lib/pkgconfig/
-
-	mkdir -p $TERMUX_PREFIX/etc
-	cp $TERMUX_PKG_BUILDER_DIR/inputrc $TERMUX_PREFIX/etc/
+	install -Dm 0644 readline.pc ${TERMUX_DESTDIR}/${USR}/lib/pkgconfig/readline.pc
+	install -Dm 0644 $TERMUX_PKG_BUILDER_DIR/inputrc ${TERMUX_DESTDIR}/${ETC}/inputrc
 }

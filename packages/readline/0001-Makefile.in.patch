@@ -1,0 +1,12 @@
+diff -u -r a/Makefile.in b/Makefile.in
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -67,8 +67,5 @@
+ man3dir = $(mandir)/man3
+ 
+-# Support an alternate destination root directory for package building
+-DESTDIR =
+-
+ # Programs to make tags files.
+ ETAGS = etags
+ CTAGS = ctags -tw
