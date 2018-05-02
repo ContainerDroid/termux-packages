@@ -1095,12 +1095,6 @@ termux_step_massage() {
 	# Remove DT_ entries which the android 5.1 linker warns about:
 	find . -type f -print0 | xargs -r -0 "$TERMUX_ELF_CLEANER"
 
-	# Fix shebang paths:
-	while IFS= read -r -d '' file
-	do
-		head -c 100 "$file" | grep -E "^#\!.*\\/bin\\/.*" | grep -q -E -v "^#\! ?\\/system" && sed --follow-symlinks -i -E "1 s@^#\!(.*)/bin/(.*)@#\!$TERMUX_PREFIX/bin/\2@" "$file"
-	done < <(find -L . -type f -print0)
-
 	test ! -z "$TERMUX_PKG_RM_AFTER_INSTALL" && rm -Rf $TERMUX_PKG_RM_AFTER_INSTALL
 
 	find . -type d -empty -delete # Remove empty directories
