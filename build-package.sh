@@ -148,9 +148,9 @@ termux_setup_meson() {
 
 		cat > "$TERMUX_MESON_CROSSFILE" <<-HERE
 			[binaries]
-			ar = '$AR'
-			c = '$CC'
-			cpp = '$CXX'
+			ar = '${AR}'
+			c = '${_CC}'
+			cpp = '${_CXX}'
 			ld = '$LD'
 			pkgconfig = '$PKG_CONFIG'
 			strip = '$STRIP'
@@ -552,27 +552,30 @@ termux_step_setup_toolchain() {
 	export LDFLAGS="-L${TERMUX_SYSROOT}/usr/lib"
 
 	if [ "$TERMUX_PKG_CLANG" = "no" ]; then
-		export AS=${TERMUX_HOST_PLATFORM}-gcc
-		export CC=$TERMUX_HOST_PLATFORM-gcc
-		export CXX=$TERMUX_HOST_PLATFORM-g++
+		_AS="${TERMUX_HOST_PLATFORM}-gcc"
+		_CC="${TERMUX_HOST_PLATFORM}-gcc"
+		_CXX="${TERMUX_HOST_PLATFORM}-g++"
 		LDFLAGS+=" -specs=$TERMUX_SCRIPTDIR/termux.spec"
 		CFLAGS+=" -specs=$TERMUX_SCRIPTDIR/termux.spec"
 	else
-		export AS=${TERMUX_HOST_PLATFORM}-clang
-		export CC=$TERMUX_HOST_PLATFORM-clang
-		export CXX=$TERMUX_HOST_PLATFORM-clang++
+		_AS="${TERMUX_HOST_PLATFORM}-clang"
+		_CC="${TERMUX_HOST_PLATFORM}-clang"
+		_CXX="${TERMUX_HOST_PLATFORM}-clang++"
 	fi
 
-	export AR=$TERMUX_HOST_PLATFORM-ar
+	export AS=${_AS}
+	export CC="${_CC} --sysroot ${TERMUX_SYSROOT}/usr"
+	export CXX="${_CXX} --sysroot ${TERMUX_SYSROOT}/usr"
+	export AR=${TERMUX_HOST_PLATFORM}-ar
 	export CPP=${TERMUX_HOST_PLATFORM}-cpp
 	export CC_FOR_BUILD=gcc
-	export LD=$TERMUX_HOST_PLATFORM-ld
-	export OBJDUMP=$TERMUX_HOST_PLATFORM-objdump
+	export LD="${TERMUX_HOST_PLATFORM}-ld --sysroot ${TERMUX_SYSROOT}/usr"
+	export OBJDUMP=${TERMUX_HOST_PLATFORM}-objdump
 	# Setup pkg-config for cross-compiling:
-	export PKG_CONFIG=$TERMUX_STANDALONE_TOOLCHAIN/bin/${TERMUX_HOST_PLATFORM}-pkg-config
-	export RANLIB=$TERMUX_HOST_PLATFORM-ranlib
-	export READELF=$TERMUX_HOST_PLATFORM-readelf
-	export STRIP=$TERMUX_HOST_PLATFORM-strip
+	export PKG_CONFIG="$TERMUX_STANDALONE_TOOLCHAIN/bin/${TERMUX_HOST_PLATFORM}-pkg-config"
+	export RANLIB=${TERMUX_HOST_PLATFORM}-ranlib
+	export READELF=${TERMUX_HOST_PLATFORM}-readelf
+	export STRIP=${TERMUX_HOST_PLATFORM}-strip
 
 	# Android 7 started to support DT_RUNPATH (but not DT_RPATH)
 	LDFLAGS+=" -Wl,-rpath=/${USR}/lib -Wl,--enable-new-dtags"
@@ -770,7 +773,7 @@ termux_step_setup_toolchain() {
 
 	export PKG_CONFIG_DIR=
 	export PKG_CONFIG_LIBDIR="$TERMUX_PKG_CONFIG_LIBDIR"
-	export PKG_CONFIG_SYSROOT_DIR="${TERMUX_SYSROOT}"
+	export PKG_CONFIG_SYSROOT_DIR="${TERMUX_SYSROOT}/usr"
 	# Create a pkg-config wrapper. We use path to host pkg-config to
 	# avoid picking up a cross-compiled pkg-config later on.
 	local _HOST_PKGCONFIG
