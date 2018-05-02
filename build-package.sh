@@ -908,7 +908,7 @@ termux_step_configure_autotools () {
 		--disable-dependency-tracking \
 		--prefix=$TERMUX_PREFIX \
 		--libdir=$TERMUX_PREFIX/lib \
-		--disable-rpath --disable-rpath-hack \
+		--disable-rpath --disable-rpath-hack --without-rpath \
 		$HOST_FLAG \
 		$TERMUX_PKG_EXTRA_CONFIGURE_ARGS \
 		$DISABLE_NLS \
