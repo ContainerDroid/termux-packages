@@ -14,7 +14,7 @@ termux_step_make () {
 }
 
 termux_step_make_install () {
-	cp $TERMUX_PKG_SRCDIR/am-libexec-packaged $TERMUX_PREFIX/bin/am
-	mkdir -p $TERMUX_PREFIX/libexec/termux-am
-	cp $TERMUX_PKG_SRCDIR/app/build/outputs/apk/release/app-release-unsigned.apk $TERMUX_PREFIX/libexec/termux-am/am.apk
+	install -Dm 0755 $TERMUX_PKG_SRCDIR/am-libexec-packaged ${TERMUX_DESTDIR}/${USR}/bin/am
+	install -Dm 0755 $TERMUX_PKG_SRCDIR/app/build/outputs/apk/release/app-release-unsigned.apk \
+	                 ${TERMUX_DESTDIR}/${USR}/libexec/termux-am/am.apk
 }
