@@ -815,7 +815,7 @@ termux_step_patch_package() {
 	for patch in $TERMUX_PKG_BUILDER_DIR/*.patch{$TERMUX_ARCH_BITS,} ${DEBUG_PATCHES}; do
 		test -f "$patch" && \
 			sed "s%\@TERMUX_DESTDIR\@%${TERMUX_DESTDIR}%g" "$patch" | \
-			sed "s%\@TERMUX_HOME\@%${TERMUX_ANDROID_HOME}%g" | \
+			sed "s%\@HOME\@%${TERMUX_ANDROID_HOME}%g" | \
 			sed "s%\@USR\@%${USR}%g" | \
 			sed "s%\@VAR\@%${VAR}%g" | \
 			sed "s%\@ETC\@%${ETC}%g" | \
