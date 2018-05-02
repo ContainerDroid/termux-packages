@@ -466,7 +466,7 @@ termux_step_start_build() {
 	test -t 1 && printf "\033]0;%s...\007" "$TERMUX_PKG_NAME"
 
 	# Avoid exporting PKG_CONFIG_LIBDIR until after termux_step_host_build.
-	export TERMUX_PKG_CONFIG_LIBDIR="${TERMUX_SYSROOT}/usr/lib/pkgconfig"
+	export TERMUX_PKG_CONFIG_LIBDIR="${TERMUX_SYSROOT}/lib/pkgconfig"
 }
 
 # Run just after sourcing $TERMUX_PKG_BUILDER_SCRIPT. May be overridden by packages.
@@ -549,7 +549,7 @@ termux_step_setup_toolchain() {
 	export PATH=$PATH:$TERMUX_STANDALONE_TOOLCHAIN/bin
 
 	export CFLAGS=""
-	export LDFLAGS="-L${TERMUX_SYSROOT}/usr/lib"
+	export LDFLAGS="-L${TERMUX_SYSROOT}/lib"
 
 	if [ "$TERMUX_PKG_CLANG" = "no" ]; then
 		_AS="${TERMUX_HOST_PLATFORM}-gcc"
@@ -564,12 +564,12 @@ termux_step_setup_toolchain() {
 	fi
 
 	export AS=${_AS}
-	export CC="${_CC} --sysroot ${TERMUX_SYSROOT}/usr"
-	export CXX="${_CXX} --sysroot ${TERMUX_SYSROOT}/usr"
+	export CC="${_CC} --sysroot ${TERMUX_SYSROOT}"
+	export CXX="${_CXX} --sysroot ${TERMUX_SYSROOT}"
 	export AR=${TERMUX_HOST_PLATFORM}-ar
 	export CPP=${TERMUX_HOST_PLATFORM}-cpp
 	export CC_FOR_BUILD=gcc
-	export LD="${TERMUX_HOST_PLATFORM}-ld --sysroot ${TERMUX_SYSROOT}/usr"
+	export LD="${TERMUX_HOST_PLATFORM}-ld --sysroot ${TERMUX_SYSROOT}"
 	export OBJDUMP=${TERMUX_HOST_PLATFORM}-objdump
 	# Setup pkg-config for cross-compiling:
 	export PKG_CONFIG="$TERMUX_STANDALONE_TOOLCHAIN/bin/${TERMUX_HOST_PLATFORM}-pkg-config"
@@ -618,11 +618,11 @@ termux_step_setup_toolchain() {
 	fi
 
 	export CXXFLAGS="$CFLAGS"
-	export CPPFLAGS="-I${TERMUX_SYSROOT}/usr/include"
+	export CPPFLAGS="-I${TERMUX_SYSROOT}/include"
 
 	if [ "$TERMUX_PKG_DEPENDS" != "${TERMUX_PKG_DEPENDS/libandroid-support/}" ]; then
 		# If using the android support library, link to it and include its headers as system headers:
-		CPPFLAGS+=" -isystem ${TERMUX_SYSROOT}/usr/include/libandroid-support"
+		CPPFLAGS+=" -isystem ${TERMUX_SYSROOT}/include/libandroid-support"
 		LDFLAGS+=" -landroid-support"
 	fi
 
@@ -726,8 +726,8 @@ termux_step_setup_toolchain() {
                 sed "s%\@TERMUX_HOST_PLATFORM\@%${TERMUX_HOST_PLATFORM}%g" $TERMUX_SCRIPTDIR/ndk-patches/*.cpppatch | patch -p1
 		mv $_TERMUX_TOOLCHAIN_TMPDIR $TERMUX_STANDALONE_TOOLCHAIN
 
-		mkdir -p ${TERMUX_SYSROOT}/usr/lib
-		termux_rsync "${TERMUX_STANDALONE_TOOLCHAIN}/sysroot/usr" "${TERMUX_SYSROOT}/usr"
+		mkdir -p "${TERMUX_SYSROOT}/lib"
+		termux_rsync "${TERMUX_STANDALONE_TOOLCHAIN}/sysroot/usr" "${TERMUX_SYSROOT}"
 
 		# Add a pkg-config file for the system zlib.
 		mkdir -p "$TERMUX_PKG_CONFIG_LIBDIR"
@@ -741,7 +741,7 @@ termux_step_setup_toolchain() {
 	fi
 
 	local _STL_LIBFILE_NAME=libc++_shared.so
-	cd "${TERMUX_SYSROOT}/usr/lib"
+	cd "${TERMUX_SYSROOT}/lib"
 	if [ ! -f ${_STL_LIBFILE_NAME} ]; then
 		# Setup libc++_shared.so in $PREFIX/lib and libstdc++.so as a link to it,
 		# so that other C++ using packages links to it instead of the default android
@@ -773,7 +773,7 @@ termux_step_setup_toolchain() {
 
 	export PKG_CONFIG_DIR=
 	export PKG_CONFIG_LIBDIR="$TERMUX_PKG_CONFIG_LIBDIR"
-	export PKG_CONFIG_SYSROOT_DIR="${TERMUX_SYSROOT}/usr"
+	export PKG_CONFIG_SYSROOT_DIR="${TERMUX_SYSROOT}"
 	# Create a pkg-config wrapper. We use path to host pkg-config to
 	# avoid picking up a cross-compiled pkg-config later on.
 	local _HOST_PKGCONFIG
@@ -794,10 +794,10 @@ termux_step_setup_toolchain() {
 	mkdir -p "$TERMUX_PKG_TMPDIR/config-scripts"
 
 	# Filtering only shell scripts should keep the cross-compiled pkg-config out of our DESTDIR-patched cache
-	for f in $(find "${TERMUX_SYSROOT}/usr/bin" -name '*-config' | xargs -r file | grep -i "shell script" | cut -f 1 -d :); do
+	for f in $(find "${TERMUX_SYSROOT}/bin" -name '*-config' | xargs -r file | grep -i "shell script" | cut -f 1 -d :); do
 		local _config_script="$TERMUX_PKG_TMPDIR/config-scripts/$(basename ${f})"
 		cp ${f} ${_config_script}
-		sed -i "s%prefix *= *\"*${PREFIX}\"*%prefix=\"${TERMUX_SYSROOT}/usr\"%" ${_config_script}
+		sed -i "s%prefix *= *\"*${PREFIX}\"*%prefix=\"${TERMUX_SYSROOT}\"%" ${_config_script}
 	done
 	ln -s "$TERMUX_STANDALONE_TOOLCHAIN/bin/${TERMUX_HOST_PLATFORM}-pkg-config" "$TERMUX_PKG_TMPDIR/config-scripts/pkg-config"
 	export PATH=$TERMUX_PKG_TMPDIR/config-scripts:$PATH
@@ -978,7 +978,7 @@ termux_step_configure_cmake () {
 		-DCMAKE_C_FLAGS="$CFLAGS $CPPFLAGS" \
 		-DCMAKE_CXX_FLAGS="$CXXFLAGS $CPPFLAGS" \
 		-DCMAKE_LINKER="$TERMUX_STANDALONE_TOOLCHAIN/bin/$LD $LDFLAGS" \
-		-DCMAKE_FIND_ROOT_PATH="${TERMUX_SYSROOT}/usr" \
+		-DCMAKE_FIND_ROOT_PATH="${TERMUX_SYSROOT}" \
 		-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY \
 		-DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY \
 		-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
@@ -1225,14 +1225,14 @@ termux_rsync() {
 }
 
 termux_step_update_sysroot() {
-	termux_rsync "${TERMUX_DESTDIR}/${USR}" "${TERMUX_SYSROOT}/usr"
+	termux_rsync "${TERMUX_DESTDIR}/${USR}" "${TERMUX_SYSROOT}"
 	for subpackage in $TERMUX_PKG_BUILDER_DIR/*.subpackage.sh $TERMUX_PKG_TMPDIR/*subpackage.sh; do
 		test ! -f "$subpackage" && continue
 		local SUB_PKG_NAME
 		SUB_PKG_NAME=$(basename "$subpackage" .subpackage.sh)
 		# Default value is same as main package, but sub package may override:
 		local SUB_PKG_MASSAGE_DIR="$TERMUX_OUTDIR/$TERMUX_PKG_NAME/subpackages/$SUB_PKG_NAME/massage"
-		termux_rsync "${SUB_PKG_MASSAGE_DIR}/${USR}" "${TERMUX_SYSROOT}/usr"
+		termux_rsync "${SUB_PKG_MASSAGE_DIR}/${USR}" "${TERMUX_SYSROOT}"
 	done
 }
 
