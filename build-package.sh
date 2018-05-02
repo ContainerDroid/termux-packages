@@ -329,7 +329,7 @@ termux_step_setup_variables() {
 	TERMUX_PKG_DEVPACKAGE_DEPENDS=""
 	# Set if a host build should be done in TERMUX_PKG_HOSTBUILD_DIR:
 	TERMUX_PKG_HOSTBUILD=""
-	TERMUX_PKG_MAINTAINER="Fredrik Fornwall @fornwall"
+	TERMUX_PKG_MAINTAINER="Vladimir Oltean <olteanv@gmail.com>"
 	TERMUX_PKG_CLANG=yes # does nothing for cmake based packages. clang is chosen by cmake
 	TERMUX_PKG_FORCE_CMAKE=no # if the package has autotools as well as cmake, then set this to prefer cmake
 	TERMUX_CMAKE_BUILD=Ninja # Which cmake generator to use
