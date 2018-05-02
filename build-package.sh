@@ -778,6 +778,20 @@ termux_step_setup_toolchain() {
 		exec $_HOST_PKGCONFIG "\$@"
 	HERE
 	chmod +x "$PKG_CONFIG"
+
+	# Moved from termux_step_configure_autotools(), where it was sometimes overridden by packages
+
+	# Some packages provides a $PKG-config script which some configure scripts pickup instead of pkg-config:
+	mkdir -p "$TERMUX_PKG_TMPDIR/config-scripts"
+
+	# Filtering only shell scripts should keep the cross-compiled pkg-config out of our DESTDIR-patched cache
+	for f in $(find "$TERMUX_DESTDIR/usr/bin" -name '*-config' | xargs -r file | grep -i "shell script" | cut -f 1 -d :); do
+		local _config_script="$TERMUX_PKG_TMPDIR/config-scripts/$(basename ${f})"
+		cp ${f} ${_config_script}
+		sed -i "s%prefix *= *\"*${PREFIX}\"*%prefix=\"${TERMUX_DESTDIR}${PREFIX}\"%" ${_config_script}
+	done
+	ln -s "$TERMUX_STANDALONE_TOOLCHAIN/bin/${TERMUX_HOST_PLATFORM}-pkg-config" "$TERMUX_PKG_TMPDIR/config-scripts/pkg-config"
+	export PATH=$TERMUX_PKG_TMPDIR/config-scripts:$PATH
 }
 
 # Apply all *.patch files for the package. Not to be overridden by packages.
@@ -843,13 +857,6 @@ termux_step_configure_autotools () {
 	if [ ! -z ${TERMUX_QUIET_BUILD+x} ]; then
 		QUIET_BUILD="--enable-silent-rules --silent --quiet"
 	fi
-
-	# Some packages provides a $PKG-config script which some configure scripts pickup instead of pkg-config:
-	mkdir "$TERMUX_PKG_TMPDIR/config-scripts"
-	for f in $TERMUX_PREFIX/bin/*config; do
-		test -f "$f" && cp "$f" "$TERMUX_PKG_TMPDIR/config-scripts"
-	done
-	export PATH=$TERMUX_PKG_TMPDIR/config-scripts:$PATH
 
 	# Avoid gnulib wrapping of functions when cross compiling. See
 	# http://wiki.osdev.org/Cross-Porting_Software#Gnulib
