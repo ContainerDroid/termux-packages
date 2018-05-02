@@ -467,22 +467,6 @@ termux_step_start_build() {
 
 	# Avoid exporting PKG_CONFIG_LIBDIR until after termux_step_host_build.
 	export TERMUX_PKG_CONFIG_LIBDIR="${TERMUX_SYSROOT}/usr/lib/pkgconfig"
-	# Add a pkg-config file for the system zlib.
-	mkdir -p "$TERMUX_PKG_CONFIG_LIBDIR"
-	cat > "$TERMUX_PKG_CONFIG_LIBDIR/zlib.pc" <<-HERE
-		Name: zlib
-		Description: zlib compression library
-		Version: 1.2.8
-		Requires:
-		Libs: -lz
-	HERE
-
-	# Keep track of when build started so we can see what files have been created.
-	# We start by sleeping so that any generated files above (such as zlib.pc) get
-	# an older timestamp than the TERMUX_BUILD_TS_FILE.
-	sleep 1
-	TERMUX_BUILD_TS_FILE=$TERMUX_PKG_TMPDIR/timestamp_$TERMUX_PKG_NAME
-	touch "$TERMUX_BUILD_TS_FILE"
 }
 
 # Run just after sourcing $TERMUX_PKG_BUILDER_SCRIPT. May be overridden by packages.
@@ -738,6 +722,19 @@ termux_step_setup_toolchain() {
 		cd $_TERMUX_TOOLCHAIN_TMPDIR/include/c++/4.9.x
                 sed "s%\@TERMUX_HOST_PLATFORM\@%${TERMUX_HOST_PLATFORM}%g" $TERMUX_SCRIPTDIR/ndk-patches/*.cpppatch | patch -p1
 		mv $_TERMUX_TOOLCHAIN_TMPDIR $TERMUX_STANDALONE_TOOLCHAIN
+
+		mkdir -p ${TERMUX_SYSROOT}/usr
+		termux_rsync "${TERMUX_STANDALONE_TOOLCHAIN}/sysroot/usr" "${TERMUX_SYSROOT}/usr"
+
+		# Add a pkg-config file for the system zlib.
+		mkdir -p "$TERMUX_PKG_CONFIG_LIBDIR"
+		cat > "$TERMUX_PKG_CONFIG_LIBDIR/zlib.pc" <<-HERE
+		Name: zlib
+		Description: zlib compression library
+		Version: 1.2.8
+		Requires:
+		Libs: -lz
+		HERE
 	fi
 
 	local _STL_LIBFILE_NAME=libc++_shared.so
@@ -751,9 +748,6 @@ termux_step_setup_toolchain() {
 		# libm.so on some i686 devices links against libstdc++.so.
 		# The libc++_shared.so library will be packaged in the libc++ package
 		# which is part of the base Termux installation.
-		mkdir -p "$TERMUX_DESTDIR/usr/lib"
-		cd "$TERMUX_DESTDIR/usr/lib"
-
 		local _STL_LIBFILE=
 		if [ "$TERMUX_ARCH" = arm ]; then
 			local _STL_LIBFILE=$TERMUX_STANDALONE_TOOLCHAIN/${TERMUX_HOST_PLATFORM}/lib/armv7-a/$_STL_LIBFILE_NAME
@@ -1060,20 +1054,9 @@ termux_step_post_make_install() {
 }
 
 termux_step_extract_into_massagedir() {
-	local TARBALL_ORIG=$TERMUX_PKG_PACKAGEDIR/${TERMUX_PKG_NAME}_orig.tar.gz
-
-	# Build diff tar with what has changed during the build:
-	cd $TERMUX_DESTDIR
-	tar -N "$TERMUX_BUILD_TS_FILE" \
+	rsync -ar "${TERMUX_DESTDIR}/" "${TERMUX_PKG_MASSAGEDIR}/" \
 		--exclude="${USR}/lib/libc\+\+_shared.so" \
 		--exclude="${USR}/lib/libstdc\+\+.so"
-		-czf "$TARBALL_ORIG" .
-
-	# Extract tar in order to massage it
-	mkdir -p "$TERMUX_PKG_MASSAGEDIR"
-	cd "$TERMUX_PKG_MASSAGEDIR"
-	tar xf "$TARBALL_ORIG"
-	rm "$TARBALL_ORIG"
 }
 
 termux_step_massage() {
@@ -1227,6 +1210,33 @@ termux_step_post_massage() {
 	return
 }
 
+termux_rsync() {
+	local SRC="$1"
+	local DEST="$2"
+
+	(cd "${SRC}";
+	for f in src lib libexec include bin/*-config; do
+		if [ -d "${f}" ]; then rsync -ar "${f}/" "${DEST}/${f}/"; fi
+		if [ -f "${f}" ]; then install -D ${f} "${DEST}/${f}"; fi
+	done;)
+}
+
+termux_step_update_sysroot() {
+	termux_rsync "${TERMUX_DESTDIR}/${USR}" "${TERMUX_SYSROOT}/usr"
+	for subpackage in $TERMUX_PKG_BUILDER_DIR/*.subpackage.sh $TERMUX_PKG_TMPDIR/*subpackage.sh; do
+		test ! -f "$subpackage" && continue
+		local SUB_PKG_NAME
+		SUB_PKG_NAME=$(basename "$subpackage" .subpackage.sh)
+		# Default value is same as main package, but sub package may override:
+		local SUB_PKG_MASSAGE_DIR="$TERMUX_OUTDIR/$TERMUX_PKG_NAME/subpackages/$SUB_PKG_NAME/massage"
+		termux_rsync "${SUB_PKG_MASSAGE_DIR}/${USR}" "${TERMUX_SYSROOT}/usr"
+	done
+}
+
+termux_step_post_update_sysroot() {
+	return
+}
+
 # Create data.tar.gz with files to package. Not to be overridden by package scripts.
 termux_step_create_datatar() {
 	# Create data tarball containing files to package:
@@ -1334,6 +1344,8 @@ cd "$TERMUX_PKG_MASSAGEDIR"
 termux_step_massage
 cd "$TERMUX_PKG_MASSAGEDIR"
 termux_step_post_massage
+termux_step_update_sysroot
+termux_step_post_update_sysroot
 termux_step_create_datatar
 termux_step_create_debfile
 termux_step_finish_build
