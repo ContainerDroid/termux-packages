@@ -754,7 +754,7 @@ termux_step_setup_toolchain() {
 			local _STL_LIBFILE=$TERMUX_STANDALONE_TOOLCHAIN/${TERMUX_HOST_PLATFORM}/lib/$_STL_LIBFILE_NAME
 		fi
 
-		cp "$_STL_LIBFILE" .
+		cp -u "$_STL_LIBFILE" .
 		$STRIP --strip-unneeded $_STL_LIBFILE_NAME
 		$TERMUX_ELF_CLEANER $_STL_LIBFILE_NAME
 		if [ $TERMUX_ARCH = "arm" ]; then
