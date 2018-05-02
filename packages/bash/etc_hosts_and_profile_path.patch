@@ -5,11 +5,11 @@
  
  /* The default file for hostname completion. */
 -#define DEFAULT_HOSTS_FILE "/etc/hosts"
-+#define DEFAULT_HOSTS_FILE "@TERMUX_PREFIX@/etc/hosts"
++#define DEFAULT_HOSTS_FILE "/@ETC@/hosts"
  
  /* The default login shell startup file. */
 -#define SYS_PROFILE "/etc/profile"
-+#define SYS_PROFILE "@TERMUX_PREFIX@/etc/profile"
++#define SYS_PROFILE "/@ETC@/profile"
  
  /* The default location of the bash debugger initialization/startup file. */
  #define DEBUGGER_START_FILE	"@DEBUGGER_START_FILE@"

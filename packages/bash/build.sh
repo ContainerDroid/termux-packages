@@ -22,7 +22,7 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" bash_cv_dev_fd=whacky"
 # - https://github.com/termux/termux-app/issues/200
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" bash_cv_getcwd_malloc=yes"
 
-TERMUX_PKG_RM_AFTER_INSTALL="share/man/man1/bashbug.1 bin/bashbug"
+TERMUX_PKG_RM_AFTER_INSTALL="${USR}/share/man/man1/bashbug.1 ${USR}/bin/bashbug"
 
 termux_step_pre_configure () {
 	declare -A PATCH_CHECKSUMS
@@ -61,13 +61,8 @@ termux_step_pre_configure () {
 }
 
 termux_step_post_make_install () {
-	sed "s|@TERMUX_PREFIX@|$TERMUX_PREFIX|" $TERMUX_PKG_BUILDER_DIR/etc-profile > $TERMUX_PREFIX/etc/profile
-	sed "s|@TERMUX_PREFIX@|$TERMUX_PREFIX|" \
-		$TERMUX_PKG_BUILDER_DIR/etc-profile | \
-		sed "s|@TERMUX_HOME@|$TERMUX_ANDROID_HOME|" > \
-		$TERMUX_PREFIX/etc/profile
+	install -D $TERMUX_PKG_BUILDER_DIR/etc-profile ${TERMUX_DESTDIR}/${ETC}/profile
 	# /etc/bash.bashrc - System-wide .bashrc file for interactive shells. (config-top.h in bash source, patched to enable):
-	sed "s|@TERMUX_PREFIX@|$TERMUX_PREFIX|" \
-		$TERMUX_PKG_BUILDER_DIR/etc-bash.bashrc > \
-		$TERMUX_PREFIX/etc/bash.bashrc
+	install -D $TERMUX_PKG_BUILDER_DIR/etc-bash.bashrc ${TERMUX_DESTDIR}/${ETC}/bash.bashrc
+	termux_fixup_target_paths ${TERMUX_DESTDIR}/${ETC}/{profile,bash.bashrc}
 }

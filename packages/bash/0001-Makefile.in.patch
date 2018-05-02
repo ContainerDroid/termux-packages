@@ -1,0 +1,12 @@
+diff -u -r a/Makefile.in b/Makefile.in
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -58,8 +58,5 @@
+ htmldir = @htmldir@
+ 
+-# Support an alternate destination root directory for package building
+-DESTDIR =
+-
+ topdir = @top_srcdir@
+ BUILD_DIR = @BUILD_DIR@
+ top_builddir = @BUILD_DIR@
