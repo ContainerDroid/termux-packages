@@ -1080,9 +1080,6 @@ termux_step_massage() {
 			awk -F ':' '{print $1;}' | xargs -r rm || true
 	fi
 
-	# Move over sbin to bin:
-	for file in sbin/*; do if test -f "$file"; then mv "$file" bin/; fi; done
-
 	# Remove world permissions and add write permissions.
 	# The -f flag is used to suppress warnings about dangling symlinks (such
 	# as ones to /system/... which may not exist on the build machine):
