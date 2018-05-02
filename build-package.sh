@@ -258,7 +258,7 @@ termux_step_setup_variables() {
 	: "${TERMUX_MAKE_PROCESSES:="$(nproc)"}"
 	: "${TERMUX_OUTDIR:="${TERMUX_SCRIPTDIR}/out"}"
 	: "${TERMUX_ARCH:="aarch64"}" # arm, aarch64, i686 or x86_64.
-	: "${TERMUX_PREFIX:="/data/data/com.termux/files/usr"}"
+	: "${TERMUX_DESTDIR:="${TERMUX_OUTDIR}/sysroot"}"
 	: "${TERMUX_ANDROID_HOME:="/home"}"
 	: "${TERMUX_DEBUG:=""}"
 	: "${TERMUX_PKG_API_LEVEL:="21"}"
@@ -291,9 +291,7 @@ termux_step_setup_variables() {
 	TERMUX_COMMON_CACHEDIR="$TERMUX_OUTDIR/_cache"
 	TERMUX_ELF_CLEANER=$TERMUX_COMMON_CACHEDIR/termux-elf-cleaner
 
-	export prefix=${TERMUX_PREFIX}
-	export PREFIX=${TERMUX_PREFIX}
-
+	TERMUX_DESTDIR=$TERMUX_OUTDIR/$TERMUX_PKG_NAME/staging
 	TERMUX_PKG_BUILDDIR=$TERMUX_OUTDIR/$TERMUX_PKG_NAME/build
 	TERMUX_PKG_CACHEDIR=$TERMUX_OUTDIR/$TERMUX_PKG_NAME/cache
 	TERMUX_PKG_MASSAGEDIR=$TERMUX_OUTDIR/$TERMUX_PKG_NAME/massage
@@ -333,6 +331,13 @@ termux_step_setup_variables() {
 	TERMUX_CMAKE_BUILD=Ninja # Which cmake generator to use
 	TERMUX_PKG_HAS_DEBUG=yes # set to no if debug build doesn't exist or doesn't work, for example for python based packages
 
+	export USR="usr"
+	export ETC="etc"
+	export VAR="var"
+	export prefix="/$USR"
+	export PREFIX="/$USR"
+	export DESTDIR="$TERMUX_DESTDIR"
+
 	unset CFLAGS CPPFLAGS LDFLAGS CXXFLAGS
 }
 
@@ -352,12 +357,12 @@ termux_step_handle_buildarch() {
 			if test -e "$TERMUX_DATA_PREVIOUS_BACKUPDIR"; then
 				termux_error_exit "Directory already exists"
 			fi
-			if [ -d /data/data ]; then
-				mv /data/data "$TERMUX_DATA_PREVIOUS_BACKUPDIR"
+			if [ -d "$TERMUX_DESTDIR" ]; then
+				mv "$TERMUX_DESTDIR" "$TERMUX_DATA_PREVIOUS_BACKUPDIR"
 			fi
 			# Restore new one (if any)
 			if [ -d "$TERMUX_DATA_CURRENT_BACKUPDIR" ]; then
-				mv "$TERMUX_DATA_CURRENT_BACKUPDIR" /data/data
+				mv "$TERMUX_DATA_CURRENT_BACKUPDIR" "$TERMUX_DESTDIR"
 			fi
 		fi
 	fi
@@ -430,12 +435,7 @@ termux_step_start_build() {
 		 "$TERMUX_PKG_PACKAGEDIR" \
 		 "$TERMUX_PKG_TMPDIR" \
 		 "$TERMUX_PKG_CACHEDIR" \
-		 "$TERMUX_PKG_MASSAGEDIR" \
-		 $TERMUX_PREFIX/{bin,etc,lib,libexec,share,tmp,include}
-
-	# Make $TERMUX_PREFIX/bin/sh executable on the builder, so that build
-	# scripts can assume that it works on both builder and host later on:
-	ln -f -s /bin/sh "$TERMUX_PREFIX/bin/sh"
+		 "$TERMUX_PKG_MASSAGEDIR"
 
 	local TERMUX_ELF_CLEANER_SRC=$TERMUX_COMMON_CACHEDIR/termux-elf-cleaner.cpp
 	local TERMUX_ELF_CLEANER_VERSION
@@ -453,11 +453,18 @@ termux_step_start_build() {
 		TERMUX_PKG_BUILDDIR=$TERMUX_PKG_SRCDIR
 	fi
 
+	# Make skeleton, as some packages assume it is already there and use cp directly
+	mkdir -p ${TERMUX_DESTDIR}/${USR}/{bin,lib,libexec,include}
+	for i in {1..8}; do mkdir -p ${TERMUX_DESTDIR}/$USR/share/man/man${i}; done
+	mkdir -p ${TERMUX_DESTDIR}/${ETC}
+	mkdir -p ${TERMUX_DESTDIR}/${VAR}
+	mkdir -p ${TERMUX_DESTDIR}/${_TMP}
+
 	echo "termux - building $TERMUX_PKG_NAME for arch $TERMUX_ARCH..."
 	test -t 1 && printf "\033]0;%s...\007" "$TERMUX_PKG_NAME"
 
 	# Avoid exporting PKG_CONFIG_LIBDIR until after termux_step_host_build.
-	export TERMUX_PKG_CONFIG_LIBDIR=$TERMUX_PREFIX/lib/pkgconfig
+	export TERMUX_PKG_CONFIG_LIBDIR="$TERMUX_DESTDIR/usr/lib/pkgconfig"
 	# Add a pkg-config file for the system zlib.
 	mkdir -p "$TERMUX_PKG_CONFIG_LIBDIR"
 	cat > "$TERMUX_PKG_CONFIG_LIBDIR/zlib.pc" <<-HERE
@@ -528,7 +535,7 @@ termux_step_handle_hostbuild() {
 
 	cd "$TERMUX_PKG_SRCDIR"
 	for patch in $TERMUX_PKG_BUILDER_DIR/*.patch.beforehostbuild; do
-		test -f "$patch" && sed "s%\@TERMUX_PREFIX\@%${TERMUX_PREFIX}%g" "$patch" | patch --silent -p1
+		test -f "$patch" && patch --silent -p1 < "$patch"
 	done
 
 	local TERMUX_HOSTBUILD_MARKER="$TERMUX_PKG_HOSTBUILD_DIR/TERMUX_BUILT_FOR_$TERMUX_PKG_VERSION"
@@ -536,6 +543,8 @@ termux_step_handle_hostbuild() {
 		rm -Rf "$TERMUX_PKG_HOSTBUILD_DIR"
 		mkdir -p "$TERMUX_PKG_HOSTBUILD_DIR"
 		cd "$TERMUX_PKG_HOSTBUILD_DIR"
+		# We don't want to install host packages in the rootfs
+		local DESTDIR=""
 		termux_step_host_build
 		touch "$TERMUX_HOSTBUILD_MARKER"
 	fi
@@ -554,7 +563,7 @@ termux_step_setup_toolchain() {
 	export PATH=$PATH:$TERMUX_STANDALONE_TOOLCHAIN/bin
 
 	export CFLAGS=""
-	export LDFLAGS="-L${TERMUX_PREFIX}/lib"
+	export LDFLAGS="-L${TERMUX_DESTDIR}/usr/lib"
 
 	if [ "$TERMUX_PKG_CLANG" = "no" ]; then
 		export AS=${TERMUX_HOST_PLATFORM}-gcc
@@ -580,7 +589,7 @@ termux_step_setup_toolchain() {
 	export STRIP=$TERMUX_HOST_PLATFORM-strip
 
 	# Android 7 started to support DT_RUNPATH (but not DT_RPATH)
-	LDFLAGS+=" -Wl,-rpath=/usr/lib -Wl,--enable-new-dtags"
+	LDFLAGS+=" -Wl,-rpath=/${USR}/lib -Wl,--enable-new-dtags"
 
 	if [ "$TERMUX_ARCH" = "arm" ]; then
 		# https://developer.android.com/ndk/guides/standalone_toolchain.html#abi_compatibility:
@@ -620,11 +629,11 @@ termux_step_setup_toolchain() {
 	fi
 
 	export CXXFLAGS="$CFLAGS"
-	export CPPFLAGS="-I${TERMUX_PREFIX}/include"
+	export CPPFLAGS="-I${TERMUX_DESTDIR}/usr/include"
 
 	if [ "$TERMUX_PKG_DEPENDS" != "${TERMUX_PKG_DEPENDS/libandroid-support/}" ]; then
 		# If using the android support library, link to it and include its headers as system headers:
-		CPPFLAGS+=" -isystem $TERMUX_PREFIX/include/libandroid-support"
+		CPPFLAGS+=" -isystem $TERMUX_DESTDIR/usr/include/libandroid-support"
 		LDFLAGS+=" -landroid-support"
 	fi
 
@@ -696,8 +705,7 @@ termux_step_setup_toolchain() {
 		cd $_TERMUX_TOOLCHAIN_TMPDIR/sysroot
 
 		for f in $TERMUX_SCRIPTDIR/ndk-patches/*.patch; do
-			sed "s%\@TERMUX_PREFIX\@%${TERMUX_PREFIX}%g" "$f" | \
-				sed "s%\@TERMUX_HOME\@%${TERMUX_ANDROID_HOME}%g" | \
+				sed "s%\@TERMUX_HOME\@%${TERMUX_ANDROID_HOME}%g" "$f" | \
 				patch --silent -p1;
 		done
 		# elf.h: Taken from glibc since the elf.h in the NDK is lacking.
@@ -731,7 +739,7 @@ termux_step_setup_toolchain() {
 	fi
 
 	local _STL_LIBFILE_NAME=libc++_shared.so
-	if [ ! -f $TERMUX_PREFIX/lib/libstdc++.so ]; then
+	if [ ! -f $TERMUX_DESTDIR/usr/lib/libstdc++.so ]; then
 		# Setup libc++_shared.so in $PREFIX/lib and libstdc++.so as a link to it,
 		# so that other C++ using packages links to it instead of the default android
 		# C++ library which does not support exceptions or STL:
@@ -740,8 +748,8 @@ termux_step_setup_toolchain() {
 		# libm.so on some i686 devices links against libstdc++.so.
 		# The libc++_shared.so library will be packaged in the libc++ package
 		# which is part of the base Termux installation.
-		mkdir -p "$TERMUX_PREFIX/lib"
-		cd "$TERMUX_PREFIX/lib"
+		mkdir -p "$TERMUX_DESTDIR/usr/lib"
+		cd "$TERMUX_DESTDIR/usr/lib"
 
 		local _STL_LIBFILE=
 		if [ "$TERMUX_ARCH" = arm ]; then
@@ -763,7 +771,9 @@ termux_step_setup_toolchain() {
 		fi
 	fi
 
+	export PKG_CONFIG_DIR=
 	export PKG_CONFIG_LIBDIR="$TERMUX_PKG_CONFIG_LIBDIR"
+	export PKG_CONFIG_SYSROOT_DIR="$TERMUX_DESTDIR"
 	# Create a pkg-config wrapper. We use path to host pkg-config to
 	# avoid picking up a cross-compiled pkg-config later on.
 	local _HOST_PKGCONFIG
@@ -773,6 +783,7 @@ termux_step_setup_toolchain() {
 		#!/bin/sh
 		export PKG_CONFIG_DIR=
 		export PKG_CONFIG_LIBDIR=$PKG_CONFIG_LIBDIR
+		#export PKG_CONFIG_SYSROOT_DIR=$PKG_CONFIG_SYSROOT_DIR
 		exec $_HOST_PKGCONFIG "\$@"
 	HERE
 	chmod +x "$PKG_CONFIG"
@@ -801,9 +812,14 @@ termux_step_patch_package() {
 	fi
 	# Suffix patch with ".patch32" or ".patch64" to only apply for these bitnesses:
 	shopt -s nullglob
-	for patch in $TERMUX_PKG_BUILDER_DIR/*.patch{$TERMUX_ARCH_BITS,} $DEBUG_PATCHES; do
-		test -f "$patch" && sed "s%\@TERMUX_PREFIX\@%${TERMUX_PREFIX}%g" "$patch" | \
+	for patch in $TERMUX_PKG_BUILDER_DIR/*.patch{$TERMUX_ARCH_BITS,} ${DEBUG_PATCHES}; do
+		test -f "$patch" && \
+			sed "s%\@TERMUX_DESTDIR\@%${TERMUX_DESTDIR}%g" "$patch" | \
 			sed "s%\@TERMUX_HOME\@%${TERMUX_ANDROID_HOME}%g" | \
+			sed "s%\@USR\@%${USR}%g" | \
+			sed "s%\@VAR\@%${VAR}%g" | \
+			sed "s%\@ETC\@%${ETC}%g" | \
+			sed "s%\@TMP\@%${_TMP}%g" | \
 			patch --silent -p1
 	done
 	shopt -u nullglob
@@ -846,7 +862,7 @@ termux_step_configure_autotools () {
 		HOST_FLAG=""
 	fi
 
-	local LIBEXEC_FLAG="--libexecdir=$TERMUX_PREFIX/libexec"
+	local LIBEXEC_FLAG="--libexecdir=/${USR}/libexec"
 	if [ "$TERMUX_PKG_EXTRA_CONFIGURE_ARGS" != "${TERMUX_PKG_EXTRA_CONFIGURE_ARGS/--libexecdir=/}" ]; then
 		LIBEXEC_FLAG=""
 	fi
@@ -911,8 +927,8 @@ termux_step_configure_autotools () {
 	# shellcheck disable=SC2086
 	env $AVOID_GNULIB "$TERMUX_PKG_SRCDIR/configure" \
 		--disable-dependency-tracking \
-		--prefix=$TERMUX_PREFIX \
-		--libdir=$TERMUX_PREFIX/lib \
+		--prefix="${PREFIX}" \
+		--libdir="${PREFIX}/lib" \
 		--disable-rpath --disable-rpath-hack --without-rpath \
 		$HOST_FLAG \
 		$TERMUX_PKG_EXTRA_CONFIGURE_ARGS \
@@ -951,10 +967,10 @@ termux_step_configure_cmake () {
 		-DCMAKE_C_FLAGS="$CFLAGS $CPPFLAGS" \
 		-DCMAKE_CXX_FLAGS="$CXXFLAGS $CPPFLAGS" \
 		-DCMAKE_LINKER="$TERMUX_STANDALONE_TOOLCHAIN/bin/$LD $LDFLAGS" \
-		-DCMAKE_FIND_ROOT_PATH=$TERMUX_PREFIX \
+		-DCMAKE_FIND_ROOT_PATH="$TERMUX_DESTDIR/usr" \
 		-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY \
 		-DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY \
-		-DCMAKE_INSTALL_PREFIX=$TERMUX_PREFIX \
+		-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 		-DCMAKE_MAKE_PROGRAM=$MAKE_PROGRAM_PATH \
 		-DCMAKE_SYSTEM_PROCESSOR=$CMAKE_PROC \
 		-DCMAKE_SYSTEM_NAME=Android \
@@ -971,7 +987,7 @@ termux_step_configure_meson () {
 		$TERMUX_PKG_SRCDIR \
 		$TERMUX_PKG_BUILDDIR \
 		--cross-file $TERMUX_MESON_CROSSFILE \
-		--prefix $TERMUX_PREFIX \
+		--prefix "${PREFIX}" \
 		--libdir lib \
 		--buildtype minsize \
 		--strip \
@@ -1032,37 +1048,38 @@ termux_step_extract_into_massagedir() {
 	local TARBALL_ORIG=$TERMUX_PKG_PACKAGEDIR/${TERMUX_PKG_NAME}_orig.tar.gz
 
 	# Build diff tar with what has changed during the build:
-	cd $TERMUX_PREFIX
+	cd $TERMUX_DESTDIR
 	tar -N "$TERMUX_BUILD_TS_FILE" \
-		--exclude='lib/libc++_shared.so' --exclude='lib/libstdc++.so' \
+		--exclude="${USR}/lib/libc\+\+_shared.so" \
+		--exclude="${USR}/lib/libstdc\+\+.so"
 		-czf "$TARBALL_ORIG" .
 
 	# Extract tar in order to massage it
-	mkdir -p "$TERMUX_PKG_MASSAGEDIR/$TERMUX_PREFIX"
-	cd "$TERMUX_PKG_MASSAGEDIR/$TERMUX_PREFIX"
+	mkdir -p "$TERMUX_PKG_MASSAGEDIR"
+	cd "$TERMUX_PKG_MASSAGEDIR"
 	tar xf "$TARBALL_ORIG"
 	rm "$TARBALL_ORIG"
 }
 
 termux_step_massage() {
-	cd "$TERMUX_PKG_MASSAGEDIR/$TERMUX_PREFIX"
+	cd "$TERMUX_PKG_MASSAGEDIR"
 
 	# Remove lib/charset.alias which is installed by gettext-using packages:
-	rm -f lib/charset.alias
+	rm -f ${USR}/lib/charset.alias
 
 	# Remove non-english man pages:
-	test -d share/man && (cd share/man; for f in `ls | grep -v man`; do rm -Rf $f; done )
+	test -d ${USR}/share/man && (cd ${USR}/share/man; for f in `ls | grep -v man`; do rm -Rf $f; done )
 
 	if [ -z "${TERMUX_PKG_KEEP_INFOPAGES+x}" ]; then
 		# Remove info pages:
-		rm -Rf share/info
+		rm -Rf ${USR}/share/info
 	fi
 
 	# Remove locale files we're not interested in::
-	rm -Rf share/locale
+	rm -Rf ${USR}/share/locale
 	if [ -z "${TERMUX_PKG_KEEP_SHARE_DOC+x}" ]; then
 		# Remove info pages:
-		rm -Rf share/doc
+		rm -Rf ${USR}/share/doc
 	fi
 
 	# Remove old kept libraries (readline):
@@ -1105,10 +1122,10 @@ termux_step_massage() {
 	find . -type d -empty -delete # Remove empty directories
 
 	# Sub packages:
-	if [ -d include ] && [ -z "${TERMUX_PKG_NO_DEVELSPLIT}" ]; then
+	if [ -d ${USR}/include ] && [ -z "${TERMUX_PKG_NO_DEVELSPLIT}" ]; then
 		# Add virtual -dev sub package if there are include files:
 		local _DEVEL_SUBPACKAGE_FILE=$TERMUX_PKG_TMPDIR/${TERMUX_PKG_NAME}-dev.subpackage.sh
-		echo TERMUX_SUBPKG_INCLUDE=\"include share/vala share/man/man3 lib/pkgconfig share/aclocal lib/cmake $TERMUX_PKG_INCLUDE_IN_DEVPACKAGE\" > "$_DEVEL_SUBPACKAGE_FILE"
+		echo TERMUX_SUBPKG_INCLUDE=\"${USR}/include ${USR}/share/vala ${USR}/share/man/man3 ${USR}/lib/pkgconfig ${USR}/share/aclocal ${USR}/lib/cmake $TERMUX_PKG_INCLUDE_IN_DEVPACKAGE\" > "$_DEVEL_SUBPACKAGE_FILE"
 		echo "TERMUX_SUBPKG_DESCRIPTION=\"Development files for ${TERMUX_PKG_NAME}\"" >> "$_DEVEL_SUBPACKAGE_FILE"
 		if [ -n "$TERMUX_PKG_DEVPACKAGE_DEPENDS" ]; then
 			echo "TERMUX_SUBPKG_DEPENDS=\"$TERMUX_PKG_NAME,$TERMUX_PKG_DEVPACKAGE_DEPENDS\"" >> "$_DEVEL_SUBPACKAGE_FILE"
@@ -1129,7 +1146,7 @@ termux_step_massage() {
 		local TERMUX_SUBPKG_CONFLICTS=""
 		local TERMUX_SUBPKG_REPLACES=""
 		local TERMUX_SUBPKG_CONFFILES=""
-		local SUB_PKG_MASSAGE_DIR=$SUB_PKG_DIR/massage/$TERMUX_PREFIX
+		local SUB_PKG_MASSAGE_DIR=$SUB_PKG_DIR/massage
 		local SUB_PKG_PACKAGE_DIR=$SUB_PKG_DIR/package
 		mkdir -p "$SUB_PKG_MASSAGE_DIR" "$SUB_PKG_PACKAGE_DIR"
 
@@ -1171,7 +1188,7 @@ termux_step_massage() {
 		test ! -z "$TERMUX_SUBPKG_REPLACES" && echo "Replaces: $TERMUX_SUBPKG_REPLACES" >> control
 		tar -cJf "$SUB_PKG_PACKAGE_DIR/control.tar.xz" .
 
-		for f in $TERMUX_SUBPKG_CONFFILES; do echo "$TERMUX_PREFIX/$f" >> conffiles; done
+		for f in $TERMUX_SUBPKG_CONFFILES; do echo "$f" >> conffiles; done
 
 		# Create the actual .deb file:
 		TERMUX_SUBPKG_DEBFILE=$TERMUX_DEBDIR/${SUB_PKG_NAME}${DEBUG}_${TERMUX_PKG_FULLVERSION}_${SUB_PKG_ARCH}.deb
@@ -1182,7 +1199,7 @@ termux_step_massage() {
 				   "$SUB_PKG_PACKAGE_DIR/data.tar.xz"
 
 		# Go back to main package:
-		cd "$TERMUX_PKG_MASSAGEDIR/$TERMUX_PREFIX"
+		cd "$TERMUX_PKG_MASSAGEDIR"
 	done
 
 	# .. remove empty directories (NOTE: keep this last):
@@ -1245,7 +1262,7 @@ termux_step_create_debfile() {
 	test ! -z "$TERMUX_PKG_SUGGESTS" && echo "Suggests: $TERMUX_PKG_SUGGESTS" >> DEBIAN/control
 
 	# Create DEBIAN/conffiles (see https://www.debian.org/doc/debian-policy/ap-pkg-conffiles.html):
-	for f in $TERMUX_PKG_CONFFILES; do echo "$TERMUX_PREFIX/$f" >> DEBIAN/conffiles; done
+	for f in $TERMUX_PKG_CONFFILES; do echo "$f" >> DEBIAN/conffiles; done
 
 	# Allow packages to create arbitrary control files.
 	# XXX: Should be done in a better way without a function?
@@ -1300,7 +1317,7 @@ cd "$TERMUX_PKG_MASSAGEDIR"
 termux_step_extract_into_massagedir
 cd "$TERMUX_PKG_MASSAGEDIR"
 termux_step_massage
-cd "$TERMUX_PKG_MASSAGEDIR/$TERMUX_PREFIX"
+cd "$TERMUX_PKG_MASSAGEDIR"
 termux_step_post_massage
 termux_step_create_datatar
 termux_step_create_debfile
