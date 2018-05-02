@@ -62,7 +62,9 @@ termux_download() {
 termux_setup_golang() {
 	export GOOS=android
 	export CGO_ENABLED=1
-	export GO_LDFLAGS="-extldflags=-pie"
+	export CGO_CFLAGS="-I${TERMUX_SYSROOT}/include"
+	export LDFLAGS="-extldflags \"-pie -L${TERMUX_SYSROOT}/lib\""
+
 	if [ "$TERMUX_ARCH" = "arm" ]; then
 		export GOARCH=arm
 		export GOARM=7
@@ -84,6 +86,18 @@ termux_setup_golang() {
 	export GOROOT=$TERMUX_BUILDGO_FOLDER
 	export PATH=$GOROOT/bin:$PATH
 
+	# Skip check in case $1 was not provided
+	if [ -n "${1+x}" ] && [ "$1" = "--mimic-go-get-workspace" ]; then
+		# Make folder tree look as expected by "go get"
+		export GOPATH="${TERMUX_PKG_BUILDDIR}/go"
+		export GO_WORKSPACE="${TERMUX_PKG_BUILDDIR}/go/$2"
+		# If $1 was provided, $2 is mandatory.
+
+		mkdir -p ${GO_WORKSPACE}
+		cp -rf $TERMUX_PKG_SRCDIR/* ${GO_WORKSPACE}
+	fi
+
+	# Don't download the toolchain every time if it's there
 	if [ -d "$TERMUX_BUILDGO_FOLDER" ]; then return; fi
 
 	local TERMUX_BUILDGO_TAR=$TERMUX_COMMON_CACHEDIR/${TERMUX_GO_VERSION}.${TERMUX_GO_PLATFORM}.tar.gz
