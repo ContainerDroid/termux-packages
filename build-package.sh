@@ -1066,7 +1066,18 @@ termux_step_massage() {
 	# Remove static libraries:
 	if [ $TERMUX_PKG_KEEP_STATIC_LIBRARIES = "false" ]; then
 		find . -name '*.a' -delete
-		find . -name '*.la' -delete
+		# https://lists.freedesktop.org/archives/pkg-config/2005-September/000014.html
+		# https://lists.freedesktop.org/archives/pkg-config/2005-September/000021.html
+		# https://www.dwheeler.com/essays/automating-destdir.html
+		# https://www.gnu.org/prep/standards/html_node/DESTDIR.html
+
+		# Libtool is the most stupid piece of software ever created.
+		# Remove every libtool archive (*.la) that ever touched the face of our rootfs.
+		# Linking works just fine without it.
+		# http://www.metastatic.org/text/libtool.html
+		# Same as below, find(1) may fail for some files. No biggie.
+		find . -name '*.la' | xargs -r file | grep -E "(libtool library file|symbolic link)" | \
+			awk -F ':' '{print $1;}' | xargs -r rm || true
 	fi
 
 	# Move over sbin to bin:
