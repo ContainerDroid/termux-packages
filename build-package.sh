@@ -296,6 +296,7 @@ termux_step_setup_variables() {
 	TERMUX_PKG_CACHEDIR=$TERMUX_OUTDIR/$TERMUX_PKG_NAME/cache
 	TERMUX_PKG_MASSAGEDIR=$TERMUX_OUTDIR/$TERMUX_PKG_NAME/massage
 	TERMUX_PKG_PACKAGEDIR=$TERMUX_OUTDIR/$TERMUX_PKG_NAME/package
+	TERMUX_PKG_PATCHDIR=$TERMUX_OUTDIR/$TERMUX_PKG_NAME/patches
 	TERMUX_PKG_SRCDIR=$TERMUX_OUTDIR/$TERMUX_PKG_NAME/src
 	TERMUX_PKG_SHA256=""
 	TERMUX_PKG_TMPDIR=$TERMUX_OUTDIR/$TERMUX_PKG_NAME/tmp
@@ -425,6 +426,7 @@ termux_step_start_build() {
 	rm -Rf "$TERMUX_PKG_BUILDDIR" \
 		"$TERMUX_PKG_PACKAGEDIR" \
 		"$TERMUX_PKG_SRCDIR" \
+		"$TERMUX_PKG_PATCHDIR" \
 		"$TERMUX_PKG_TMPDIR" \
 		"$TERMUX_PKG_MASSAGEDIR"
 
@@ -803,6 +805,18 @@ termux_step_setup_toolchain() {
 	export PATH=$TERMUX_PKG_TMPDIR/config-scripts:$PATH
 }
 
+termux_fixup_target_paths() {
+	for file in $@; do
+		sed -i -e "s|@TERMUX_DESTDIR@|${TERMUX_DESTDIR}|g" \
+		       -e "s|@HOME@|${TERMUX_ANDROID_HOME}|g" \
+		       -e "s|@USR@|${USR}|g" \
+		       -e "s|@VAR@|${VAR}|g" \
+		       -e "s|@ETC@|${ETC}|g" \
+		       -e "s|@TMP@|${_TMP}|g" \
+		       ${file}
+	done
+}
+
 # Apply all *.patch files for the package. Not to be overridden by packages.
 termux_step_patch_package() {
 	cd "$TERMUX_PKG_SRCDIR"
@@ -813,14 +827,12 @@ termux_step_patch_package() {
 	# Suffix patch with ".patch32" or ".patch64" to only apply for these bitnesses:
 	shopt -s nullglob
 	for patch in $TERMUX_PKG_BUILDER_DIR/*.patch{$TERMUX_ARCH_BITS,} ${DEBUG_PATCHES}; do
-		test -f "$patch" && \
-			sed "s%\@TERMUX_DESTDIR\@%${TERMUX_DESTDIR}%g" "$patch" | \
-			sed "s%\@HOME\@%${TERMUX_ANDROID_HOME}%g" | \
-			sed "s%\@USR\@%${USR}%g" | \
-			sed "s%\@VAR\@%${VAR}%g" | \
-			sed "s%\@ETC\@%${ETC}%g" | \
-			sed "s%\@TMP\@%${_TMP}%g" | \
-			patch --silent -p1
+		test -f "$patch" && {
+			tmp_patch="${TERMUX_PKG_PATCHDIR}/$(basename ${patch})"
+			install -D ${patch} ${tmp_patch}
+			termux_fixup_target_paths ${tmp_patch}
+			patch --silent -p1 < ${tmp_patch}
+		}
 	done
 	shopt -u nullglob
 }
