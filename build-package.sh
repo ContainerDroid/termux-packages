@@ -392,8 +392,7 @@ termux_step_handle_buildarch() {
 	mkdir -p $TERMUX_OUTDIR && echo "$TERMUX_ARCH" > $TERMUX_ARCH_FILE
 }
 
-# Source the package build script and start building. No to be overridden by packages.
-termux_step_start_build() {
+termux_step_pre_start_build() {
 	# shellcheck source=/dev/null
 	source "$TERMUX_PKG_BUILDER_SCRIPT"
 
@@ -422,6 +421,9 @@ termux_step_start_build() {
 		TERMUX_PKG_FULLVERSION+="-$TERMUX_PKG_REVISION"
 	fi
 
+	# Avoid exporting PKG_CONFIG_LIBDIR until after termux_step_host_build.
+	export TERMUX_PKG_CONFIG_LIBDIR="${TERMUX_SYSROOT}/lib/pkgconfig"
+
 	if [ "$TERMUX_DEBUG" == "true" ]; then
 		if [ "$TERMUX_PKG_HAS_DEBUG" == "yes" ]; then
 			DEBUG="-dbg"
@@ -433,33 +435,31 @@ termux_step_start_build() {
 		DEBUG=""
 	fi
 
-	if [ -z "$TERMUX_DEBUG" ] &&
-	   [ -z "${TERMUX_FORCE_BUILD+x}" ] &&
-	   [ -e "${TERMUX_PKG_STATUSDIR}/10-finish" ]; then
-		if [ "$(cat "${TERMUX_PKG_STATUSDIR}/10-finish")" = "$TERMUX_PKG_FULLVERSION" ]; then
-			echo "$TERMUX_PKG_NAME@$TERMUX_PKG_FULLVERSION built - skipping (rm -rf ${TERMUX_PKG_STATUSDIR} to force rebuild)"
-			exit 0
-		fi
-	fi
+	# Ensure folders present (but not $TERMUX_PKG_SRCDIR, it will be created in build)
+	mkdir -p "${TERMUX_COMMON_CACHEDIR}" \
+	         "${TERMUX_DEBDIR}" \
+	         "${TERMUX_PKG_STATUSDIR}" \
+	         "${TERMUX_PKG_BUILDDIR}" \
+	         "${TERMUX_PKG_PACKAGEDIR}" \
+	         "${TERMUX_PKG_TMPDIR}" \
+	         "${TERMUX_PKG_CACHEDIR}" \
+	         "${TERMUX_PKG_MASSAGEDIR}"
+
+	echo "${TERMUX_PKG_NAME} - building for arch $TERMUX_ARCH..."
+	test -t 1 && printf "\033]0;%s...\007" "$TERMUX_PKG_NAME"
+}
+
+# Source the package build script and start building. No to be overridden by packages.
+termux_step_start_build() {
 
 	# Cleanup old state:
-	rm -Rf "$TERMUX_PKG_BUILDDIR" \
-		"$TERMUX_PKG_PACKAGEDIR" \
-		"$TERMUX_PKG_SRCDIR" \
-		"$TERMUX_PKG_PATCHDIR" \
-		"$TERMUX_PKG_STATUSDIR/*" \
-		"$TERMUX_PKG_TMPDIR" \
-		"$TERMUX_PKG_MASSAGEDIR"
-
-	# Ensure folders present (but not $TERMUX_PKG_SRCDIR, it will be created in build)
-	mkdir -p "$TERMUX_COMMON_CACHEDIR" \
-		 "$TERMUX_DEBDIR" \
-		 "$TERMUX_PKG_BUILDDIR" \
-		 "$TERMUX_PKG_PACKAGEDIR" \
-		 "$TERMUX_PKG_STATUSDIR" \
-		 "$TERMUX_PKG_TMPDIR" \
-		 "$TERMUX_PKG_CACHEDIR" \
-		 "$TERMUX_PKG_MASSAGEDIR"
+	find "$TERMUX_PKG_BUILDDIR" \
+	     "$TERMUX_PKG_PACKAGEDIR" \
+	     "$TERMUX_PKG_SRCDIR" \
+	     "$TERMUX_PKG_PATCHDIR" \
+	     "$TERMUX_PKG_TMPDIR" \
+	     "$TERMUX_PKG_MASSAGEDIR" \
+	     ! -type d -delete
 
 	local TERMUX_ELF_CLEANER_SRC=$TERMUX_COMMON_CACHEDIR/termux-elf-cleaner.cpp
 	local TERMUX_ELF_CLEANER_VERSION
@@ -483,12 +483,6 @@ termux_step_start_build() {
 	mkdir -p ${TERMUX_DESTDIR}/${ETC}
 	mkdir -p ${TERMUX_DESTDIR}/${VAR}
 	mkdir -p ${TERMUX_DESTDIR}/${_TMP}
-
-	echo "termux - building $TERMUX_PKG_NAME for arch $TERMUX_ARCH..."
-	test -t 1 && printf "\033]0;%s...\007" "$TERMUX_PKG_NAME"
-
-	# Avoid exporting PKG_CONFIG_LIBDIR until after termux_step_host_build.
-	export TERMUX_PKG_CONFIG_LIBDIR="${TERMUX_SYSROOT}/lib/pkgconfig"
 }
 
 # Run just after sourcing $TERMUX_PKG_BUILDER_SCRIPT. May be overridden by packages.
@@ -822,7 +816,7 @@ termux_step_setup_toolchain() {
 		cp ${f} ${_config_script}
 		sed -i "s%prefix *= *\"*${PREFIX}\"*%prefix=\"${TERMUX_SYSROOT}\"%" ${_config_script}
 	done
-	ln -s "$TERMUX_STANDALONE_TOOLCHAIN/bin/${TERMUX_HOST_PLATFORM}-pkg-config" "$TERMUX_PKG_TMPDIR/config-scripts/pkg-config"
+	ln -sf "$TERMUX_STANDALONE_TOOLCHAIN/bin/${TERMUX_HOST_PLATFORM}-pkg-config" "$TERMUX_PKG_TMPDIR/config-scripts/pkg-config"
 	export PATH=$TERMUX_PKG_TMPDIR/config-scripts:$PATH
 }
 
@@ -1332,62 +1326,60 @@ termux_step_create_debfile() {
 	       "$TERMUX_PKG_PACKAGEDIR/data.tar.xz"
 }
 
-# Setting ${_status} lets external processes know
-# which step is currently undergoing
-termux_update_status() {
-	local _status="$1"
-	echo "$TERMUX_PKG_FULLVERSION" > "$TERMUX_PKG_STATUSDIR/${_status}"
-}
-
 # Finish the build. Not to be overridden by package scripts.
 termux_step_finish_build() {
-	echo "termux - build of '$TERMUX_PKG_NAME' done"
+	echo "$TERMUX_PKG_NAME - package built"
 	test -t 1 && printf "\033]0;%s - DONE\007" "$TERMUX_PKG_NAME"
-	termux_update_status "10-finish"
-	exit 0
+}
+
+# Setting ${_status} lets external processes know
+# which step is currently undergoing
+termux_run_step() {
+	local _step="${1}"
+	local _status="${TERMUX_PKG_STATUSDIR}/${2}"
+
+	if [ ${pkg_run_all_steps} = true ] || [ ! -f ${_status} ] || [ "$(< ${_status})" != "${TERMUX_PKG_FULLVERSION}" ]; then
+		pkg_run_all_steps=true
+		eval ${_step} && echo "$TERMUX_PKG_FULLVERSION" > "${_status}"
+	else
+		echo "${TERMUX_PKG_NAME} - skipping step ${_step} (file ${_status} exists)"
+	fi
 }
 
 export TERMUX_SCRIPTDIR="$(realpath $(cd "$(dirname "${BASH_SOURCE[0]}" )" && pwd))"
+pkg_run_all_steps=false
 termux_step_handle_arguments "$@"
 termux_step_setup_variables
 termux_step_handle_buildarch
-termux_step_start_build
-termux_update_status "01-fetch-extract"
-termux_step_extract_package
+termux_step_pre_start_build
+termux_run_step termux_step_start_build "01-start-build"
+termux_run_step termux_step_extract_package "02-fetch-extract"
 cd "$TERMUX_PKG_SRCDIR"
-termux_step_post_extract_package
-termux_update_status "02-handle-hostbuild"
-termux_step_handle_hostbuild
+termux_run_step termux_step_post_extract_package "03-post-extract-package"
+termux_run_step termux_step_handle_hostbuild "04-handle-hostbuild"
 termux_step_setup_toolchain
-termux_update_status "03-patch"
-termux_step_patch_package
-termux_step_replace_guess_scripts
+termux_run_step termux_step_patch_package "05-patch"
+termux_run_step termux_step_replace_guess_scripts "06-replace-guess-scripts"
 cd "$TERMUX_PKG_SRCDIR"
-termux_step_pre_configure
-termux_update_status "04-configure"
+termux_run_step termux_step_pre_configure "07-pre-configure"
 cd "$TERMUX_PKG_BUILDDIR"
-termux_step_configure
+termux_run_step termux_step_configure "08-configure"
 cd "$TERMUX_PKG_BUILDDIR"
-termux_step_post_configure
-termux_update_status "05-make"
+termux_run_step termux_step_post_configure "09-post-configure"
 cd "$TERMUX_PKG_BUILDDIR"
-termux_step_make
-termux_update_status "06-install"
+termux_run_step termux_step_make "10-make"
 cd "$TERMUX_PKG_BUILDDIR"
-termux_step_make_install
+termux_run_step termux_step_make_install "11-make-install"
 cd "$TERMUX_PKG_BUILDDIR"
-termux_step_post_make_install
-termux_update_status "07-massage"
+termux_run_step termux_step_post_make_install "12-post-make-install"
 cd "$TERMUX_PKG_MASSAGEDIR"
-termux_step_extract_into_massagedir
+termux_run_step termux_step_extract_into_massagedir "13-extract-massagedir"
 cd "$TERMUX_PKG_MASSAGEDIR"
-termux_step_massage
+termux_run_step termux_step_massage "14-massage"
 cd "$TERMUX_PKG_MASSAGEDIR"
-termux_step_post_massage
-termux_update_status "08-update-sysroot"
-termux_step_update_sysroot
-termux_step_post_update_sysroot
-termux_update_status "09-create-debfile"
-termux_step_create_datatar
-termux_step_create_debfile
-termux_step_finish_build
+termux_run_step termux_step_post_massage "15-post-massage"
+termux_run_step termux_step_update_sysroot "16-update-sysroot"
+termux_run_step termux_step_post_update_sysroot "17-post-update-sysroot"
+termux_run_step termux_step_create_datatar "18-create-datatar"
+termux_run_step termux_step_create_debfile "19-create-debfile"
+termux_run_step termux_step_finish_build "20-finish-build"
