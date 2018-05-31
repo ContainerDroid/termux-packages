@@ -653,7 +653,7 @@ termux_step_setup_toolchain() {
 	export ac_cv_func_getpwuid=no
 	export ac_cv_func_sigsetmask=no
 
-	if [ ! -d $TERMUX_STANDALONE_TOOLCHAIN ]; then
+	if [ ! -d ${TERMUX_SYSROOT} -o ! -d $TERMUX_STANDALONE_TOOLCHAIN ]; then
 		# Do not put toolchain in place until we are done with setup, to avoid having a half setup
 		# toolchain left in place if something goes wrong (or process is just aborted):
 		local _TERMUX_TOOLCHAIN_TMPDIR=${TERMUX_STANDALONE_TOOLCHAIN}-tmp
