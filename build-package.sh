@@ -351,10 +351,10 @@ termux_step_setup_variables() {
 	TERMUX_PKG_HAS_DEBUG=yes # set to no if debug build doesn't exist or doesn't work, for example for python based packages
 
 	export SHEBANG="/bin/sh"
-	export USR="usr"
-	export ETC="etc"
-	export VAR="var"
-	export _TMP="tmp"
+	export USR="system"
+	export ETC="data/docker/etc"
+	export VAR="data/docker"
+	export _TMP="data/local/tmp"
 	export prefix="/$USR"
 	export PREFIX="/$USR"
 	export DESTDIR="$TERMUX_DESTDIR"
@@ -594,7 +594,15 @@ termux_step_setup_toolchain() {
 	export STRIP=${TERMUX_HOST_PLATFORM}-strip
 
 	# Android 7 started to support DT_RUNPATH (but not DT_RPATH)
-	LDFLAGS+=" -Wl,-rpath=/${USR}/lib -Wl,--enable-new-dtags"
+	case ${TERMUX_ARCH_BITS} in
+	64)
+		RPATH="/${USR}/lib64"
+		;;
+	32)
+		RPATH="/${USR}/lib"
+		;;
+	esac
+	LDFLAGS+=" -Wl,-rpath=${RPATH} -Wl,--enable-new-dtags"
 
 	if [ "$TERMUX_ARCH" = "arm" ]; then
 		# https://developer.android.com/ndk/guides/standalone_toolchain.html#abi_compatibility:
