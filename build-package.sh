@@ -107,6 +107,9 @@ termux_setup_golang() {
 		b3fcf280ff86558e0559e185b601c9eade0fd24c900b4c63cd14d1d38613e499
 
 	( cd "$TERMUX_COMMON_CACHEDIR"; tar xf "$TERMUX_BUILDGO_TAR"; mv go "$TERMUX_BUILDGO_FOLDER"; rm "$TERMUX_BUILDGO_TAR" )
+
+	# Spoof runtime.GOOS to "linux" for apps at runtime
+	sed -i -e 's|\(const GOOS string.*=.*\)sys.GOOS|\1"linux"|g' "${TERMUX_BUILDGO_FOLDER}/src/runtime/extern.go"
 }
 
 # Utility function to setup a current ninja build system.
